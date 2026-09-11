@@ -1,0 +1,4 @@
+Files placed in this directory will be deployed to the RoboRIO into the
+'deploy' directory in the home folder. Use the 'GetDeployDirectory()' function from
+the 'src/main/py/utils.py' file to get a proper path relative to the deploy
+directory.

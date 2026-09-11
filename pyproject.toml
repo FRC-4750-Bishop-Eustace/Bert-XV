@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bert_xv"
+version = "0.1.0"
+description = "Source code for Bert/Swernie 15"
+readme = "./README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Rohan Bharatia", email = "rohan.bharatia@outlook.com" },
+]
+license = "MIT"
+license-files = [ "./LICENSE" ]
+dependencies = [
+    "robotpy>=2026.2.2", # Use "2027.0.0a5.post1" for latest SystemCore update (unstable)
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "ruff>=0.12",
+    "mypy>=1.17",
+]
+
+[tool.robotpy]
+robotpy_version = "2026.2.2" # Use "2027.0.0a5.post1" for latest SystemCore update (unstable)
+components = [
+    "apriltag",
+    # "commands2",
+    "cscore",
+    # "navx",
+    # "phoenix6",
+    # "rev",
+    "sim",
+]
+requires = [
+    "robotpy-commands-v2",
+    "robotpy-navx",
+    "phoenix6",
+    "robotpy-rev",
+
+    "sleipnirgroup-choreolib",
+    "robotpy-urcl",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src/main/py" }
+
+[tool.setuptools.packages.find]
+where = [ "src/main/py" ]
+
+[tool.setuptools.package-data]
+bert_xv = [
+    "py.typed",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [ "bert_xv" ]
+
+[tool.pytest.ini_options]
+testpaths = [ "src/test/py" ]
+
+[tool.coverage.run]
+source = [ "bert_xv" ]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = [
+    "src/main/py",
+    "src/test/py",
+]
+explicit_package_bases = true
+mypy_path = "src/main/py"
