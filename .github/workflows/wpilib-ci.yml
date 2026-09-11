@@ -101,7 +101,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           if find tests -name '*.py' | grep -q .; then
-            pytest --cov=JARVIS --cov-report=term-missing --cov-report=xml
+            pytest --cov=bert_xv --cov-report=term-missing --cov-report=xml
           else
             echo "No tests found yet; skipping."
           fi

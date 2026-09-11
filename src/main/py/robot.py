@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from commands2 import TimedCommandRobot, CommandScheduler
+from commands2 import CommandScheduler, TimedCommandRobot
 from urcl import URCL
 
 from src.main.py.robot_container import RobotContainer
+
 
 class Robot(TimedCommandRobot):
     def __init__(self) -> None:

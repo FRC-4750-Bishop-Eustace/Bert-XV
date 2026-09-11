@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from wpilib import Field2d, SmartDashboard
-from commands2 import Command
 import commands2.cmd as cmd
+from commands2 import Command
+from wpilib import Field2d, SmartDashboard
+
 
 class RobotContainer:
     def __init__(self) -> None:
