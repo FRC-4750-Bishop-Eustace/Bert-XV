@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from commands2 import CommandScheduler, TimedCommandRobot
+from commands2 import Command, CommandScheduler, TimedCommandRobot
 from robot_container import RobotContainer
 from urcl import URCL
 from utils.health import Health
+from utils.logger import Logger
 
 
 class Robot(TimedCommandRobot):
@@ -31,14 +32,16 @@ class Robot(TimedCommandRobot):
         super().__init__()
 
     def robotInit(self) -> None:
+        self._logger = Logger("robot")  # `self.logger` already exists as an internal method of `TimedCommandRobot`
+
         URCL.start()
 
         self.robot = RobotContainer()
-        self.health = Health()
-
         self.robot.ConfigureBindings()
 
-        self.autoCmd = None
+        self.health = Health(self._logger)
+
+        self.autoCmd: Command | None = None
         self.cmdScheduler = CommandScheduler.getInstance()
 
     def robotPeriodic(self) -> None:
@@ -46,6 +49,8 @@ class Robot(TimedCommandRobot):
         self.robot.UpdateField()
 
     def autonomousInit(self) -> None:
+        self._logger.Trace("Autonomous mode started")
+
         self.autoCmd = self.robot.GetAutonomousCommand()
         if self.autoCmd:
             self.autoCmd.schedule()
@@ -54,6 +59,8 @@ class Robot(TimedCommandRobot):
         pass
 
     def teleopInit(self) -> None:
+        self._logger.Trace("Teleoperated mode started")
+
         if self.autoCmd:
             self.autoCmd.cancel()
 
@@ -66,11 +73,20 @@ class Robot(TimedCommandRobot):
         """
         pass
 
+    def disabledInit(self) -> None:
+        self._logger.Trace("Disabled mode started")
+
     def disabledPeriodic(self) -> None:
         pass
 
+    def _simulationInit(self) -> None:
+        self._logger.Trace("Simulation mode started")
+
     def _simulationPeriodic(self) -> None:
         pass
+
+    def testInit(self) -> None:
+        self._logger.Trace("Test mode started")
 
     def testPeriodic(self) -> None:
         pass

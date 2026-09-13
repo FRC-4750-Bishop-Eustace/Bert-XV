@@ -1,4 +1,4 @@
 Files placed in this directory will be deployed to the RoboRIO into the
-'deploy' directory in the home folder. Use the 'get_deploy_directory()' function from
+'deploy' directory in the home folder. Use the 'getDeployDirectory()' function from
 the 'wpilib' package to get a proper path relative to the deploy
 directory.
