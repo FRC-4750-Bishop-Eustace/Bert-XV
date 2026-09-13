@@ -3,7 +3,7 @@ repos:
     hooks:
     - id: ruff-check
       name: Ruff Check
-      entry: ruff check . --fix --unsafe-fixes
+      entry: ruff check .
       language: system
       pass_filenames: false
       types: [ python ]
