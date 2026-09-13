@@ -42,8 +42,6 @@ class Robot(TimedCommandRobot):
         URCL.start()
 
         self.robot = RobotContainer(self._logger)
-        self.robot.ConfigureBindings()
-
         self.health = Health(self._logger)
 
         self.autoCmd: Command | None = None

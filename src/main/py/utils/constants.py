@@ -22,18 +22,20 @@
 
 import json
 from pathlib import Path
-from typing import cast
+from typing import Final, cast
 
 from wpilib import getDeployDirectory
 
 from .logger import Logger
 
+type Constants = dict[str, int | float]
 
-def LoadConstants(path: Path) -> dict[str, int | float]:
+
+def LoadConstants(path: Path) -> Constants:
     logger = Logger("constants")
     try:
         with path.open("r", encoding="utf-8", buffering=1) as file:
-            return cast(dict[str, int | float], json.load(file))
+            return cast(Constants, json.load(file))
     except FileNotFoundError as e:
         logger.Except("Constants file not found", e, path=path)
     except json.JSONDecodeError as e:
@@ -41,4 +43,4 @@ def LoadConstants(path: Path) -> dict[str, int | float]:
     return {}
 
 
-CONSTANTS = LoadConstants(Path(getDeployDirectory()) / "constants.json")
+CONSTANTS: Final[Constants] = LoadConstants(Path(getDeployDirectory()) / "constants.json")

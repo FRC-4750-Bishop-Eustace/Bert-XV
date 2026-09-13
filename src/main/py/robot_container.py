@@ -33,6 +33,8 @@ class RobotContainer:
         self.field = Field2d()
         SmartDashboard.putData("Field", self.field)
 
+        self.ConfigureBindings()
+
     def ConfigureBindings(self) -> None:
         pass
 

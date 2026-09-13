@@ -105,7 +105,6 @@ jobs:
         run: |
           if find tests -name '*.py' | grep -q .; then
             pytest --cov=bert_xv --cov-report=term-missing --cov-report=xml
-          else
             robotpy test --builtin
           fi
 

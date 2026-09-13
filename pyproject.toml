@@ -23,6 +23,8 @@ dev = [
     "pytest-cov>=6.0",
     "ruff>=0.12",
     "mypy>=1.17",
+
+    "pre-commit>=4.6.2",
 ]
 
 [tool.robotpy]
@@ -67,10 +69,13 @@ target-version = "py312"
 select = [
     "E",
     "F",
+    "W",
     "I",
     "UP",
     "B",
     "SIM",
+    "ARG",
+    "RUF",
 ]
 
 [tool.ruff.lint.isort]
@@ -94,4 +99,12 @@ files = [
     "src/test/py",
 ]
 explicit_package_bases = true
+warn_unreachable = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+check_untyped_defs = true
+no_implicit_optional = true
 mypy_path = "src/main/py"

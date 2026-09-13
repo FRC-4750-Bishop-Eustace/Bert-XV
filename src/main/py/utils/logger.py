@@ -30,7 +30,7 @@ import traceback
 from datetime import datetime
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any, Final, TextIO
 
 from wpilib import getDeployDirectory
 
@@ -45,7 +45,7 @@ class LogLevel(IntEnum):
 
 
 class Logger:
-    COLORS = {
+    COLORS: Final[dict[LogLevel, str]] = {
         LogLevel.TRACE: "\033[36;1m",  # Cyan + Bold
         LogLevel.DEBUG: "\033[34;1m",  # Blue + Bold
         LogLevel.INFO: "\033[32;1m",  # Green + Bold
@@ -54,7 +54,7 @@ class Logger:
         LogLevel.FATAL: "\033[35;1m",  # Magenta + Bold
     }
 
-    RESET = "\033[0m"
+    RESET: Final[str] = "\033[0m"
 
     def __init__(
         self,

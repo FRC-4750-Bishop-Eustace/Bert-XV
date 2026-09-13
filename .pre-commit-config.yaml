@@ -1,0 +1,37 @@
+repos:
+  - repo: local
+    hooks:
+    - id: ruff-check
+      name: Ruff Check
+      entry: ruff check . --fix --unsafe-fixes
+      language: system
+      pass_filenames: false
+      types: [ python ]
+
+    - id: ruff-format
+      name: Ruff Format
+      entry: ruff format --check .
+      language: system
+      pass_filenames: false
+      types: [ python ]
+
+    - id: mypy
+      name: MyPy
+      entry: mypy
+      language: system
+      pass_filenames: false
+      types: [ python ]
+
+    - id: pytest
+      name: PyTest
+      entry: bash -c 'if find tests -name "-.py" | grep -q .; then pytest --cov=bert_xv --cov-report=term-missing --cov-report=xml; fi'
+      language: system
+      pass_filenames: false
+      always_run: true
+
+    - id: robotpy-test
+      name: RobotPy Tests
+      entry: bash -c 'if find tests -name "-.py" | grep -q .; then robotpy test --builtin; fi'
+      language: system
+      pass_filenames: false
+      always_run: true
