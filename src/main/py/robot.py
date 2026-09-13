@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from commands2 import CommandScheduler, TimedCommandRobot
+from robot_container import RobotContainer
 from urcl import URCL
-
-from src.main.py.robot_container import RobotContainer
+from utils.health import Health
 
 
 class Robot(TimedCommandRobot):
@@ -34,6 +34,8 @@ class Robot(TimedCommandRobot):
         URCL.start()
 
         self.robot = RobotContainer()
+        self.health = Health()
+
         self.robot.ConfigureBindings()
 
         self.autoCmd = None
@@ -57,8 +59,10 @@ class Robot(TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         """
-        The `teleopPeriodic` function is not directly used here but if it's not defined, WPILib sends an annoying warning message
-        (this is the same for `autonomousPeriodic`, `disabledPeriodic`, `_simulationPeriodic`, and `testPeriodic`)
+        The `teleopPeriodic` function is not directly used here but if it's not defined,
+        WPILib/RobotPy sends an annoying warning message
+
+        This is the same for `autonomousPeriodic`, `disabledPeriodic`, `_simulationPeriodic`, and `testPeriodic`
         """
         pass
 
