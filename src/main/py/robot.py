@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent / "src" / "main" / "py"))
+
 from commands2 import Command, CommandScheduler, TimedCommandRobot
 from robot_container import RobotContainer
 from urcl import URCL
@@ -36,7 +41,7 @@ class Robot(TimedCommandRobot):
 
         URCL.start()
 
-        self.robot = RobotContainer()
+        self.robot = RobotContainer(self._logger)
         self.robot.ConfigureBindings()
 
         self.health = Health(self._logger)

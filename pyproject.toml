@@ -55,6 +55,8 @@ where = [ "src/main/py" ]
 [tool.setuptools.package-data]
 bert_xv = [
     "py.typed",
+    "src/main/deploy/*.txt",
+    "src/main/deploy/*.json",
 ]
 
 [tool.ruff]

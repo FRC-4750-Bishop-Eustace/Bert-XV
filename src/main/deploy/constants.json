@@ -1,0 +1,13 @@
+{
+  "fieldLength": 16.5409880001,
+  "fieldWidth": 8.069326,
+  "lowVoltage": 10.0,
+  "criticalVoltage": 8.0,
+  "voltageDebounce": 1.0,
+  "highCPUTemperature": 70.0,
+  "criticalCPUTemperature": 85.0,
+  "highCANUtilization": 85.0,
+  "criticalCANUtilization": 100.0,
+  "controllerPort": 2,
+  "dashboardPort": 0
+}

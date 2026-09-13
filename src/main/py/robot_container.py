@@ -22,11 +22,14 @@
 
 import commands2.cmd as cmd
 from commands2 import Command
+from utils.logger import Logger
 from wpilib import Field2d, SmartDashboard
 
 
 class RobotContainer:
-    def __init__(self) -> None:
+    def __init__(self, logger: "Logger") -> None:
+        self.logger = logger
+
         self.field = Field2d()
         SmartDashboard.putData("Field", self.field)
 

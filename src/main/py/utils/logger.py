@@ -62,7 +62,7 @@ class Logger:
         level: LogLevel = LogLevel.FATAL,
         stream: TextIO = sys.stderr,
         use_color: bool = True,
-        log_file: bool = False,
+        log_file: bool = True,
         json_output: bool = False,
     ) -> None:
         self.tag = tag
@@ -74,7 +74,7 @@ class Logger:
 
         self.file = None
         if log_file:
-            path = Path(getDeployDirectory() + "logs/" + tag + ".txt")
+            path = Path(getDeployDirectory()) / "logs" / f"{tag}.log"
             path.parent.mkdir(parents=True, exist_ok=True)
             self.file = path.open("a", encoding="utf-8", buffering=1)
 

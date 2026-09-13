@@ -106,7 +106,7 @@ jobs:
           if find tests -name '*.py' | grep -q .; then
             pytest --cov=bert_xv --cov-report=term-missing --cov-report=xml
           else
-            echo "No tests found yet; skipping."
+            robotpy test --builtin
           fi
 
       - name: Upload coverage report

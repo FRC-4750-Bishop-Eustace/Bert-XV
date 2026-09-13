@@ -20,13 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .constants import CONSTANTS
-from .health import Health
-from .logger import Logger, LogLevel
+import json
+from pathlib import Path
+from typing import cast
 
-__all__ = [
-    "CONSTANTS",
-    "Health",
-    "LogLevel",
-    "Logger",
-]
+from wpilib import getDeployDirectory
+
+from .logger import Logger
+
+
+def LoadConstants(path: Path) -> dict[str, int | float]:
+    logger = Logger("constants")
+    try:
+        with path.open("r", encoding="utf-8", buffering=1) as file:
+            return cast(dict[str, int | float], json.load(file))
+    except FileNotFoundError as e:
+        logger.Except("Constants file not found", e, path=path)
+    except json.JSONDecodeError as e:
+        logger.Except("Failed to parse constants file", e, path=path)
+    return {}
+
+
+CONSTANTS = LoadConstants(Path(getDeployDirectory()) / "constants.json")

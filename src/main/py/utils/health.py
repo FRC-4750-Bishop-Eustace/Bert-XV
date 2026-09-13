@@ -24,6 +24,7 @@ import time
 
 from wpilib import DriverStation, RobotController, SmartDashboard
 
+from .constants import CONSTANTS
 from .logger import Logger
 
 
@@ -36,17 +37,7 @@ class Health:
         self.lastMsgTime = 0.0
         self.channelOvercurrentTime = [0.0] * 24
         self.brownout = False
-
-        self.warningVoltage = 10.0
-        self.criticalVoltage = 8.0
         self.lowVoltageStart: float | None = None
-        self.voltageDebounce = 1.0
-
-        self.warningCPUTemperature = 70.0
-        self.criticalCPUTemperature = 85.0
-
-        self.warningCANUtilization = 85.0
-        self.criticalCANUtilization = 100.0
 
     def Update(self) -> None:
         if DriverStation.isEStopped():
@@ -64,15 +55,15 @@ class Health:
             self.brownout = True
             self.TriggerFault("Robot brownout detected")
 
-        elif voltage <= self.warningVoltage:
+        elif voltage <= CONSTANTS["lowVoltage"]:
             # Check for (and ignore) voltage spikes
             now = time.monotonic()
             if self.lowVoltageStart is None:
                 self.lowVoltageStart = now
-            elif now - self.lowVoltageStart >= self.voltageDebounce:
+            elif now - self.lowVoltageStart >= CONSTANTS["voltageDebounce"]:
                 self.lowVoltageStart = None
 
-                if voltage <= self.criticalVoltage:
+                if voltage <= CONSTANTS["criticalVoltage"]:
                     self.TriggerFault(
                         f"Critical battery percentage: {(100.0 * voltage / 12.0):.1f}% ({voltage:.2f}V)", True
                     )
@@ -81,14 +72,14 @@ class Health:
         else:
             self.lowVoltageStart = None
 
-        if temperature >= self.warningCPUTemperature:
-            if temperature >= self.criticalCPUTemperature:
+        if temperature >= CONSTANTS["highCPUTemperature"]:
+            if temperature >= CONSTANTS["criticalCPUTemperature"]:
                 self.TriggerFault(f"Critical CPU temperature: {temperature:.2f} °C", True)
             else:
                 self.TriggerFault(f"High CPU temperature: {temperature:.2f} °C")
 
-        if can.percentBusUtilization >= self.warningCANUtilization:
-            if can.percentBusUtilization >= self.criticalCANUtilization:
+        if can.percentBusUtilization >= CONSTANTS["highCANUtilization"]:
+            if can.percentBusUtilization >= CONSTANTS["criticalCANUtilization"]:
                 self.TriggerFault(f"Max CAN bus utilization used: {can.percentBusUtilization}%", True)
             else:
                 self.TriggerFault(f"High CAN bus utilization used: {can.percentBusUtilization}%")
