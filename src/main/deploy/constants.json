@@ -9,5 +9,6 @@
   "highCANUtilization": 85.0,
   "criticalCANUtilization": 100.0,
   "controllerPort": 2,
-  "dashboardPort": 0
+  "dashboardPort": 0,
+  "canbus": "rio"
 }
