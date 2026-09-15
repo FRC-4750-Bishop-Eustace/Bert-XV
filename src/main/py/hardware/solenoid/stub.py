@@ -20,20 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from hardware.solenoid import SolenoidParameters
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+
+class StubSolenoid:
+    def __init__(self, params: SolenoidParameters) -> None:
+        self.params = params
+        self.state = 0
+
+    def Set(self, state: int) -> None:
+        self.state = state
+
+    def Get(self) -> int | None:
+        return self.state
+
+    def Toggle(self) -> None:
+        self.state = 1 if self.state == 0 else 0

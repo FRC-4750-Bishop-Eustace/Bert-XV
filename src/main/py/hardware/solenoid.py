@@ -20,20 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from dataclasses import dataclass
+from enum import IntEnum
+from pathlib import Path
+from typing import Protocol, runtime_checkable
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+# Bridge so `hardware.solenoid` also acts as a package root for `hardware.solenoid.{...}`
+__path__ = [str(Path(__file__).resolve().parent / "solenoid")]
+
+
+class PneumaticsModule(IntEnum):
+    CTRE_PCM = 0
+    REV_PH = 1
+
+
+@dataclass(frozen=True, slots=True)
+class SolenoidParameters:
+    module: int
+    type: PneumaticsModule
+    channel: int | tuple[int, int]
+
+
+@runtime_checkable
+class Solenoid(Protocol):
+    params: SolenoidParameters
+
+    def Set(self, state: int) -> None: ...
+
+    def Get(self) -> int | None: ...
+
+    def Toggle(self) -> None: ...

@@ -20,20 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from hardware.encoder import EncoderParameters
+from wpilib import Encoder
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+
+class WPIEncoder:
+    def __init__(self, params: EncoderParameters) -> None:
+        assert (
+            isinstance(params.device_id, tuple)
+            and len(params.device_id) == 2
+            and all(isinstance(id, int) for id in params.device_id)
+        )
+
+        self.params = params
+        self.encoder = Encoder(
+            params.device_id[0],
+            params.device_id[1],
+            params.inverted,
+        )
+
+    def GetPosition(self) -> float | None:
+        return self.encoder.getDistance()
+
+    def GetVelocity(self) -> float | None:
+        return self.encoder.getRate()
+
+    def Reset(self) -> None:
+        self.encoder.reset()

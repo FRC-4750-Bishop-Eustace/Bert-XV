@@ -20,20 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from hardware.solenoid import PneumaticsModule, SolenoidParameters
+from wpilib import PneumaticsModuleType, Solenoid
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+
+class SingleSolenoid:
+    def __init__(self, params: SolenoidParameters) -> None:
+        assert isinstance(params.channel, int)
+
+        self.params = params
+        self.solenoid = Solenoid(
+            params.module,
+            PneumaticsModuleType.CTREPCM if params.type == PneumaticsModule.CTRE_PCM else PneumaticsModuleType.REVPH,
+            params.channel,
+        )
+
+    def Set(self, state: int) -> None:
+        self.solenoid.set(bool(state))
+
+    def Get(self) -> int | None:
+        return int(self.solenoid.get())
+
+    def Toggle(self) -> None:
+        self.solenoid.toggle()

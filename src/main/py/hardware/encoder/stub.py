@@ -20,20 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from hardware.encoder import EncoderParameters
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+
+class StubEncoder:
+    def __init__(self, params: EncoderParameters) -> None:
+        self.params = params
+        self.position = 0.0
+        self.velocity = 0.0
+
+    def GetPosition(self) -> float | None:
+        return self.position
+
+    def GetVelocity(self) -> float | None:
+        return self.velocity
+
+    def Reset(self) -> None:
+        self.position = 0.0
+        self.velocity = 0.0

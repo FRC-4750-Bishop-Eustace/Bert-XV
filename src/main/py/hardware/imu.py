@@ -20,20 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol, runtime_checkable
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+from wpimath.geometry import Pose3d, Rotation3d, Translation3d
+
+# Bridge so `hardware.imu` also acts as a package root for `hardware.imu.{...}`
+__path__ = [str(Path(__file__).resolve().parent / "imu")]
+
+
+@dataclass(frozen=True, slots=True)
+class IMUParameters:
+    device_id: int
+
+
+@runtime_checkable
+class IMU(Protocol):
+    params: IMUParameters
+
+    def GetPosition(self) -> Translation3d | None: ...
+
+    def GetRotation(self) -> Rotation3d | None: ...
+
+    def GetAcceleration(self) -> Translation3d | None: ...
+
+    def GetRate(self) -> float | None: ...
+
+    def GetYaw(self) -> float | None: ...
+
+    def Reset(self, pose: Pose3d | None = None) -> None: ...

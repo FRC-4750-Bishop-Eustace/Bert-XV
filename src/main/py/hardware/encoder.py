@@ -20,20 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol, runtime_checkable
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+from .motor import Motor
+
+# Bridge so `hardware.encoder` also acts as a package root for `hardware.encoder.{...}`
+__path__ = [str(Path(__file__).resolve().parent / "encoder")]
+
+
+@dataclass(frozen=True, slots=True)
+class EncoderParameters:
+    device_id: int | tuple[int, int] | Motor
+    inverted: bool = False
+
+
+@runtime_checkable
+class Encoder(Protocol):
+    params: EncoderParameters
+
+    def GetPosition(self) -> float | None: ...
+
+    def GetVelocity(self) -> float | None: ...
+
+    def Reset(self) -> None: ...

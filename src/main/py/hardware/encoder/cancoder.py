@@ -20,20 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from typing import cast
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+from hardware.encoder import EncoderParameters
+from phoenix6.canbus import CANBus
+from phoenix6.hardware import CANcoder
+from utils.constants import CONSTANTS
+
+
+class CANcoderEncoder:
+    def __init__(self, params: EncoderParameters) -> None:
+        assert isinstance(params.device_id, int)
+
+        self.params = params
+        self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(cast(str, CONSTANTS["canbus"])))
+
+    def GetPosition(self) -> float | None:
+        return self.encoder.get_position().value
+
+    def GetVelocity(self) -> float | None:
+        return self.encoder.get_velocity().value
+
+    def Reset(self) -> None:
+        self.encoder.set_position(0.0)

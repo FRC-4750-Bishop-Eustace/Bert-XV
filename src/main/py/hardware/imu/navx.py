@@ -20,20 +20,41 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import Encoder, EncoderParameters
-from .imu import IMU, IMUParameters
-from .motor import IdleMode, Motor, MotorMode, MotorParameters
-from .solenoid import Solenoid, SolenoidParameters
+from hardware.imu import IMUParameters
+from navx import AHRS
+from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
-__all__ = [
-    "IMU",
-    "Encoder",
-    "EncoderParameters",
-    "IMUParameters",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "Solenoid",
-    "SolenoidParameters",
-]
+
+class NavXIMU:
+    def __init__(self, params: IMUParameters) -> None:
+        self.params = params
+        self.imu = AHRS.create_spi()
+
+        self.imu.reset()
+
+    def GetPosition(self) -> Translation3d | None:
+        return Translation3d(
+            self.imu.getDisplacementX(),
+            self.imu.getDisplacementY(),
+            self.imu.getDisplacementZ(),
+        )
+
+    def GetRotation(self) -> Rotation3d | None:
+        return self.imu.getRotation3d()
+
+    def GetAcceleration(self) -> Translation3d | None:
+        return Translation3d(
+            self.imu.getRawAccelX(),
+            self.imu.getRawAccelY(),
+            self.imu.getRawAccelZ(),
+        )
+
+    def GetRate(self) -> float | None:
+        return self.imu.getRate()
+
+    def GetYaw(self) -> float | None:
+        return -self.imu.getYaw()
+
+    def Reset(self, _pose: Pose3d | None = None) -> None:
+        self.imu.reset()
+        self.imu.zeroYaw()
