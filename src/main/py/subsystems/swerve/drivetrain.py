@@ -113,8 +113,8 @@ class Drivetrain(Subsystem):
         self.gyro.Reset()
         self.logger.Debug("IMU reset on startup")
 
-        SmartDashboard.putData("swerve/lateralPID", GetPID(_DRIVE_CONSTANTS, "autoLateral"))
-        SmartDashboard.putData("swerve/angularPID", GetProfiledPID(_DRIVE_CONSTANTS, "autoAngular"))
+        SmartDashboard.putData("swerve/lateralPID", GetPID(_DRIVE_CONSTANTS, "lateralPID"))
+        SmartDashboard.putData("swerve/angularPID", GetProfiledPID(_DRIVE_CONSTANTS, "angularPID"))
 
     def Drive(self, x: float, y: float, theta: float, field_relative: float, period: float = 0.02) -> None:
         states = self.kinematics.toSwerveModuleStates(

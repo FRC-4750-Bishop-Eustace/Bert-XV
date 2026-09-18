@@ -128,20 +128,18 @@ def GetProfiledPID(const: Constants, key: str) -> ProfiledPIDController:
 
 
 def GetFeedForwardMeters(const: Constants, key: str) -> SimpleMotorFeedforwardMeters:
-    ff = GetNumbers(const, key, 3)
+    ff = GetNumbers(const, key, 2)
     return SimpleMotorFeedforwardMeters(
         ff[0],
         ff[1],
-        ff[2],
     )
 
 
 def GetFeedForwardRadians(const: Constants, key: str) -> SimpleMotorFeedforwardRadians:
-    ff = GetNumbers(const, key, 3)
+    ff = GetNumbers(const, key, 2)
     return SimpleMotorFeedforwardRadians(
         ff[0],
         ff[1],
-        ff[2],
     )
 
 

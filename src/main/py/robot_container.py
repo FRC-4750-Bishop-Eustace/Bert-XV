@@ -36,8 +36,8 @@ class RobotContainer:
     def __init__(self, logger: "Logger") -> None:
         self.logger = logger
 
-        self.controller = PS4Controller(GetInt(_CTRL_CONSTANTS, "controllerPort") or -1)
-        self.dashboard = Joystick(GetInt(_CTRL_CONSTANTS, "dashboardPort") or -1)
+        self.controller = PS4Controller(GetInt(_CTRL_CONSTANTS, "controllerPort"))
+        self.dashboard = Joystick(GetInt(_CTRL_CONSTANTS, "dashboardPort"))
 
         self.field = Field2d()
 

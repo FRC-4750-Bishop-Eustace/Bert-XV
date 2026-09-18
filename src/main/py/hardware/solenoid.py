@@ -25,10 +25,6 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from .solenoid.double import DoubleSolenoid
-from .solenoid.single import SingleSolenoid
-from .solenoid.stub import StubSolenoid
-
 # Bridge so `hardware.solenoid` also acts as a package root for `hardware.solenoid.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "solenoid")]
 
@@ -60,6 +56,11 @@ class Solenoid(Protocol):
     def Get(self) -> int | None: ...
 
     def Toggle(self) -> None: ...
+
+
+from .solenoid.double import DoubleSolenoid  # noqa: E402
+from .solenoid.single import SingleSolenoid  # noqa: E402
+from .solenoid.stub import StubSolenoid  # noqa: E402
 
 
 def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Solenoid":

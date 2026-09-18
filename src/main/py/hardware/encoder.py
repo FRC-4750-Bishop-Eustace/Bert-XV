@@ -25,10 +25,6 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from .encoder.absolute_encoder import AbsoluteEncoder
-from .encoder.cancoder import CANcoderEncoder
-from .encoder.stub import StubEncoder
-from .encoder.wpi_encoder import WPIEncoder
 from .motor import Motor
 
 # Bridge so `hardware.encoder` also acts as a package root for `hardware.encoder.{...}`
@@ -57,6 +53,12 @@ class Encoder(Protocol):
     def GetVelocity(self) -> float | None: ...
 
     def Reset(self) -> None: ...
+
+
+from .encoder.absolute_encoder import AbsoluteEncoder  # noqa: E402
+from .encoder.cancoder import CANcoderEncoder  # noqa: E402
+from .encoder.stub import StubEncoder  # noqa: E402
+from .encoder.wpi_encoder import WPIEncoder  # noqa: E402
 
 
 def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":

@@ -27,11 +27,6 @@ from typing import Protocol, runtime_checkable
 
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
-from .imu.adis16470 import ADIS16470IMU
-from .imu.navx import NavXIMU
-from .imu.pigeon2 import Pigeon2IMU
-from .imu.stub import StubIMU
-
 # Bridge so `hardware.imu` also acts as a package root for `hardware.imu.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "imu")]
 
@@ -63,6 +58,12 @@ class IMU(Protocol):
     def GetYaw(self) -> float | None: ...
 
     def Reset(self, pose: Pose3d | None = None) -> None: ...
+
+
+from .imu.adis16470 import ADIS16470IMU  # noqa: E402
+from .imu.navx import NavXIMU  # noqa: E402
+from .imu.pigeon2 import Pigeon2IMU  # noqa: E402
+from .imu.stub import StubIMU  # noqa: E402
 
 
 def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
