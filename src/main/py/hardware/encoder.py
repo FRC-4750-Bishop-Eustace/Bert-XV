@@ -21,13 +21,25 @@
 # SOFTWARE.
 
 from dataclasses import dataclass
+from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+from .encoder.absolute_encoder import AbsoluteEncoder
+from .encoder.cancoder import CANcoderEncoder
+from .encoder.stub import StubEncoder
+from .encoder.wpi_encoder import WPIEncoder
 from .motor import Motor
 
 # Bridge so `hardware.encoder` also acts as a package root for `hardware.encoder.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "encoder")]
+
+
+class EncoderType(IntEnum):
+    STUB = 0
+    WPI = 1
+    CANCODER = 2
+    ABSOLUTE = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,3 +57,15 @@ class Encoder(Protocol):
     def GetVelocity(self) -> float | None: ...
 
     def Reset(self) -> None: ...
+
+
+def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
+    match backend:
+        case EncoderType.STUB:
+            return StubEncoder(params)
+        case EncoderType.WPI:
+            return WPIEncoder(params)
+        case EncoderType.CANCODER:
+            return CANcoderEncoder(params)
+        case EncoderType.ABSOLUTE:
+            return AbsoluteEncoder(params)

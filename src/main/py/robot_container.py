@@ -21,25 +21,53 @@
 # SOFTWARE.
 
 import commands2.cmd as cmd
-from commands2 import Command
-from utils.logger import Logger
-from wpilib import Field2d, SmartDashboard
+from commands import DriveWithJoystick
+from commands2 import Command, InstantCommand
+from commands2.button import JoystickButton
+from subsystems import Drivetrain
+from utils import CONSTANTS, GetInt, GetObject, Logger
+from wpilib import Field2d, Joystick, PS4Controller, SmartDashboard
+
+_CTRL_CONSTANTS = GetObject(CONSTANTS, "controllers")
+_PORT_CONSTANTS = GetObject(CONSTANTS, "ports")
 
 
 class RobotContainer:
     def __init__(self, logger: "Logger") -> None:
         self.logger = logger
 
+        self.controller = PS4Controller(GetInt(_CTRL_CONSTANTS, "controllerPort") or -1)
+        self.dashboard = Joystick(GetInt(_CTRL_CONSTANTS, "dashboardPort") or -1)
+
         self.field = Field2d()
+
+        self.swerve = Drivetrain(self.logger)
+        self.drive = DriveWithJoystick(self.swerve, self.controller)
+
         SmartDashboard.putData("Field", self.field)
 
+        self.SetDefaults()
         self.ConfigureBindings()
 
+    def SetDefaults(self) -> None:
+        self.swerve.setDefaultCommand(self.drive)
+
     def ConfigureBindings(self) -> None:
-        pass
+        JoystickButton(self.controller, GetInt(_PORT_CONSTANTS, "faceDown")).onTrue(
+            InstantCommand(
+                self.drive.ToggleFieldRelative,
+                self.swerve,
+            ),
+        )
+        JoystickButton(self.controller, GetInt(_PORT_CONSTANTS, "faceUp")).onTrue(
+            InstantCommand(
+                self.drive.ToggleFieldRelative,
+                self.swerve,
+            ),
+        )
 
     def UpdateField(self) -> None:
-        pass
+        self.field.setRobotPose(self.swerve.GetPose())
 
     def GetAutonomousCommand(self) -> Command:
         return cmd.none()

@@ -8,7 +8,79 @@
   "criticalCPUTemperature": 85.0,
   "highCANUtilization": 85.0,
   "criticalCANUtilization": 100.0,
-  "controllerPort": 2,
-  "dashboardPort": 0,
-  "canbus": "rio"
+  "controllers": {
+    "controllerPort": 2,
+    "dashboardPort": 0,
+    "lateralSlewRate": 10.0,
+    "angularSlewRate": 20.0,
+    "lateralDeadband": 0.05,
+    "angularDeadband": 0.05
+  },
+  "ports": {
+    "faceDown": 1,
+    "faceRight": 2,
+    "faceLeft": 3,
+    "faceUp": 4,
+    "L1": 5,
+    "R1": 6,
+    "share": 7,
+    "options": 8,
+    "L3": 9,
+    "R3": 10,
+    "dpadUp": 0,
+    "dpadRight": 90,
+    "dpadDown": 180,
+    "dpadLeft": 270,
+    "axisLeftX": 0,
+    "axisLeftY": 1,
+    "axisL2": 2,
+    "axisR2": 3,
+    "axisRightX": 4,
+    "axisRightY": 5
+  },
+  "canbus": "rio",
+  "subsystems": {
+    "drivetrain": {
+      "chassisHalfLength": 0.3429,
+      "wheelRadius": 0.0492,
+      "driveReduction": 6.74603174603,
+      "encoderResolution": 4096,
+      "maxAngularVelocity": 1000,
+      "maxAngularAcceleration": 1000,
+      "maxLateralSpeed": 4.6,
+      "maxAngularSpeed": 5,
+      "microLateralSpeed": 0.2,
+      "microAngularSpeed": 3.0,
+      "frontLeftLateralMotor": 1,
+      "frontLeftAngularMotor": 8,
+      "frontLeftAngularEncoder": 12,
+      "frontRightLateralMotor": 4,
+      "frontRightAngularMotor": 5,
+      "frontRightAngularEncoder": 9,
+      "backLeftLateralMotor": 7,
+      "backLeftAngularMotor": 6,
+      "backLeftAngularEncoder": 10,
+      "backRightLateralMotor": 2,
+      "backRightAngularMotor": 3,
+      "backRightAngularEncoder": 11,
+      "lateralPID": [
+        0.02,
+        0.0,
+        0.0
+      ],
+      "angularPID": [
+        7.8,
+        0.0,
+        0.055
+      ],
+      "lateralFeedforward": [
+        0.0,
+        2.2
+      ],
+      "angularFeedforward": [
+        0.0,
+        0.0
+      ]
+    }
+  }
 }

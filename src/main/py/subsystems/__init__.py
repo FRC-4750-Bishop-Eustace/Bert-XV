@@ -20,28 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .encoder import CreateEncoder, Encoder, EncoderParameters, EncoderType
-from .imu import IMU, CreateIMU, IMUParameters, IMUType
-from .motor import CreateMotor, IdleMode, Motor, MotorMode, MotorParameters, MotorType
-from .solenoid import CreateSolenoid, Solenoid, SolenoidParameters, SolenoidType
+from .swerve.drivetrain import Drivetrain
+from .swerve.swerve_module import SwerveModule
 
 __all__ = [
-    "IMU",
-    "CreateEncoder",
-    "CreateIMU",
-    "CreateMotor",
-    "CreateSolenoid",
-    "Encoder",
-    "EncoderParameters",
-    "EncoderType",
-    "IMUParameters",
-    "IMUType",
-    "IdleMode",
-    "Motor",
-    "MotorMode",
-    "MotorParameters",
-    "MotorType",
-    "Solenoid",
-    "SolenoidParameters",
-    "SolenoidType",
+    "Drivetrain",
+    "SwerveModule",
 ]

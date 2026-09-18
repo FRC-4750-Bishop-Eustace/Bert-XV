@@ -21,13 +21,26 @@
 # SOFTWARE.
 
 from dataclasses import dataclass
+from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
+from .imu.adis16470 import ADIS16470IMU
+from .imu.navx import NavXIMU
+from .imu.pigeon2 import Pigeon2IMU
+from .imu.stub import StubIMU
+
 # Bridge so `hardware.imu` also acts as a package root for `hardware.imu.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "imu")]
+
+
+class IMUType(IntEnum):
+    STUB = 0
+    ADIS16470 = 1
+    NAVX = 2
+    PIGEON2 = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,3 +63,15 @@ class IMU(Protocol):
     def GetYaw(self) -> float | None: ...
 
     def Reset(self, pose: Pose3d | None = None) -> None: ...
+
+
+def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
+    match backend:
+        case IMUType.STUB:
+            return StubIMU(params)
+        case IMUType.ADIS16470:
+            return ADIS16470IMU(params)
+        case IMUType.NAVX:
+            return NavXIMU(params)
+        case IMUType.PIGEON2:
+            return Pigeon2IMU(params)

@@ -50,6 +50,7 @@ class Robot(TimedCommandRobot):
     def robotPeriodic(self) -> None:
         self.cmdScheduler.run()
         self.robot.UpdateField()
+        self.health.Update()
 
     def autonomousInit(self) -> None:
         self._logger.Trace("Autonomous mode started")

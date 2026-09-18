@@ -20,20 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import cast
-
 from hardware.motor import IdleMode, MotorParameters
 from phoenix6.canbus import CANBus
 from phoenix6.configs import TalonFXSConfiguration
 from phoenix6.hardware import TalonFXS
 from phoenix6.signals import InvertedValue, NeutralModeValue
-from utils.constants import CONSTANTS
+from utils import CONSTANTS, GetString
 
 
 class TalonFXSMotor:
     def __init__(self, params: MotorParameters) -> None:
         self.params = params
-        self.motor = TalonFXS(device_id=params.device_id, canbus=CANBus(cast(str, CONSTANTS["canbus"])))
+        self.motor = TalonFXS(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
 
         self.SetParams(self.params)
 

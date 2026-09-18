@@ -21,52 +21,34 @@
 # SOFTWARE.
 
 from hardware.imu import IMUParameters
-from navx import AHRS
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
 
-class NavXIMU:
+class StubIMU:
     def __init__(self, params: IMUParameters) -> None:
         self.params = params
-        match params.device_id:
-            case 0:  # SPI
-                self.imu = AHRS(AHRS.NavXComType.kMXP_SPI)
-            case 1:  # UART
-                self.imu = AHRS(AHRS.NavXComType.kMXP_UART)
-            case 2:  # I2C
-                self.imu = AHRS(AHRS.NavXComType.kI2C)
-            case 3:  # USB 1
-                self.imu = AHRS(AHRS.NavXComType.kUSB1)
-            case 4:  # USB 2
-                self.imu = AHRS(AHRS.NavXComType.kUSB2)
-            case _:  # SPI
-                self.imu = AHRS(AHRS.NavXComType.kMXP_SPI)
-
-        self.imu.reset()
+        self.position = Translation3d(0.0, 0.0, 0.0)
+        self.rotation = Rotation3d(0.0, 0.0, 0.0)
+        self.acceleration = Translation3d(0.0, 0.0, 0.0)
+        self.rate = 0.0
 
     def GetPosition(self) -> Translation3d | None:
-        return Translation3d(
-            self.imu.getDisplacementX(),
-            self.imu.getDisplacementY(),
-            self.imu.getDisplacementZ(),
-        )
+        return self.position
 
     def GetRotation(self) -> Rotation3d | None:
-        return self.imu.getRotation3d()
+        return self.rotation
 
     def GetAcceleration(self) -> Translation3d | None:
-        return Translation3d(
-            self.imu.getRawAccelX(),
-            self.imu.getRawAccelY(),
-            self.imu.getRawAccelZ(),
-        )
+        return self.acceleration
 
     def GetRate(self) -> float | None:
-        return self.imu.getRate()
+        return self.rate
 
     def GetYaw(self) -> float | None:
-        return -self.imu.getYaw()
+        return self.rotation.Z()
 
     def Reset(self, _pose: Pose3d | None = None) -> None:
-        self.imu.reset()
-        self.imu.zeroYaw()
+        self.position = Translation3d(0.0, 0.0, 0.0)
+        self.rotation = Rotation3d(0.0, 0.0, 0.0)
+        self.acceleration = Translation3d(0.0, 0.0, 0.0)
+        self.rate = 0.0

@@ -25,8 +25,22 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+from .motor.spark_flex import SparkFlexMotor
+from .motor.spark_max import SparkMAXMotor
+from .motor.stub import StubMotor
+from .motor.talon_fx import TalonFXMotor
+from .motor.talon_fxs import TalonFXSMotor
+
 # Bridge so `hardware.motor` also acts as a package root for `hardware.motor.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "motor")]
+
+
+class MotorType(IntEnum):
+    STUB = 0
+    SPARK_MAX = 1
+    SPARK_FLEX = 2
+    TALON_FX = 3
+    TALON_FXS = 4
 
 
 class MotorMode(IntEnum):
@@ -68,3 +82,17 @@ class Motor(Protocol):
     def GetVelocity(self) -> float | None: ...
 
     def Stop(self) -> None: ...
+
+
+def CreateMotor(backend: MotorType, params: MotorParameters) -> "Motor":
+    match backend:
+        case MotorType.STUB:
+            return StubMotor(params)
+        case MotorType.SPARK_MAX:
+            return SparkMAXMotor(params)
+        case MotorType.SPARK_FLEX:
+            return SparkFlexMotor(params)
+        case MotorType.TALON_FX:
+            return TalonFXMotor(params)
+        case MotorType.TALON_FXS:
+            return TalonFXSMotor(params)

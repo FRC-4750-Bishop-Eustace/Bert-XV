@@ -20,19 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import cast
-
 from hardware.imu import IMUParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import Pigeon2
-from utils.constants import CONSTANTS
+from utils import CONSTANTS, GetString
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
 
 class Pigeon2IMU:
     def __init__(self, params: IMUParameters) -> None:
         self.params = params
-        self.imu = Pigeon2(device_id=params.device_id, canbus=CANBus(cast(str, CONSTANTS["canbus"])))
+        self.imu = Pigeon2(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
 
     def GetPosition(self) -> Translation3d | None:
         return Translation3d(

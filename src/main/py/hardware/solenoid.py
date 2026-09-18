@@ -25,8 +25,18 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+from .solenoid.double import DoubleSolenoid
+from .solenoid.single import SingleSolenoid
+from .solenoid.stub import StubSolenoid
+
 # Bridge so `hardware.solenoid` also acts as a package root for `hardware.solenoid.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "solenoid")]
+
+
+class SolenoidType(IntEnum):
+    STUB = 0
+    SINGLE = 1
+    DOUBLE = 2
 
 
 class PneumaticsModule(IntEnum):
@@ -50,3 +60,13 @@ class Solenoid(Protocol):
     def Get(self) -> int | None: ...
 
     def Toggle(self) -> None: ...
+
+
+def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Solenoid":
+    match backend:
+        case SolenoidType.STUB:
+            return StubSolenoid(params)
+        case SolenoidType.SINGLE:
+            return SingleSolenoid(params)
+        case SolenoidType.DOUBLE:
+            return DoubleSolenoid(params)

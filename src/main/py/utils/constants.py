@@ -25,10 +25,18 @@ from pathlib import Path
 from typing import Final, cast
 
 from wpilib import getDeployDirectory
+from wpimath.controller import (
+    PIDController,
+    ProfiledPIDController,
+    SimpleMotorFeedforwardMeters,
+    SimpleMotorFeedforwardRadians,
+)
+from wpimath.trajectory import TrapezoidProfile
 
 from .logger import Logger
 
-type Constants = dict[str, int | float]
+type JSONValue = int | float | str | bool | list[JSONValue] | dict[str, JSONValue] | None
+type Constants = dict[str, JSONValue]
 
 
 def LoadConstants(path: Path) -> Constants:
@@ -41,6 +49,100 @@ def LoadConstants(path: Path) -> Constants:
     except json.JSONDecodeError as e:
         logger.Except("Failed to parse constants file", e, path=path)
     return {}
+
+
+def GetInt(const: Constants, key: str) -> int:
+    value = const[key]
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise TypeError(f"Expected constants entry '{key}' to be a number, got {type(value).__name__}")
+    return int(value)
+
+
+def GetFloat(const: Constants, key: str) -> float:
+    value = const[key]
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise TypeError(f"Expected constants entry '{key}' to be a number, got {type(value).__name__}")
+    return float(value)
+
+
+def GetString(const: Constants, key: str) -> str:
+    value = const[key]
+    if not isinstance(value, str):
+        raise TypeError(f"Expected constants entry '{key}' to be a string, got {type(value).__name__}")
+    return value
+
+
+def GetBool(const: Constants, key: str) -> bool:
+    value = const[key]
+    if not isinstance(value, bool):
+        raise TypeError(f"Expected constants entry 'key' to be a boolean, got {type(value).__name__}")
+    return value
+
+
+def GetList(const: Constants, key: str) -> list[JSONValue]:
+    value = const[key]
+    if not isinstance(value, list):
+        raise TypeError(f"Expected constants entry '{key}' to be a JSON array, got {type(value).__name__}")
+    return value
+
+
+def GetObject(const: Constants, key: str) -> Constants:
+    value = const[key]
+    if not isinstance(value, dict):
+        raise TypeError(f"Expected constants entry '{key}' to be a JSON object, got {type(value).__name__}")
+    return value
+
+
+def GetNumbers(const: Constants, key: str, count: int) -> list[float]:
+    numbers = GetList(const, key)
+    if len(numbers) != count:
+        raise TypeError(f"Expected constants entry '{key}' to have exactly {count} numbers, got {len(numbers)}")
+    result: list[float] = []
+    for n in numbers:
+        if isinstance(n, bool) or not isinstance(n, int | float):
+            raise TypeError(f"Expected constants entry '{key}' to be a list of numbers, got {type(n).__name__}")
+        result.append(float(n))
+    return result
+
+
+def GetPID(const: Constants, key: str) -> PIDController:
+    pid = GetNumbers(const, key, 3)
+    return PIDController(
+        pid[0],
+        pid[1],
+        pid[2],
+    )
+
+
+def GetProfiledPID(const: Constants, key: str) -> ProfiledPIDController:
+    pid = GetNumbers(const, key, 3)
+    return ProfiledPIDController(
+        pid[0],
+        pid[1],
+        pid[2],
+        TrapezoidProfile.Constraints(
+            GetFloat(const, "maxAngularVelocity"),
+            GetFloat(const, "maxAngularAcceleration"),
+        ),
+    )
+
+
+def GetFeedForwardMeters(const: Constants, key: str) -> SimpleMotorFeedforwardMeters:
+    ff = GetNumbers(const, key, 3)
+    return SimpleMotorFeedforwardMeters(
+        ff[0],
+        ff[1],
+        ff[2],
+    )
+
+
+def GetFeedForwardRadians(const: Constants, key: str) -> SimpleMotorFeedforwardRadians:
+    ff = GetNumbers(const, key, 3)
+    return SimpleMotorFeedforwardRadians(
+        ff[0],
+        ff[1],
+        ff[2],
+    )
 
 
 CONSTANTS: Final[Constants] = LoadConstants(Path(getDeployDirectory()) / "constants.json")

@@ -20,12 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import cast
-
 from hardware.encoder import EncoderParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import CANcoder
-from utils.constants import CONSTANTS
+from utils import CONSTANTS, GetString
 
 
 class CANcoderEncoder:
@@ -33,7 +31,7 @@ class CANcoderEncoder:
         assert isinstance(params.device_id, int)
 
         self.params = params
-        self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(cast(str, CONSTANTS["canbus"])))
+        self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
 
     def GetPosition(self) -> float | None:
         return self.encoder.get_position().value
