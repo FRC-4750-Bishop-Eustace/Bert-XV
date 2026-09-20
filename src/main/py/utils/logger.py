@@ -29,10 +29,9 @@ import time
 import traceback
 from datetime import datetime
 from enum import IntEnum
-from pathlib import Path
 from typing import Any, Final, TextIO
 
-from wpilib import getDeployDirectory
+from .uuid import GetLogDirectory
 
 
 class LogLevel(IntEnum):
@@ -74,8 +73,7 @@ class Logger:
 
         self.file = None
         if log_file:
-            path = Path(getDeployDirectory()) / "logs" / f"{tag}.log"
-            path.parent.mkdir(parents=True, exist_ok=True)
+            path = GetLogDirectory() / f"{tag}.log"
             self.file = path.open("a", encoding="utf-8", buffering=1)
 
         self.lock = threading.Lock()
@@ -167,6 +165,7 @@ class Logger:
             use_color=self.use_color,
             json_output=self.json_output,
             tag=f"{self.tag}/{tag}",
+            log_file=False,
         )
 
         child.start_time = self.start_time

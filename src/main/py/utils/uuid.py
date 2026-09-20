@@ -20,40 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .constants import (
-    CONSTANTS,
-    GetBool,
-    GetFeedForwardMeters,
-    GetFeedForwardRadians,
-    GetFloat,
-    GetInt,
-    GetList,
-    GetNumbers,
-    GetObject,
-    GetPID,
-    GetProfiledPID,
-    GetString,
-)
-from .health import Health
-from .logger import Logger, LogLevel
-from .uuid import GetLogDirectory, NewUUID
+from __future__ import annotations
 
-__all__ = [
-    "CONSTANTS",
-    "GetBool",
-    "GetFeedForwardMeters",
-    "GetFeedForwardRadians",
-    "GetFloat",
-    "GetInt",
-    "GetList",
-    "GetLogDirectory",
-    "GetNumbers",
-    "GetObject",
-    "GetPID",
-    "GetProfiledPID",
-    "GetString",
-    "Health",
-    "LogLevel",
-    "Logger",
-    "NewUUID",
-]
+import uuid
+from pathlib import Path
+
+from wpilib import getDeployDirectory
+
+session_dir: Path | None = None
+
+
+def NewUUID() -> str:
+    return str(uuid.uuid4())
+
+
+def GetLogDirectory(parent: str = "logs") -> Path:
+    global session_dir
+    if session_dir is None:
+        session_dir = Path(getDeployDirectory()) / parent / NewUUID()
+        session_dir.mkdir(parents=True, exist_ok=True)
+    return session_dir
