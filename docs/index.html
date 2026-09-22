@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FRC 2027 Preseason Exploration — Lab Bench Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --canvas: #faf8ff;
+      --surface: #ffffff;
+      --tint: #f2f3ff;
+      --dim: #d2d9f4;
+      --border: #94a3b8;
+      --border-soft: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #1d4ed8;
+      --primary-active: #0052cc;
+      --cta: #ea580c;
+      --cta-hover: #c2410c;
+      --caution: #f59e0b;
+      --caution-dark: #d97706;
+      --pass: #10b981;
+      --pass-dark: #059669;
+      --standin: #6366f1;
+      --standin-dark: #4338ca;
+      --radius: 4px;
+      --shadow: 0 2px 0 0 #94a3b8;
+      --nav-h: 64px;
+      --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 20px); }
+    body {
+      font-family: var(--font);
+      background-color: var(--canvas);
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    a { color: var(--primary); }
+    a:hover { color: var(--primary-active); }
+    code, .mono { font-family: var(--mono); font-size: 0.88em; }
+
+    .topnav {
+      position: sticky; top: 0; z-index: 200; height: var(--nav-h);
+      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--border); box-shadow: var(--shadow);
+    }
+    .topnav-inner {
+      max-width: 1280px; margin: 0 auto; height: 100%; padding: 0 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .nav-brand-wrap { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .nav-brand {
+      font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--primary);
+      white-space: nowrap; max-width: 280px; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pill {
+      display: inline-flex; align-items: center; font-family: var(--mono); font-size: 0.62rem;
+      font-weight: 600; letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 999px;
+      border: 1.5px solid var(--standin); background: #eef2ff; color: var(--standin-dark); white-space: nowrap;
+    }
+    .nav-links {
+      display: flex; list-style: none; gap: 0.1rem; flex: 1; justify-content: center;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      display: block; padding: 0.4rem 0.55rem; font-size: 0.78rem; font-weight: 550;
+      color: var(--text-muted); text-decoration: none; border-radius: var(--radius);
+      white-space: nowrap; border: 1.5px solid transparent;
+      transition: color 0.12s, background 0.12s, border-color 0.12s;
+    }
+    .nav-links a:hover { color: var(--primary); background: var(--tint); }
+    .nav-links a.active { color: var(--primary-active); background: var(--tint); border-color: var(--dim); }
+    .btn-deploy {
+      flex-shrink: 0; background: var(--cta); color: #fff; border: 2px solid #9a3412;
+      border-radius: var(--radius); box-shadow: 0 2px 0 0 #9a3412; padding: 0.45rem 0.85rem;
+      font-family: var(--font); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      transition: background 0.12s, transform 0.08s;
+    }
+    .btn-deploy:hover { background: var(--cta-hover); color: #fff; }
+    .btn-deploy:active { transform: translateY(1px); box-shadow: 0 1px 0 0 #9a3412; }
+    .nav-toggle {
+      display: none; background: var(--tint); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 0.4rem 0.65rem; font-family: var(--font);
+      font-weight: 600; font-size: 0.8rem; cursor: pointer; color: var(--text); margin-left: auto;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem 3.5rem; }
+    section { margin-bottom: 2.75rem; scroll-margin-top: calc(var(--nav-h) + 20px); }
+    .sec-label {
+      display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 2px dashed var(--border-soft);
+    }
+    .sec-num { font-family: var(--mono); font-size: 0.75rem; font-weight: 700; color: var(--primary); letter-spacing: 0.08em; }
+    .sec-label h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+    .card {
+      position: relative; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.15rem 1.25rem;
+    }
+    .card.tint { background: var(--tint); }
+    .reg {
+      position: absolute; font-family: var(--mono); font-size: 0.55rem; font-weight: 600;
+      color: var(--border); letter-spacing: 0.04em; pointer-events: none; user-select: none; line-height: 1;
+    }
+    .reg-nw { top: 4px; left: 6px; } .reg-ne { top: 4px; right: 6px; }
+    .reg-sw { bottom: 4px; left: 6px; } .reg-se { bottom: 4px; right: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    .hero { padding: 2rem 0 0.5rem; }
+    .hero-card { padding: 1.75rem 1.5rem 1.5rem; margin-bottom: 1rem; }
+    .hero-badge-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem; }
+    .badge {
+      display: inline-flex; align-items: center; font-family: var(--mono); font-size: 0.65rem;
+      font-weight: 600; letter-spacing: 0.05em; padding: 0.25rem 0.55rem; border-radius: var(--radius); border: 1.5px solid;
+    }
+    .badge-blue { background: #dbeafe; border-color: var(--primary); color: var(--primary-active); }
+    .badge-orange { background: #ffedd5; border-color: var(--cta); color: #9a3412; }
+    .badge-pass { background: #d1fae5; border-color: var(--pass-dark); color: var(--pass-dark); }
+    .badge-standin { background: #eef2ff; border-color: var(--standin); color: var(--standin-dark); }
+    .badge-caution { background: #fef3c7; border-color: var(--caution-dark); color: #92400e; }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.15rem); font-weight: 700; letter-spacing: -0.03em;
+      line-height: 1.15; margin-bottom: 0.65rem; color: var(--text);
+    }
+    .hero-lead { font-size: 1.05rem; color: var(--text-muted); max-width: 62ch; margin-bottom: 1.25rem; }
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.65rem; margin-top: 1rem; }
+    .stat {
+      background: var(--tint); border: 1.5px solid var(--border-soft); border-radius: var(--radius);
+      padding: 0.7rem 0.75rem; text-align: center;
+    }
+    .stat .label { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.2rem; }
+    .stat .value { font-weight: 700; font-size: 1rem; color: var(--primary); }
+    .why-card { border-left: 4px solid var(--primary); background: var(--surface); padding: 1.15rem 1.25rem; }
+    .why-card h3 { font-size: 1rem; margin-bottom: 0.4rem; color: var(--primary-active); }
+    .why-card p { color: var(--text-muted); font-size: 0.95rem; }
+    .sticky {
+      background: #fef9c3; border: 1.5px solid #ca8a04; border-radius: var(--radius);
+      box-shadow: 2px 3px 0 0 rgba(202, 138, 4, 0.25); padding: 0.85rem 1rem;
+      font-size: 0.9rem; color: #713f12; position: relative; transform: rotate(-0.4deg);
+    }
+    .sticky strong { display: block; margin-bottom: 0.25rem; font-size: 0.85rem; }
+    .hazard {
+      background: repeating-linear-gradient(-45deg, #fff7ed, #fff7ed 8px, #ffedd5 8px, #ffedd5 16px);
+      border: 2px solid var(--caution-dark); border-radius: var(--radius);
+      padding: 0.9rem 1rem; display: flex; gap: 0.75rem; align-items: flex-start; margin: 0.85rem 0;
+    }
+    .hazard .hz-icon {
+      flex-shrink: 0; width: 1.75rem; height: 1.75rem; background: var(--caution);
+      border: 1.5px solid var(--caution-dark); border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: #78350f;
+    }
+    .hazard .hz-body strong { display: block; font-size: 0.88rem; color: #9a3412; margin-bottom: 0.2rem; }
+    .hazard .hz-body p { font-size: 0.88rem; color: #7c2d12; margin: 0; }
+    .callout-info {
+      background: #eff6ff; border: 1.5px solid var(--primary); border-radius: var(--radius);
+      padding: 0.9rem 1rem; margin: 0.85rem 0; font-size: 0.9rem; color: var(--text-muted);
+    }
+    .callout-info strong { color: var(--primary-active); display: block; margin-bottom: 0.2rem; }
+
+    .pipeline { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem; margin: 1rem 0 0.75rem; }
+    .pipe-stage {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 0.7rem 0.5rem; cursor: pointer; text-align: left;
+      font-family: inherit; color: inherit; transition: border-color 0.12s, background 0.12s, transform 0.08s;
+      min-height: 88px;
+    }
+    .pipe-stage:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .pipe-stage:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .pipe-stage.active {
+      background: var(--tint); border-color: var(--primary-active);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2), var(--shadow);
+    }
+    .pipe-stage .stage-num { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; color: var(--primary); margin-bottom: 0.2rem; }
+    .pipe-stage .stage-name { font-weight: 700; font-size: 0.78rem; color: var(--text); line-height: 1.2; margin-bottom: 0.15rem; }
+    .pipe-stage .stage-where { font-size: 0.65rem; color: var(--text-dim); font-family: var(--mono); }
+    .pipe-panel { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1rem; margin-top: 0.75rem; }
+    .pipe-detail {
+      background: var(--surface); border: 1.5px solid var(--border); border-left: 4px solid var(--primary);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem 1.15rem; min-height: 140px;
+    }
+    .pipe-detail h4 { font-size: 1rem; color: var(--primary-active); margin-bottom: 0.4rem; }
+    .pipe-detail p { font-size: 0.9rem; color: var(--text-muted); }
+    .scope {
+      background: #0f172a; border: 2px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 0.85rem 1rem; font-family: var(--mono);
+      color: #86efac; min-height: 140px; cursor: pointer; position: relative; overflow: hidden;
+    }
+    .scope:focus-visible { outline: 2px solid var(--pass); outline-offset: 2px; }
+    .scope-label {
+      font-size: 0.62rem; color: #94a3b8; letter-spacing: 0.08em; margin-bottom: 0.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .scope-tap { font-size: 0.58rem; background: #1e293b; border: 1px solid #334155; color: #fbbf24; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .scope-ch { display: grid; grid-template-columns: 90px 1fr; gap: 0.35rem 0.5rem; font-size: 0.72rem; align-items: center; margin-bottom: 0.35rem; }
+    .scope-ch .ch-name { color: #38bdf8; }
+    .scope-ch .ch-val { color: #86efac; }
+    .scope-wave { height: 28px; margin-top: 0.4rem; opacity: 0.85; }
+    .scope.paused .scope-tap { color: #f87171; }
+    .latency-callout {
+      margin-top: 1rem; background: #ecfdf5; border: 1.5px solid var(--pass-dark);
+      border-radius: var(--radius); padding: 0.9rem 1rem; font-size: 0.9rem; color: #065f46;
+    }
+    .latency-callout strong { color: var(--pass-dark); }
+    .arch { padding: 1.25rem; margin-bottom: 1rem; }
+    .arch-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.65rem; }
+    .arch-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-bottom: 1.15rem; }
+    .arch-node {
+      background: var(--tint); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 0.55rem 0.75rem; min-width: 100px; text-align: center;
+    }
+    .arch-node.primary { background: #dbeafe; border-color: var(--primary); }
+    .arch-node.side { background: #fef3c7; border-color: var(--caution-dark); }
+    .arch-node .role { font-family: var(--mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+    .arch-node .name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+    .arch-arrow { font-family: var(--mono); color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+    .arch-side { display: flex; flex-wrap: wrap; gap: 1.25rem; padding-top: 0.75rem; border-top: 1.5px dashed var(--border-soft); }
+    .arch-side-path { display: flex; align-items: center; gap: 0.4rem; }
+
+    .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .matrix-col { padding: 1.15rem; }
+    .matrix-col.works { border-top: 4px solid var(--pass-dark); background: #ecfdf5; }
+    .matrix-col.doesnt { border-top: 4px solid var(--caution-dark); background: #fffbeb; }
+    .matrix-col h3 { font-size: 0.95rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .matrix-col.works h3 { color: var(--pass-dark); }
+    .matrix-col.doesnt h3 { color: #92400e; }
+    .matrix-col ul { list-style: none; margin: 0; padding: 0; }
+    .matrix-col li {
+      position: relative; padding: 0.45rem 0 0.45rem 1.4rem; font-size: 0.9rem;
+      color: var(--text-muted); border-bottom: 1px dashed var(--border-soft);
+    }
+    .matrix-col li:last-child { border-bottom: none; }
+    .matrix-col.works li::before { content: "\2713"; position: absolute; left: 0; color: var(--pass-dark); font-weight: 700; }
+    .matrix-col.doesnt li::before { content: "!"; position: absolute; left: 0.15rem; color: var(--caution-dark); font-weight: 800; font-family: var(--mono); }
+    .checklist-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .progress-wrap { flex: 1; min-width: 180px; }
+    .progress-label { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .progress-track {
+      height: 10px; background: var(--dim); border: 1.5px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, var(--pass-dark), var(--pass));
+      width: 0%; transition: width 0.25s ease;
+    }
+    .btn-reset {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); color: var(--text-muted); padding: 0.4rem 0.75rem;
+      font-family: var(--font); font-size: 0.8rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-reset:hover { border-color: #dc2626; color: #dc2626; }
+    .check-cat { margin-bottom: 1.15rem; }
+    .check-cat-title {
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--primary); margin-bottom: 0.4rem;
+      padding: 0.3rem 0; border-bottom: 1.5px solid var(--dim);
+    }
+    .checklist { list-style: none; margin: 0; padding: 0; }
+    .checklist li { border-bottom: 1px solid var(--border-soft); }
+    .checklist li:last-child { border-bottom: none; }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0.35rem;
+      cursor: pointer; border-radius: var(--radius); transition: background 0.1s; min-height: 44px;
+    }
+    .check-item:hover { background: var(--tint); }
+    .check-item input {
+      appearance: none; -webkit-appearance: none; width: 1.2rem; height: 1.2rem; margin-top: 0.1rem;
+      flex-shrink: 0; border: 2px solid var(--border); border-radius: 3px; background: var(--surface);
+      cursor: pointer; position: relative; transition: background 0.12s, border-color 0.12s;
+    }
+    .check-item input:checked { background: var(--pass); border-color: var(--pass-dark); }
+    .check-item input:checked::after {
+      content: ""; position: absolute; left: 3px; top: 0px; width: 5px; height: 9px;
+      border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+    .check-item input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .check-item input:disabled { opacity: 0.55; cursor: not-allowed; }
+    .check-body { flex: 1; }
+    .item-title { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+    .check-item:has(input:checked) .item-title { text-decoration: line-through; color: var(--text-dim); }
+    .item-meta { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.15rem; }
+    .check-status {
+      display: inline-block; font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.04em; padding: 0.12rem 0.35rem; border-radius: 3px; margin-left: 0.35rem;
+      vertical-align: middle; border: 1px solid;
+    }
+    .status-ordered { background: #d1fae5; border-color: var(--pass-dark); color: var(--pass-dark); }
+    .status-need { background: #fef3c7; border-color: var(--caution-dark); color: #92400e; }
+    .status-skip { background: #f1f5f9; border-color: var(--border); color: var(--text-dim); }
+    .status-opt { background: #eef2ff; border-color: var(--standin); color: var(--standin-dark); }
+    .work-orders {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem; margin-top: 1.25rem;
+    }
+    .wo-card {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 0.9rem; position: relative;
+    }
+    .wo-num { font-family: var(--mono); font-size: 0.7rem; font-weight: 700; color: var(--cta); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+    .wo-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.35rem; color: var(--text); }
+    .wo-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+    .doc-list { list-style: none; display: grid; gap: 0.55rem; margin: 0; padding: 0; }
+    .doc-list a {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1rem;
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); text-decoration: none; color: var(--text);
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .doc-list a:hover { border-color: var(--primary); background: var(--tint); color: var(--text); }
+    .doc-icon {
+      width: 2.1rem; height: 2.1rem; background: var(--tint); border: 1.5px solid var(--dim);
+      border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; flex-shrink: 0;
+    }
+    .doc-title { font-weight: 650; font-size: 0.9rem; }
+    .doc-hint { font-size: 0.72rem; color: var(--text-dim); font-family: var(--mono); }
+    footer {
+      border-top: 2px solid var(--border); background: var(--tint); padding: 1.5rem 1.25rem;
+      text-align: center; color: var(--text-dim); font-size: 0.82rem;
+    }
+    footer .mono { font-size: 0.72rem; }
+    @media (max-width: 960px) {
+      .pipeline { grid-template-columns: repeat(4, 1fr); }
+      .stat-row { grid-template-columns: repeat(2, 1fr); }
+      .pipe-panel { grid-template-columns: 1fr; }
+      .nav-brand { max-width: 160px; font-size: 0.65rem; }
+    }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3, .matrix { grid-template-columns: 1fr; }
+      .pipeline { grid-template-columns: 1fr; }
+      .pipe-stage {
+        min-height: 64px; display: grid; grid-template-columns: auto 1fr auto;
+        gap: 0.5rem; align-items: center; padding: 0.85rem 1rem;
+      }
+      .pipe-stage .stage-num { margin: 0; }
+      .pipe-stage .stage-where { text-align: right; }
+      .nav-toggle { display: block; }
+      .btn-deploy { display: none; }
+      .nav-links {
+        display: none; position: absolute; top: var(--nav-h); left: 0; right: 0;
+        flex-direction: column; background: #fff; border-bottom: 2px solid var(--border);
+        padding: 0.5rem; gap: 0.15rem; box-shadow: var(--shadow); justify-content: flex-start;
+      }
+      .nav-links.open { display: flex; }
+      .topnav-inner { position: relative; overflow: visible; }
+      .nav-brand-wrap { flex: 1; min-width: 0; }
+      .arch-flow { flex-direction: column; align-items: stretch; }
+      .arch-arrow { transform: rotate(90deg); text-align: center; }
+      .arch-side { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: 1.45rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .pipe-stage, .progress-fill, .btn-deploy { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav" aria-label="Lab bench navigation">
+    <div class="topnav-inner">
+      <div class="nav-brand-wrap">
+        <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
+        <span class="pill">BENCH PROTO V2.1</span>
+      </div>
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navLinks">Menu</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#vision">Vision Pipeline</a></li>
+        <li><a href="#systemcore">Systemcore on Pi</a></li>
+        <li><a href="#can-imu">CAN &amp; IMU</a></li>
+        <li><a href="#prototype-robot">Prototype Robot</a></li>
+        <li><a href="#parts">Parts Checklist</a></li>
+        <li><a href="#sources">Team Docs</a></li>
+      </ul>
+      <a class="btn-deploy" href="#parts" id="deployBench">DEPLOY BENCH</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <header class="hero" id="overview">
+      <div class="card hero-card">
+        <span class="reg reg-nw">⌜ REG_NW</span>
+        <span class="reg reg-ne">REG_NE ⌝</span>
+        <span class="reg reg-sw">⌞ REG_SW</span>
+        <span class="reg reg-se">REG_SE ⌟</span>
+        <div class="hero-badge-row">
+          <span class="badge badge-blue">MISSION BRIEFING</span>
+          <span class="badge badge-standin">SYSTEMCORE ALPHA STAND-IN</span>
+          <span class="badge badge-orange">2027 PRESEASON</span>
+        </div>
+        <h1>Build a makerspace vision bench — cheap multi-camera AprilTag odometry</h1>
+        <p class="hero-lead">
+          Offload grayscale, blur, gradients, and edge extract to a Gowin FPGA on the Brisbane EPM11,
+          solve tag pose on the RP2350, and publish NetworkTables 4 telemetry to a Raspberry Pi&nbsp;5
+          running Systemcore Alpha. Hands-on lab work — not a dark dashboard.
+        </p>
+        <div class="stat-row">
+          <div class="stat"><div class="label">FPGA platform</div><div class="value">EPM11 / GW1NR-9</div></div>
+          <div class="stat"><div class="label">Camera</div><div class="value">OV2640 DVP</div></div>
+          <div class="stat"><div class="label">WPILib host</div><div class="value">Pi 5 Alpha</div></div>
+          <div class="stat"><div class="label">HW latency</div><div class="value">&lt; 0.05 ms</div></div>
+        </div>
+      </div>
+      <div class="why-card card" style="box-shadow: var(--shadow);">
+        <h3>Why we're building this</h3>
+        <p>
+          USB webcams burn ~15&nbsp;ms in compression and Linux buffer stalls before your detector even starts.
+          A 24-pin DVP parallel stream into the GW1NR-9 keeps pixels in hardware — sub-0.05&nbsp;ms front-end latency —
+          so the dual Cortex-M33 on the RP2350 can spend cycles on 3D homography instead of waiting on USB.
+          Ethan Tola’s RIT thesis (Fusion&nbsp;2 / Zynq&nbsp;7020) showed ~43&nbsp;fps FPGA vs ~2&nbsp;fps pure software;
+          we’re chasing that win on a cheaper Brisbane + OV2640 BOM for multi-camera odometry.
+        </p>
+      </div>
+    </header>
+
+    <section id="vision" aria-labelledby="vision-h">
+      <div class="sec-label">
+        <span class="sec-num">02 // VISION</span>
+        <h2 id="vision-h">Interactive 7-Stage Vision Pipeline</h2>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
+        Tap a stage to inspect signal flow. Optional scope tap shows sample DVP channels
+        (<code>CH_04_PCLK</code>, <code>HREF</code>, <code>VSYNC</code>, <code>DATA</code>).
+      </p>
+      <div class="pipeline" id="pipeline" role="tablist" aria-label="Vision pipeline stages">
+        <button type="button" class="pipe-stage active" role="tab" aria-selected="true" data-stage="0" id="stage-btn-0" tabindex="0">
+          <div class="stage-num">01</div><div class="stage-name">OV2640 DVP</div><div class="stage-where">24-pin · 60 FPS</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="1" id="stage-btn-1" tabindex="-1">
+          <div class="stage-num">02</div><div class="stage-name">Grayscale FPGA</div><div class="stage-where">GW1NR-9</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="2" id="stage-btn-2" tabindex="-1">
+          <div class="stage-num">03</div><div class="stage-name">3×3 Gaussian</div><div class="stage-where">On-chip blur</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="3" id="stage-btn-3" tabindex="-1">
+          <div class="stage-num">04</div><div class="stage-name">Sobel Gradients</div><div class="stage-where">Magnitude</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="4" id="stage-btn-4" tabindex="-1">
+          <div class="stage-num">05</div><div class="stage-name">Edge Quad Extract</div><div class="stage-where">Corners</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="5" id="stage-btn-5" tabindex="-1">
+          <div class="stage-num">06</div><div class="stage-name">RP2350 Tag Pose</div><div class="stage-where">150 MHz · M33×2</div>
+        </button>
+        <button type="button" class="pipe-stage" role="tab" aria-selected="false" data-stage="6" id="stage-btn-6" tabindex="-1">
+          <div class="stage-num">07</div><div class="stage-name">NT4 / USB → Pi 5</div><div class="stage-where">Pose telemetry</div>
+        </button>
+      </div>
+      <div class="pipe-panel">
+        <div class="pipe-detail" id="pipeDetail" role="tabpanel" aria-labelledby="stage-btn-0">
+          <h4>OV2640 DVP — 24-pin parallel raw pixel stream</h4>
+          <p>
+            OV2640 streams raw pixels over a 24-pin Digital Video Port at 60&nbsp;FPS with a 24.0&nbsp;MHz PCLK.
+            Zero Linux buffer stalls. On EPM11 there is no native camera connector — use a 0.5&nbsp;mm FFC-to-DIP
+            breakout and <strong>solder to headers</strong>. First milestone after soldering: verify live pixels into the FPGA.
+          </p>
+        </div>
+        <div class="scope" id="scopeTap" role="button" tabindex="0" aria-pressed="false"
+             aria-label="Logic analyzer scope tap — click to pause or resume sample values"
+             title="Tap to pause/resume sample values">
+          <div class="scope-label">
+            <span>LOGIC ANALYZER · TAP CH_04</span>
+            <span class="scope-tap" id="scopeTapLabel">LIVE ●</span>
+          </div>
+          <div class="scope-ch"><span class="ch-name">CH_04_PCLK</span><span class="ch-val" id="chPclk">24.0 MHz</span></div>
+          <div class="scope-ch"><span class="ch-name">HREF</span><span class="ch-val" id="chHref">HIGH · row active</span></div>
+          <div class="scope-ch"><span class="ch-name">VSYNC</span><span class="ch-val" id="chVsync">↑ frame 0042</span></div>
+          <div class="scope-ch"><span class="ch-name">DATA[7:0]</span><span class="ch-val" id="chData">[0x82] [0x88] [0x8C] [0x90]</span></div>
+          <svg class="scope-wave" viewBox="0 0 280 28" preserveAspectRatio="none" aria-hidden="true">
+            <polyline id="scopePoly" fill="none" stroke="#34d399" stroke-width="1.5"
+              points="0,20 10,20 10,8 20,8 20,20 30,20 30,8 40,8 40,20 50,20 60,14 70,18 80,6 90,22 100,10 110,16 120,8 130,20 140,12 150,20 160,8 170,8 180,20 190,20 200,8 210,8 220,20 230,14 240,10 250,18 260,8 270,20 280,14" />
+          </svg>
+        </div>
+      </div>
+      <div class="latency-callout">
+        <strong>Student callout — hardware latency vs USB webcam</strong>
+        DVP → FPGA front-end latency is <strong>sub-0.05&nbsp;ms</strong> (pixels stay on the wire / fabric).
+        A typical USB webcam path spends ~<strong>15&nbsp;ms</strong> in MJPEG/YUY2 compression + kernel buffering
+        before your detector sees a frame. That gap is why we solder the FFC breakout instead of plugging a UVC cam.
+      </div>
+      <div class="hazard" style="margin-top: 1rem;">
+        <div class="hz-icon" aria-hidden="true">⚠</div>
+        <div class="hz-body">
+          <strong>No Dupont jumpers on the 24-pin 0.5&nbsp;mm DVP FFC</strong>
+          <p>Parasitic capacitance on Dupont wires will corrupt the 24.0&nbsp;MHz PCLK edge. Solder the breakout to headers. Period.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture" aria-labelledby="arch-h">
+      <div class="sec-label">
+        <span class="sec-num">03 // ARCH</span>
+        <h2 id="arch-h">System Architecture &amp; Bus Topology</h2>
+      </div>
+      <div class="card arch">
+        <span class="reg reg-nw">⌜ REG_NW</span>
+        <span class="reg reg-se">REG_SE ⌟</span>
+        <div class="arch-label">Primary vision → robot path</div>
+        <div class="arch-flow" role="img" aria-label="Architecture: OV2640 Optics to Brisbane EPM11 Gowin FPGA to RP2350 Pose Coprocessor to Raspberry Pi 5 WPILib Host Brain">
+          <div class="arch-node"><div class="role">Optics</div><div class="name">OV2640</div></div>
+          <span class="arch-arrow" aria-hidden="true">→</span>
+          <div class="arch-node primary"><div class="role">FPGA · Gowin</div><div class="name">EPM11 / GW1NR-9</div></div>
+          <span class="arch-arrow" aria-hidden="true">→</span>
+          <div class="arch-node primary"><div class="role">Pose coprocessor</div><div class="name">RP2350</div></div>
+          <span class="arch-arrow" aria-hidden="true">→</span>
+          <div class="arch-node primary"><div class="role">WPILib host brain</div><div class="name">Pi 5 (Alpha)</div></div>
+          <span class="arch-arrow" aria-hidden="true">→</span>
+          <div class="arch-node"><div class="role">Control</div><div class="name">DS / Code</div></div>
+        </div>
+        <div class="arch-side">
+          <div>
+            <div class="arch-label">Side bus · IMU</div>
+            <div class="arch-side-path">
+              <div class="arch-node side"><div class="role">9-DOF · I2C @ 100 Hz</div><div class="name">BNO08x</div></div>
+              <span class="arch-arrow" aria-hidden="true">→</span>
+              <div class="arch-node primary"><div class="role">STEMMA QT</div><div class="name">Pi 5</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="arch-label">Side bus · CAN gateway</div>
+            <div class="arch-side-path">
+              <div class="arch-node side"><div class="role">Classic CAN · USB CDC</div><div class="name">Feather RP2040</div></div>
+              <span class="arch-arrow" aria-hidden="true">→</span>
+              <div class="arch-node primary"><div class="role">Host</div><div class="name">Pi 5</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hazard">
+        <div class="hz-icon" aria-hidden="true">⚠</div>
+        <div class="hz-body">
+          <strong>CAN terminators MUST BE 120&nbsp;Ω — NOT 120&nbsp;kΩ</strong>
+          <p>
+            Place a 120&nbsp;ohm resistor across CAN-H and CAN-L at <em>both</em> ends of the bus (unpowered).
+            With both terminators in parallel you should read <strong>~60.0&nbsp;Ω</strong> loop resistance.
+            If you read 120&nbsp;Ω, one terminator is missing. 120&nbsp;kΩ is a common parts-bin mistake and will kill the bus.
+          </p>
+        </div>
+      </div>
+      <div class="hazard">
+        <div class="hz-icon" aria-hidden="true">⚠</div>
+        <div class="hz-body">
+          <strong>Feather = classic CAN ≤&nbsp;1&nbsp;Mbps — NOT CAN-FD</strong>
+          <p>The Feather RP2040 CAN (MCP25625) path is classic CAN only. Do not assume FD frames or 5&nbsp;Mbps payload rates on that adapter.</p>
+        </div>
+      </div>
+      <div class="sticky" style="margin-top: 1rem; max-width: 420px;">
+        <strong>📝 Bench sticky</strong>
+        Verify 60&nbsp;Ω loop <em>before</em> applying 12&nbsp;V to any CAN device. Write the meter reading in the lab notebook.
+      </div>
+    </section>
+
+    <section id="systemcore" aria-labelledby="systemcore-h">
+      <div class="sec-label">
+        <span class="sec-num">04 // SYSTEMCORE</span>
+        <h2 id="systemcore-h">Systemcore on Pi 5 — Works vs. Doesn't</h2>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.95rem;">
+        Full Raspberry Pi&nbsp;5 stands in for Systemcore Alpha under WPILib. CM5 IO board is
+        <em>not</em> required. Flash Alpha, connect Driver Station, deploy, publish NT vision.
+        <span class="badge badge-standin" style="margin-left: 0.35rem;">SOFTWARE STAND-IN ONLY</span>
+      </p>
+      <div class="matrix">
+        <div class="card matrix-col works">
+          <span class="reg reg-nw">⌜ REG_NW</span>
+          <h3><span class="badge badge-pass">PASS / READY</span> Supported in Alpha</h3>
+          <ul>
+            <li>Full WPILib 2027 Linux runtime &amp; TimedRobot loop (50&nbsp;Hz / 100&nbsp;Hz)</li>
+            <li>NetworkTables 4 publisher &amp; websocket server</li>
+            <li>AprilTag pose logging &amp; AdvantageKit WPILog replay</li>
+            <li>Physics simulation telemetry</li>
+            <li>Driver Station connect · <code>robot.local</code> · code deploy</li>
+          </ul>
+        </div>
+        <div class="card matrix-col doesnt">
+          <span class="reg reg-nw">⌜ REG_NW</span>
+          <h3><span class="badge badge-caution">CAUTION</span> Needs real Systemcore / RoboRIO</h3>
+          <ul>
+            <li>80%+ CAN-FD bus saturation handling</li>
+            <li>Physical FPGA PWM hardware watchdog &amp; motor safe-state lockouts</li>
+            <li>12V-to-5V power buck brownout surge protection</li>
+            <li>Field Management System (FMS) communication tokens</li>
+            <li>Carrier heartbeat · full five-bus CAN topology</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hazard" style="margin-top: 1rem;">
+        <div class="hz-icon" aria-hidden="true">⚠</div>
+        <div class="hz-body">
+          <strong>Pi 5 = software stand-in only — no 24&nbsp;V protection / industrial clamps</strong>
+          <p>
+            Pi&nbsp;5 GPIO pins lack 24&nbsp;V industrial protection and 50&nbsp;V inductive kick clamp diodes.
+            Treat this as a software / NT / deploy stand-in — not an electrical twin of Systemcore.
+          </p>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top: 1rem;">
+        <div class="card">
+          <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--primary);">Hardware</h3>
+          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--text-muted);">
+            <li>Full Pi&nbsp;5 (not CM5-only)</li>
+            <li>5&nbsp;V / 5&nbsp;A USB-C supply</li>
+            <li>microSD 32&nbsp;GB+ A2</li>
+            <li>Active cooler optional</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--primary);">Software</h3>
+          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--text-muted);">
+            <li>Flash Systemcore Alpha image</li>
+            <li>WPILib Alpha · port 5810</li>
+            <li>Driver Station connects</li>
+            <li>NT4 vision OK</li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--standin-dark);">Alpha gaps</h3>
+          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--text-muted);">
+            <li>No carrier heartbeat</li>
+            <li>Not all five CAN buses</li>
+            <li>Use sim or lab CAN</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="can-imu" aria-labelledby="can-imu-h">
+      <div class="sec-label">
+        <span class="sec-num">05 // BUS</span>
+        <h2 id="can-imu-h">CAN &amp; IMU Bring-Up</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <span class="reg reg-nw">⌜ REG_NW</span>
+          <h3 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--primary-active);">IMU — Adafruit BNO08x</h3>
+          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.9rem; color: var(--text-muted);">
+            <li>STEMMA QT / I2C on Pi&nbsp;5 @ ~100&nbsp;Hz</li>
+            <li>9-DOF fused orientation for odometry assist</li>
+            <li>Calibrate with figure-8 magnetometer bias sweep</li>
+            <li>CAN alternatives later: NavX3-CAN or Pigeon&nbsp;2</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="reg reg-nw">⌜ REG_NW</span>
+          <h3 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--primary-active);">CAN — Feather RP2040</h3>
+          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.9rem; color: var(--text-muted);">
+            <li>MCP25625 · USB CDC serial to Pi</li>
+            <li><strong>Classic CAN ≤&nbsp;1&nbsp;Mbps</strong> (not FD)</li>
+            <li>120&nbsp;Ω terminators each end → ~60&nbsp;Ω loop</li>
+            <li>No GPIO conflict with BNO08x I2C</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="prototype-robot" aria-labelledby="prototype-robot-h">
+      <div class="card">
+        <span class="reg reg-nw">⌜ REG_NW</span>
+        <span class="reg reg-se">REG_SE ⌟</span>
+        <div class="hero-badge-row" style="margin-bottom:0.75rem">
+          <span class="badge badge-orange">NEW</span>
+          <span class="badge badge-blue">AUTOMATION TEST CHASSIS</span>
+        </div>
+        <h2 id="prototype-robot-h">FRC Prototype Test Robot</h2>
+        <p>Simple mecanum prototype for team automation testing — not a competition robot. Goal: drive 4–5 brushed DC motors with SystemCore SmartIO, practice automation scripts without tying up the full bot.</p>
+
+        <div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+          <div class="card" style="box-shadow:none;border:1px solid var(--dim)">
+            <h3 style="margin-top:0">Motor control</h3>
+            <p><strong>Recommended:</strong> 2× TB6612FNG dual H-bridge modules (Toshiba).</p>
+            <ul>
+              <li>~1.2 A continuous / 3.2 A peak per channel</li>
+              <li>Motor supply 2.5–13.5 V · logic 2.7–5.5 V (3.3 V SmartIO OK)</li>
+              <li>Standby, thermal shutdown, kickback diodes</li>
+              <li>Two modules → four mecanum drive motors</li>
+            </ul>
+            <p><strong>Alternative:</strong> Adafruit Motor Shield V2 (four TB6612FNG chips, I2C + Adafruit_MotorShield library) when you need to free SmartIO PWM/DIR pins.</p>
+          </div>
+          <div class="card" style="box-shadow:none;border:1px solid var(--dim)">
+            <h3 style="margin-top:0">Inventory highlights</h3>
+            <ul>
+              <li>2× TB6612FNG <em>or</em> 1× Motor Shield V2</li>
+              <li>4–5 brushed DC motors + mecanum wheel kit</li>
+              <li>SystemCore (or Alpha stand-in) + SmartIO access</li>
+              <li>Separate motor PSU, common ground, breadboard/perfboard</li>
+              <li>Fuse / kill switch recommended</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Build steps (summary)</h3>
+        <ol>
+          <li>Assemble mecanum chassis and mount motors/wheels.</li>
+          <li>Mount SystemCore + drivers; wire separate VM motor supply and common GND.</li>
+          <li>Wire SmartIO PWM/DIR/STBY (TB6612 path) or I2C (Motor Shield V2).</li>
+          <li>Label FL/FR/BL/BR; bring up one motor at current-limited low voltage.</li>
+          <li>Implement mecanum mix (<code>vx, vy, omega</code> → four wheel speeds) and enable/deadman before automation scripts.</li>
+        </ol>
+
+        <div class="callout caution" style="margin-top:1rem">
+          <strong>Power note:</strong> Do not power motor VM from logic rails. Tie grounds together; fuse VM+.
+        </div>
+
+        <p style="margin-top:1.25rem">
+          <a class="btn-deploy" href="https://docs.google.com/document/d/1beCMKh5KkO6ATgbNA8zfSu-VdVHk7O_DakCLaJarbZM/edit" target="_blank" rel="noopener">Open full Google Doc →</a>
+          <span class="mono" style="margin-left:0.75rem;font-size:0.85rem;opacity:0.8">Wiring pinouts + ASCII schematic inside</span>
+        </p>
+      </div>
+    </section>
+
+    <section id="parts" aria-labelledby="parts-h">
+      <div class="sec-label">
+        <span class="sec-num">06 // BENCH</span>
+        <h2 id="parts-h">Parts Checklist &amp; Lab Notebook Sprint</h2>
+      </div>
+      <div class="card" style="margin-bottom: 1.25rem;">
+        <span class="reg reg-nw">⌜ REG_NW</span>
+        <span class="reg reg-se">REG_SE ⌟</span>
+        <div class="checklist-bar">
+          <div class="progress-wrap">
+            <div class="progress-label"><span id="checkCount">0</span> of <span id="checkTotal">0</span> Items Ready (<span id="checkPct">0</span>%)</div>
+            <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+          <button type="button" class="btn-reset" id="resetChecklist">Reset checklist</button>
+        </div>
+        <div class="check-cat">
+          <div class="check-cat-title">Vision Subsystem</div>
+          <ul class="checklist">
+            <li><label class="check-item"><input type="checkbox" data-id="epm11" />
+              <span class="check-body"><span class="item-title">Brisbane EPM11 (RP2350 + GW1NR-9)</span>
+              <span class="item-meta">FPGA + MCU host for vision front-end <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="ov2640" checked />
+              <span class="check-body"><span class="item-title">OV2640 camera (~$16, 120° lens)</span>
+              <span class="item-meta">24-pin DVP parallel sensor <span class="check-status status-ordered">RECEIVED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="breakout" checked />
+              <span class="check-body"><span class="item-title">24-pin 0.5&nbsp;mm FFC-to-DIP breakout</span>
+              <span class="item-meta">Solder to headers — no Duponts <span class="check-status status-ordered">RECEIVED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="solder" />
+              <span class="check-body"><span class="item-title">Solder camera headers</span>
+              <span class="item-meta">350°C leaded · verify continuity <span class="check-status status-need">TODO</span></span></span></label></li>
+          </ul>
+        </div>
+        <div class="check-cat">
+          <div class="check-cat-title">Controller</div>
+          <ul class="checklist">
+            <li><label class="check-item"><input type="checkbox" data-id="pi5" />
+              <span class="check-body"><span class="item-title">Raspberry Pi 5 (full board)</span>
+              <span class="item-meta">Systemcore Alpha software stand-in <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="microsd" />
+              <span class="check-body"><span class="item-title">microSD 32&nbsp;GB+ A2</span>
+              <span class="item-meta">For Alpha image flash <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="psu" />
+              <span class="check-body"><span class="item-title">5&nbsp;V / 5&nbsp;A USB-C power supply</span>
+              <span class="item-meta">Official Pi PSU preferred <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="cooler" />
+              <span class="check-body"><span class="item-title">Active cooler</span>
+              <span class="item-meta">Recommended under load <span class="check-status status-opt">OPTIONAL</span></span></span></label></li>
+          </ul>
+        </div>
+        <div class="check-cat">
+          <div class="check-cat-title">Sensing / Bus</div>
+          <ul class="checklist">
+            <li><label class="check-item"><input type="checkbox" data-id="bno08x" />
+              <span class="check-body"><span class="item-title">Adafruit BNO08x IMU (STEMMA QT)</span>
+              <span class="item-meta">I2C 9-DOF on Pi <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="feather" />
+              <span class="check-body"><span class="item-title">Feather RP2040 CAN board</span>
+              <span class="item-meta">Classic CAN ≤1&nbsp;Mbps · USB CDC <span class="check-status status-need">NEED</span></span></span></label></li>
+            <li><label class="check-item"><input type="checkbox" data-id="terminators" />
+              <span class="check-body"><span class="item-title">120&nbsp;Ω 1/4W terminators (pair)</span>
+              <span class="item-meta">NOT 120&nbsp;kΩ — both ends → ~60&nbsp;Ω loop <span class="check-status status-need">NEED</span></span></span></label></li>
+          </ul>
+        </div>
+        <div class="check-cat">
+          <div class="check-cat-title">Deferred</div>
+          <ul class="checklist">
+            <li><label class="check-item"><input type="checkbox" data-id="nicla" disabled />
+              <span class="check-body"><span class="item-title">Arduino Nicla Vision</span>
+              <span class="item-meta">Evaluated &amp; skipped — $95/unit vs ~$15 Gowin path <span class="check-status status-skip">SKIPPED</span></span></span></label></li>
+          </ul>
+        </div>
+      </div>
+      <h3 style="font-size: 1.05rem; margin-bottom: 0.65rem; color: var(--text);">Lab Notebook — Sprint Work Orders</h3>
+      <div class="work-orders" id="workOrders">
+        <div class="wo-card"><div class="wo-num">WO-01</div><div class="wo-title">Solder Camera Headers</div>
+          <div class="wo-desc">350°C leaded solder on 24-pin 0.5&nbsp;mm FFC breakout. No Dupont jumpers. Continuity check every pin.</div></div>
+        <div class="wo-card"><div class="wo-num">WO-02</div><div class="wo-title">Stream Raw Pixels</div>
+          <div class="wo-desc">Verify 24.0&nbsp;MHz PCLK with logic analyzer. Confirm HREF/VSYNC edges into GW1NR-9.</div></div>
+        <div class="wo-card"><div class="wo-num">WO-03</div><div class="wo-title">Validate Classic CAN</div>
+          <div class="wo-desc">Measure ~60&nbsp;Ω loop resistance with both 120&nbsp;Ω terminators before applying 12&nbsp;V.</div></div>
+        <div class="wo-card"><div class="wo-num">WO-04</div><div class="wo-title">Wire BNO08x</div>
+          <div class="wo-desc">STEMMA QT to Pi I2C. Run figure-8 magnetometer bias calibration; log residuals.</div></div>
+        <div class="wo-card"><div class="wo-num">WO-05</div><div class="wo-title">Flash Systemcore Alpha</div>
+          <div class="wo-desc">Mount WPILib Alpha image on microSD. Bind NT / DS on port 5810. Confirm robot.local.</div></div>
+      </div>
+    </section>
+
+    <section id="sources" aria-labelledby="sources-h">
+      <div class="sec-label">
+        <span class="sec-num">07 // DOCS</span>
+        <h2 id="sources-h">Engineering Documentation &amp; Deep-Links</h2>
+      </div>
+      <ul class="doc-list">
+          <li><a href="https://docs.google.com/document/d/1beCMKh5KkO6ATgbNA8zfSu-VdVHk7O_DakCLaJarbZM/edit" target="_blank" rel="noopener">FRC Prototype Test Robot — Inventory and Build Needs</a></li>
+
+        <li><a href="https://docs.google.com/document/d/1SL-J25ujiIUowuXdyGijsYu4MuIxhTIWk3UI_QeVhxw/edit" target="_blank" rel="noopener noreferrer">
+          <span class="doc-icon" aria-hidden="true">📦</span>
+          <span><span class="doc-title">Kit / Parts Overview</span><br /><span class="doc-hint">docs.google.com · kit brief</span></span>
+        </a></li>
+        <li><a href="https://docs.google.com/document/d/1iflEXBfXYyEhGVWpyY_St7hNy5k3w5lC6NUQEc6nTaU/edit" target="_blank" rel="noopener noreferrer">
+          <span class="doc-icon" aria-hidden="true">◈</span>
+          <span><span class="doc-title">FPGA Vision Path (EPM11 / GW1NR-9)</span><br /><span class="doc-hint">docs.google.com · FPGA notes</span></span>
+        </a></li>
+        <li><a href="https://docs.google.com/document/d/1r7yx7s8iGXUkemEWnMXeXu13FKiwnxO8l3hOOAJ2bwk/edit" target="_blank" rel="noopener noreferrer">
+          <span class="doc-icon" aria-hidden="true">π</span>
+          <span><span class="doc-title">Systemcore on Pi 5</span><br /><span class="doc-hint">docs.google.com · Alpha stand-in</span></span>
+        </a></li>
+        <li><a href="https://docs.google.com/document/d/1BnnQ68JjhB_lbME_oqZsrBCbn8fyG8aO5h64X4cWhno/edit" target="_blank" rel="noopener noreferrer">
+          <span class="doc-icon" aria-hidden="true">⌀</span>
+          <span><span class="doc-title">Feather RP2040 CAN</span><br /><span class="doc-hint">docs.google.com · classic CAN bring-up</span></span>
+        </a></li>
+        <li><a href="https://drive.google.com/file/d/1L_9XL4qPozNmYk1pkIkW5-7WwF7BTi5k/view" target="_blank" rel="noopener noreferrer">
+          <span class="doc-icon" aria-hidden="true">✎</span>
+          <span><span class="doc-title">Design Brief — Kinetic Lab Bench</span><br /><span class="doc-hint">drive.google.com · visual system</span></span>
+        </a></li>
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    <p><strong>FRC 2027 Preseason Exploration</strong> — Kinetic Lab Bench Edition · Bench Proto V2.3</p>
+    <p class="mono" style="margin-top: 0.35rem;">Offline-first · checklist → localStorage[frc2027-labbench-checklist] · fonts via Google Fonts CDN</p>
+  </footer>
+
+  <script>
+  (function () {
+    "use strict";
+    var STORAGE_KEY = "frc2027-labbench-checklist";
+    var STAGES = [
+      {
+        title: "OV2640 DVP — 24-pin parallel raw pixel stream",
+        body: "OV2640 streams raw pixels over a 24-pin Digital Video Port at 60 FPS with a 24.0 MHz PCLK. Zero Linux buffer stalls. On EPM11 there is no native camera connector — use a 0.5 mm FFC-to-DIP breakout and solder to headers. First milestone after soldering: verify live pixels into the FPGA."
+      },
+      {
+        title: "Grayscale FPGA — YUV/RGB byte extraction",
+        body: "Gowin GW1NR-9 (~8k LUTs, 8 MB PSRAM on EPM11) extracts luminance from the incoming YUV/RGB byte stream in fabric. Keeps the RP2350 free of per-pixel bookkeeping so dual Cortex-M33 cores can focus on tag geometry later."
+      },
+      {
+        title: "3×3 Gaussian — On-chip blur convolution",
+        body: "A 3×3 Gaussian convolution kernel runs on-chip to suppress sensor noise before edge detection. Pipeline stage stays in FPGA BRAM / line buffers — no round-trip to the MCU."
+      },
+      {
+        title: "Sobel Gradients — Spatial gradient magnitude",
+        body: "Sobel operators compute spatial gradient magnitude across the blurred grayscale plane. Strong edges feed the connected-component stage; weak noise gradients are thresholded out in fabric."
+      },
+      {
+        title: "Edge Quad Extract — Connected component corner candidates",
+        body: "Connected-component labeling finds edge quads and decimates corner candidates for AprilTag-like markers. Only compact corner sets cross the FPGA→RP2350 boundary — not full frame buffers."
+      },
+      {
+        title: "RP2350 Tag Pose — Dual Cortex-M33 @ 150 MHz",
+        body: "Dual Cortex-M33 cores at 150 MHz solve 3D homography / tag pose from the corner set. This is the detector stage: geometry math on the MCU, imaging math already finished in the GW1NR-9."
+      },
+      {
+        title: "NT4 / USB to Pi 5 — NetworkTables 4 pose telemetry",
+        body: "Pose packets leave over USB CDC (or similar) and land as NetworkTables 4 publishers on the Pi 5 Systemcore Alpha host. Robot code and Driver Station consume the same NT topics used in competition season."
+      }
+    ];
+
+    var buttons = Array.prototype.slice.call(document.querySelectorAll(".pipe-stage"));
+    var detail = document.getElementById("pipeDetail");
+
+    function setStage(idx, focusBtn) {
+      if (idx < 0 || idx >= STAGES.length) return;
+      buttons.forEach(function (btn, i) {
+        var on = i === idx;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-selected", on ? "true" : "false");
+        btn.tabIndex = on ? 0 : -1;
+      });
+      var s = STAGES[idx];
+      detail.innerHTML = "<h4>" + s.title + "</h4><p>" + s.body + "</p>";
+      detail.setAttribute("aria-labelledby", "stage-btn-" + idx);
+      if (focusBtn) buttons[idx].focus();
+      try { localStorage.setItem("frc2027-labbench-stage", String(idx)); } catch (e) {}
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setStage(parseInt(btn.getAttribute("data-stage"), 10), false);
+      });
+      btn.addEventListener("keydown", function (e) {
+        var i = parseInt(btn.getAttribute("data-stage"), 10);
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          e.preventDefault(); setStage((i + 1) % STAGES.length, true);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault(); setStage((i - 1 + STAGES.length) % STAGES.length, true);
+        } else if (e.key === "Home") {
+          e.preventDefault(); setStage(0, true);
+        } else if (e.key === "End") {
+          e.preventDefault(); setStage(STAGES.length - 1, true);
+        }
+      });
+    });
+
+    try {
+      var savedStage = parseInt(localStorage.getItem("frc2027-labbench-stage"), 10);
+      if (!isNaN(savedStage) && savedStage >= 0 && savedStage < STAGES.length) setStage(savedStage, false);
+    } catch (e) {}
+
+    var scope = document.getElementById("scopeTap");
+    var scopeLabel = document.getElementById("scopeTapLabel");
+    var chPclk = document.getElementById("chPclk");
+    var chHref = document.getElementById("chHref");
+    var chVsync = document.getElementById("chVsync");
+    var chData = document.getElementById("chData");
+    var scopeLive = true;
+    var frameN = 42;
+    var scopeTimer = null;
+    var DATA_SAMPLES = [
+      "[0x82] [0x88] [0x8C] [0x90]",
+      "[0x81] [0x87] [0x8B] [0x8F]",
+      "[0x83] [0x89] [0x8D] [0x91]",
+      "[0x80] [0x86] [0x8A] [0x8E]",
+      "[0x84] [0x8A] [0x8E] [0x92]"
+    ];
+    var dataIdx = 0;
+
+    function tickScope() {
+      if (!scopeLive) return;
+      frameN = (frameN + 1) % 10000;
+      chVsync.textContent = "\u2191 frame " + String(frameN).padStart(4, "0");
+      chHref.textContent = (frameN % 3 === 0) ? "LOW  · blanking" : "HIGH · row active";
+      dataIdx = (dataIdx + 1) % DATA_SAMPLES.length;
+      chData.textContent = DATA_SAMPLES[dataIdx];
+      chPclk.textContent = "24.0 MHz";
+    }
+    function startScope() {
+      if (scopeTimer) clearInterval(scopeTimer);
+      scopeTimer = setInterval(tickScope, 450);
+    }
+    function toggleScope() {
+      scopeLive = !scopeLive;
+      scope.classList.toggle("paused", !scopeLive);
+      scope.setAttribute("aria-pressed", scopeLive ? "false" : "true");
+      scopeLabel.textContent = scopeLive ? "LIVE \u25CF" : "PAUSED \u25A0";
+      if (scopeLive) startScope();
+    }
+    scope.addEventListener("click", toggleScope);
+    scope.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleScope(); }
+    });
+    startScope();
+
+    var inputs = Array.prototype.slice.call(
+      document.querySelectorAll("#parts input[type=checkbox]:not([disabled])")
+    );
+    var checkCount = document.getElementById("checkCount");
+    var checkTotal = document.getElementById("checkTotal");
+    var checkPct = document.getElementById("checkPct");
+    var progressFill = document.getElementById("progressFill");
+    var progressBar = document.getElementById("progressBar");
+    var DEFAULTS = {
+      epm11: false, ov2640: true, breakout: true, solder: false,
+      pi5: false, microsd: false, psu: false, cooler: false,
+      bno08x: false, feather: false, terminators: false
+    };
+
+    function updateProgress() {
+      var total = inputs.length;
+      var done = inputs.filter(function (i) { return i.checked; }).length;
+      var pct = total ? Math.round((done / total) * 100) : 0;
+      checkCount.textContent = String(done);
+      checkTotal.textContent = String(total);
+      checkPct.textContent = String(pct);
+      progressFill.style.width = pct + "%";
+      progressBar.setAttribute("aria-valuenow", String(pct));
+    }
+    function saveChecklist() {
+      var state = {};
+      inputs.forEach(function (inp) { state[inp.getAttribute("data-id")] = !!inp.checked; });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+      updateProgress();
+    }
+    function loadChecklist() {
+      var state = null;
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) state = JSON.parse(raw);
+      } catch (e) {}
+      if (!state || typeof state !== "object") state = DEFAULTS;
+      inputs.forEach(function (inp) {
+        var id = inp.getAttribute("data-id");
+        if (Object.prototype.hasOwnProperty.call(state, id)) inp.checked = !!state[id];
+        else if (Object.prototype.hasOwnProperty.call(DEFAULTS, id)) inp.checked = !!DEFAULTS[id];
+      });
+      updateProgress();
+    }
+    inputs.forEach(function (inp) { inp.addEventListener("change", saveChecklist); });
+    document.getElementById("resetChecklist").addEventListener("click", function () {
+      inputs.forEach(function (inp) {
+        var id = inp.getAttribute("data-id");
+        inp.checked = !!DEFAULTS[id];
+      });
+      saveChecklist();
+    });
+    loadChecklist();
+
+    var navToggle = document.getElementById("navToggle");
+    var navLinks = document.getElementById("navLinks");
+    navToggle.addEventListener("click", function () {
+      var open = navLinks.classList.toggle("open");
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    navLinks.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        navLinks.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+        var href = a.getAttribute("href") || "";
+        if (href.charAt(0) === "#") {
+          spyLinks.forEach(function (link) {
+            link.classList.toggle("active", link === a);
+          });
+        }
+      });
+    });
+
+    var spySections = ["overview", "vision", "architecture", "systemcore", "can-imu", "prototype-robot", "parts", "sources"].map(function (id) {
+      return document.getElementById(id);
+    }).filter(Boolean);
+    var spyLinks = Array.prototype.slice.call(navLinks.querySelectorAll("a"));
+    function onScrollSpy() {
+      var y = window.scrollY + 80;
+      var current = spySections[0] && spySections[0].id;
+      spySections.forEach(function (sec) { if (sec.offsetTop <= y) current = sec.id; });
+      spyLinks.forEach(function (a) {
+        a.classList.toggle("active", a.getAttribute("href") === "#" + current);
+      });
+    }
+    window.addEventListener("scroll", onScrollSpy, { passive: true });
+    onScrollSpy();
+  })();
+  </script>
+</body>
+</html>
