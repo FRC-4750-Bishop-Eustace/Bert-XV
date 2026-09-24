@@ -40,10 +40,10 @@ Notify any collaborators to get editor access or to push requests.
 
 ### 🧰 Prerequisites
 
-1. Install **[Git](https://git-scm.com/install/)**
-2. Install **[Java JDK 17](https://www.oracle.com/java/technologies/downloads/)** (WPILib ONLY works with Java 17)
-3. Install **[GCC 11+](https://gcc.gnu.org/install/)**
-4. Install **[FRC & WPILib tools](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/frc-game-tools.html)** (including the RoboRIO toolchain)
+1. Install [**Git**](https://git-scm.com/install/)
+2. Install [**Python**](https://www.python.org/downloads/release/python-3147/)
+3. Install [**FRC & WPILib tools**](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/frc-game-tools.html) (including the RoboRIO and/or SystemCore toolchain)
+4. Install [**RobotPy**](https://robotpy.readthedocs.io/en/stable/)
 
 ### ⚙️ Installation
 
@@ -54,26 +54,26 @@ Notify any collaborators to get editor access or to push requests.
 ### ▶️ Testing and Running your project
 
 1. Navigate to the repo directory.
-2. Run the gradlew script after making any changes:
+2. Run the `robotpy` CL tool after making any changes:
   - Installation
   ```sh
-  ./gradlew installRoboRioToolchain
+  robotpy sync
   ```
   - Building
   ```sh
-  ./gradlew build
+  robotpy run
   ```
   - Testing
   ```sh
-  ./gradlew testNativeDebug
+  robotpy test --builtin
   ```
   - Simulation
   ```sh
-  ./gradlew simulateNative
+  robotpy sim
   ```
   - Deploying
   ```sh
-  ./gradlew deploy
+  robotpy deploy
   ```
 
 
