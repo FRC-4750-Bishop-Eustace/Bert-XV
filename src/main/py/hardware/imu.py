@@ -47,26 +47,31 @@ class IMUParameters:
 class IMU(Protocol):
     params: IMUParameters
 
-    def GetPosition(self) -> Translation3d | None: ...
+    def GetPosition(self) -> Translation3d | None:
+        raise NotImplementedError
 
-    def GetRotation(self) -> Rotation3d | None: ...
+    def GetRotation(self) -> Rotation3d | None:
+        raise NotImplementedError
 
-    def GetAcceleration(self) -> Translation3d | None: ...
+    def GetAcceleration(self) -> Translation3d | None:
+        raise NotImplementedError
 
-    def GetRate(self) -> float | None: ...
+    def GetRate(self) -> float | None:
+        raise NotImplementedError
 
-    def GetYaw(self) -> float | None: ...
+    def GetYaw(self) -> float | None:
+        raise NotImplementedError
 
-    def Reset(self, pose: Pose3d | None = None) -> None: ...
-
-
-from .imu.adis16470 import ADIS16470IMU  # noqa: E402
-from .imu.navx import NavXIMU  # noqa: E402
-from .imu.pigeon2 import Pigeon2IMU  # noqa: E402
-from .imu.stub import StubIMU  # noqa: E402
+    def Reset(self, pose: Pose3d | None = None) -> None:
+        raise NotImplementedError
 
 
 def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
+    from .imu.adis16470 import ADIS16470IMU
+    from .imu.navx import NavXIMU
+    from .imu.pigeon2 import Pigeon2IMU
+    from .imu.stub import StubIMU
+
     match backend:
         case IMUType.STUB:
             return StubIMU(params)
@@ -76,3 +81,5 @@ def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
             return NavXIMU(params)
         case IMUType.PIGEON2:
             return Pigeon2IMU(params)
+        case _:
+            raise ValueError(f"Unknown IMU type: {backend}")

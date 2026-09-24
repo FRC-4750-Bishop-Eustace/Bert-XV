@@ -65,27 +65,32 @@ class MotorParameters:
 class Motor(Protocol):
     params: MotorParameters
 
-    def SetParams(self, params: MotorParameters) -> None: ...
+    def SetParams(self, params: MotorParameters) -> None:
+        raise NotImplementedError
 
-    def SetSpeed(self, speed: float) -> None: ...
+    def SetSpeed(self, speed: float) -> None:
+        raise NotImplementedError
 
-    def SetVoltage(self, voltage: float) -> None: ...
+    def SetVoltage(self, voltage: float) -> None:
+        raise NotImplementedError
 
-    def GetPosition(self) -> float | None: ...
+    def GetPosition(self) -> float | None:
+        raise NotImplementedError
 
-    def GetVelocity(self) -> float | None: ...
+    def GetVelocity(self) -> float | None:
+        raise NotImplementedError
 
-    def Stop(self) -> None: ...
-
-
-from .motor.spark_flex import SparkFlexMotor  # noqa: E402
-from .motor.spark_max import SparkMAXMotor  # noqa: E402
-from .motor.stub import StubMotor  # noqa: E402
-from .motor.talon_fx import TalonFXMotor  # noqa: E402
-from .motor.talon_fxs import TalonFXSMotor  # noqa: E402
+    def Stop(self) -> None:
+        raise NotImplementedError
 
 
 def CreateMotor(backend: MotorType, params: MotorParameters) -> "Motor":
+    from .motor.spark_flex import SparkFlexMotor
+    from .motor.spark_max import SparkMAXMotor
+    from .motor.stub import StubMotor
+    from .motor.talon_fx import TalonFXMotor
+    from .motor.talon_fxs import TalonFXSMotor
+
     match backend:
         case MotorType.STUB:
             return StubMotor(params)
@@ -97,3 +102,5 @@ def CreateMotor(backend: MotorType, params: MotorParameters) -> "Motor":
             return TalonFXMotor(params)
         case MotorType.TALON_FXS:
             return TalonFXSMotor(params)
+        case _:
+            raise ValueError(f"Unknown motor type: {backend}")

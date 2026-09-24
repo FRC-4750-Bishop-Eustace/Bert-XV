@@ -48,20 +48,22 @@ class EncoderParameters:
 class Encoder(Protocol):
     params: EncoderParameters
 
-    def GetPosition(self) -> float | None: ...
+    def GetPosition(self) -> float | None:
+        raise NotImplementedError
 
-    def GetVelocity(self) -> float | None: ...
+    def GetVelocity(self) -> float | None:
+        raise NotImplementedError
 
-    def Reset(self) -> None: ...
-
-
-from .encoder.absolute_encoder import AbsoluteEncoder  # noqa: E402
-from .encoder.cancoder import CANcoderEncoder  # noqa: E402
-from .encoder.stub import StubEncoder  # noqa: E402
-from .encoder.wpi_encoder import WPIEncoder  # noqa: E402
+    def Reset(self) -> None:
+        raise NotImplementedError
 
 
 def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
+    from .encoder.absolute_encoder import AbsoluteEncoder
+    from .encoder.cancoder import CANcoderEncoder
+    from .encoder.stub import StubEncoder
+    from .encoder.wpi_encoder import WPIEncoder
+
     match backend:
         case EncoderType.STUB:
             return StubEncoder(params)
@@ -71,3 +73,5 @@ def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
             return CANcoderEncoder(params)
         case EncoderType.ABSOLUTE:
             return AbsoluteEncoder(params)
+        case _:
+            raise ValueError(f"Unknown encoder type: {backend}")

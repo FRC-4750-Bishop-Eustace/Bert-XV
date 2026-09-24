@@ -94,9 +94,6 @@ class Logger:
         timestamp = datetime.now().astimezone().isoformat(timespec="milliseconds")
         uptime = time.monotonic() - self.start_time
 
-        color = self.COLORS[level] if self.use_color else ""
-        reset = self.RESET if self.use_color else ""
-
         if self.json_output:
             record: dict[str, Any] = {
                 "timestamp": timestamp,

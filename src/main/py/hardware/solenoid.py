@@ -51,19 +51,21 @@ class SolenoidParameters:
 class Solenoid(Protocol):
     params: SolenoidParameters
 
-    def Set(self, state: int) -> None: ...
+    def Set(self, state: int) -> None:
+        raise NotImplementedError
 
-    def Get(self) -> int | None: ...
+    def Get(self) -> int | None:
+        raise NotImplementedError
 
-    def Toggle(self) -> None: ...
-
-
-from .solenoid.double import DoubleSolenoid  # noqa: E402
-from .solenoid.single import SingleSolenoid  # noqa: E402
-from .solenoid.stub import StubSolenoid  # noqa: E402
+    def Toggle(self) -> None:
+        raise NotImplementedError
 
 
 def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Solenoid":
+    from .solenoid.double import DoubleSolenoid
+    from .solenoid.single import SingleSolenoid
+    from .solenoid.stub import StubSolenoid
+
     match backend:
         case SolenoidType.STUB:
             return StubSolenoid(params)
@@ -71,3 +73,5 @@ def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Soleno
             return SingleSolenoid(params)
         case SolenoidType.DOUBLE:
             return DoubleSolenoid(params)
+        case _:
+            raise ValueError(f"Unknown solenoid type: {backend}")
