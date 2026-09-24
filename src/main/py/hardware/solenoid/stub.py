@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.solenoid import SolenoidParameters
+from hardware.types import SolenoidParameters
 
 
 class StubSolenoid:

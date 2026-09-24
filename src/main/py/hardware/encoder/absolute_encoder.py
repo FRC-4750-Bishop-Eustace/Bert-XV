@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.encoder import EncoderParameters
 from hardware.motor.spark_flex import SparkFlexMotor
 from hardware.motor.spark_max import SparkMAXMotor
+from hardware.types import EncoderParameters
 
 
 class AbsoluteEncoder:

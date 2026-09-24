@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.encoder import EncoderParameters
+from hardware.types import EncoderParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import CANcoder
 from utils import CONSTANTS, GetString

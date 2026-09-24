@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.imu import IMUParameters
+from hardware.types import IMUParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import Pigeon2
 from utils import CONSTANTS, GetString

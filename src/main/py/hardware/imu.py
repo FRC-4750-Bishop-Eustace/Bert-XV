@@ -20,50 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import dataclass
-from enum import IntEnum
 from pathlib import Path
-from typing import Protocol, runtime_checkable
 
-from wpimath.geometry import Pose3d, Rotation3d, Translation3d
+from .types import IMU, IMUParameters, IMUType
+
+__all__ = [
+    "IMU",
+    "CreateIMU",
+    "IMUParameters",
+    "IMUType",
+]
 
 # Bridge so `hardware.imu` also acts as a package root for `hardware.imu.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "imu")]
-
-
-class IMUType(IntEnum):
-    STUB = 0
-    ADIS16470 = 1
-    NAVX = 2
-    PIGEON2 = 3
-
-
-@dataclass(frozen=True, slots=True)
-class IMUParameters:
-    device_id: int
-
-
-@runtime_checkable
-class IMU(Protocol):
-    params: IMUParameters
-
-    def GetPosition(self) -> Translation3d | None:
-        raise NotImplementedError
-
-    def GetRotation(self) -> Rotation3d | None:
-        raise NotImplementedError
-
-    def GetAcceleration(self) -> Translation3d | None:
-        raise NotImplementedError
-
-    def GetRate(self) -> float | None:
-        raise NotImplementedError
-
-    def GetYaw(self) -> float | None:
-        raise NotImplementedError
-
-    def Reset(self, pose: Pose3d | None = None) -> None:
-        raise NotImplementedError
 
 
 def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
@@ -72,14 +41,12 @@ def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
     from .imu.pigeon2 import Pigeon2IMU
     from .imu.stub import StubIMU
 
-    match backend:
-        case IMUType.STUB:
-            return StubIMU(params)
-        case IMUType.ADIS16470:
-            return ADIS16470IMU(params)
-        case IMUType.NAVX:
-            return NavXIMU(params)
-        case IMUType.PIGEON2:
-            return Pigeon2IMU(params)
-        case _:
-            raise ValueError(f"Unknown IMU type: {backend}")
+    if backend == IMUType.STUB:
+        return StubIMU(params)
+    if backend == IMUType.ADIS16470:
+        return ADIS16470IMU(params)
+    if backend == IMUType.NAVX:
+        return NavXIMU(params)
+    if backend == IMUType.PIGEON2:
+        return Pigeon2IMU(params)
+    raise ValueError(f"Unknown IMU type: {backend}")

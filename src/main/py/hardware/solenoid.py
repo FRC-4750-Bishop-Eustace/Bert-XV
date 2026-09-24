@@ -20,45 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import dataclass
-from enum import IntEnum
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+
+from .types import Solenoid, SolenoidParameters, SolenoidType
+
+__all__ = [
+    "CreateSolenoid",
+    "Solenoid",
+    "SolenoidParameters",
+    "SolenoidType",
+]
 
 # Bridge so `hardware.solenoid` also acts as a package root for `hardware.solenoid.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "solenoid")]
-
-
-class SolenoidType(IntEnum):
-    STUB = 0
-    SINGLE = 1
-    DOUBLE = 2
-
-
-class PneumaticsModule(IntEnum):
-    CTRE_PCM = 0
-    REV_PH = 1
-
-
-@dataclass(frozen=True, slots=True)
-class SolenoidParameters:
-    module: int
-    type: PneumaticsModule
-    channel: int | tuple[int, int]
-
-
-@runtime_checkable
-class Solenoid(Protocol):
-    params: SolenoidParameters
-
-    def Set(self, state: int) -> None:
-        raise NotImplementedError
-
-    def Get(self) -> int | None:
-        raise NotImplementedError
-
-    def Toggle(self) -> None:
-        raise NotImplementedError
 
 
 def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Solenoid":
@@ -66,12 +40,10 @@ def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Soleno
     from .solenoid.single import SingleSolenoid
     from .solenoid.stub import StubSolenoid
 
-    match backend:
-        case SolenoidType.STUB:
-            return StubSolenoid(params)
-        case SolenoidType.SINGLE:
-            return SingleSolenoid(params)
-        case SolenoidType.DOUBLE:
-            return DoubleSolenoid(params)
-        case _:
-            raise ValueError(f"Unknown solenoid type: {backend}")
+    if backend == SolenoidType.STUB:
+        return StubSolenoid(params)
+    if backend == SolenoidType.SINGLE:
+        return SingleSolenoid(params)
+    if backend == SolenoidType.DOUBLE:
+        return DoubleSolenoid(params)
+    raise ValueError(f"Unknown solenoid type: {backend}")

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.solenoid import PneumaticsModule, SolenoidParameters
+from hardware.types import PneumaticsModule, SolenoidParameters
 from wpilib import PneumaticsModuleType, Solenoid
 
 

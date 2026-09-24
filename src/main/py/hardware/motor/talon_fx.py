@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.motor import IdleMode, MotorParameters
+from hardware.types import IdleMode, MotorParameters
 from phoenix6.canbus import CANBus
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.hardware import TalonFX

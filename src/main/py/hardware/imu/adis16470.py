@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from hardware.imu import IMUParameters
+from hardware.types import IMUParameters
 from wpilib import ADIS16470_IMU
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 

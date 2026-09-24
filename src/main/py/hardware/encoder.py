@@ -20,42 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from dataclasses import dataclass
-from enum import IntEnum
 from pathlib import Path
-from typing import Protocol, runtime_checkable
 
-from .motor import Motor
+from .types import Encoder, EncoderParameters, EncoderType
+
+__all__ = [
+    "CreateEncoder",
+    "Encoder",
+    "EncoderParameters",
+    "EncoderType",
+]
 
 # Bridge so `hardware.encoder` also acts as a package root for `hardware.encoder.{...}`
 __path__ = [str(Path(__file__).resolve().parent / "encoder")]
-
-
-class EncoderType(IntEnum):
-    STUB = 0
-    WPI = 1
-    CANCODER = 2
-    ABSOLUTE = 3
-
-
-@dataclass(frozen=True, slots=True)
-class EncoderParameters:
-    device_id: int | tuple[int, int] | Motor
-    inverted: bool = False
-
-
-@runtime_checkable
-class Encoder(Protocol):
-    params: EncoderParameters
-
-    def GetPosition(self) -> float | None:
-        raise NotImplementedError
-
-    def GetVelocity(self) -> float | None:
-        raise NotImplementedError
-
-    def Reset(self) -> None:
-        raise NotImplementedError
 
 
 def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
@@ -64,14 +41,12 @@ def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
     from .encoder.stub import StubEncoder
     from .encoder.wpi_encoder import WPIEncoder
 
-    match backend:
-        case EncoderType.STUB:
-            return StubEncoder(params)
-        case EncoderType.WPI:
-            return WPIEncoder(params)
-        case EncoderType.CANCODER:
-            return CANcoderEncoder(params)
-        case EncoderType.ABSOLUTE:
-            return AbsoluteEncoder(params)
-        case _:
-            raise ValueError(f"Unknown encoder type: {backend}")
+    if backend == EncoderType.STUB:
+        return StubEncoder(params)
+    if backend == EncoderType.WPI:
+        return WPIEncoder(params)
+    if backend == EncoderType.CANCODER:
+        return CANcoderEncoder(params)
+    if backend == EncoderType.ABSOLUTE:
+        return AbsoluteEncoder(params)
+    raise ValueError(f"Unknown encoder type: {backend}")
