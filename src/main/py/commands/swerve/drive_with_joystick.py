@@ -22,15 +22,11 @@
 
 from commands2 import Command
 from subsystems import Drivetrain
-from utils import CONSTANTS, GetFloat, GetInt, GetObject
+from utils import CTRL_CONSTANTS, DRIVE_CONSTANTS, PORT_CONSTANTS, GetFloat, GetInt
 from wpilib import DriverStation, SmartDashboard
 from wpilib.interfaces import GenericHID
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
-
-_CTRL_CONSTANTS = GetObject(CONSTANTS, "controllers")
-_PORT_CONSTANTS = GetObject(CONSTANTS, "ports")
-_DRIVE_CONSTANTS = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
 
 
 class DriveWithJoystick(Command):
@@ -38,8 +34,8 @@ class DriveWithJoystick(Command):
         self.swerve = swerve
         self.controller = controller
         self.slew_rates: list[SlewRateLimiter] = [
-            SlewRateLimiter(GetFloat(_CTRL_CONSTANTS, "lateralSlewRate")),  # X/Y
-            SlewRateLimiter(GetFloat(_CTRL_CONSTANTS, "angularSlewRate")),  # Theta
+            SlewRateLimiter(GetFloat(CTRL_CONSTANTS, "lateralSlewRate")),  # X/Y
+            SlewRateLimiter(GetFloat(CTRL_CONSTANTS, "angularSlewRate")),  # Theta
         ]
         self.field_relative = True
 
@@ -65,38 +61,38 @@ class DriveWithJoystick(Command):
 
         x = -self.slew_rates[0].calculate(
             applyDeadband(
-                self.controller.getRawAxis(GetInt(_PORT_CONSTANTS, "axisLeftY") or -1),  # -Y
-                GetFloat(_CTRL_CONSTANTS, "lateralDeadband"),
+                self.controller.getRawAxis(GetInt(PORT_CONSTANTS, "axisLeftY") or -1),  # -Y
+                GetFloat(CTRL_CONSTANTS, "lateralDeadband"),
             )
-            * GetFloat(_DRIVE_CONSTANTS, "maxLateralSpeed"),
+            * GetFloat(DRIVE_CONSTANTS, "maxLateralSpeed"),
         )
         y = -self.slew_rates[0].calculate(
             applyDeadband(
-                self.controller.getRawAxis(GetInt(_PORT_CONSTANTS, "axisLeftX") or -1),  # -X
-                GetFloat(_CTRL_CONSTANTS, "lateralDeadband"),
+                self.controller.getRawAxis(GetInt(PORT_CONSTANTS, "axisLeftX") or -1),  # -X
+                GetFloat(CTRL_CONSTANTS, "lateralDeadband"),
             )
-            * GetFloat(_DRIVE_CONSTANTS, "maxLateralSpeed"),
+            * GetFloat(DRIVE_CONSTANTS, "maxLateralSpeed"),
         )
         theta = -self.slew_rates[1].calculate(
             applyDeadband(
-                self.controller.getRawAxis(GetInt(_PORT_CONSTANTS, "axisRightX") or -1),  # +X
-                GetFloat(_CTRL_CONSTANTS, "angularDeadband"),
+                self.controller.getRawAxis(GetInt(PORT_CONSTANTS, "axisRightX") or -1),  # +X
+                GetFloat(CTRL_CONSTANTS, "angularDeadband"),
             )
-            * GetFloat(_DRIVE_CONSTANTS, "maxAngularSpeed"),
+            * GetFloat(DRIVE_CONSTANTS, "maxAngularSpeed"),
         )
 
-        if self.controller.getPOV() == (GetInt(_PORT_CONSTANTS, "dpadUp") or -1):
-            x = GetFloat(_DRIVE_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(_PORT_CONSTANTS, "dpadRight") or -1):
-            y = -GetFloat(_DRIVE_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(_PORT_CONSTANTS, "dpadDown") or -1):
-            x = -GetFloat(_DRIVE_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(_PORT_CONSTANTS, "dpadLeft") or -1):
-            y = GetFloat(_DRIVE_CONSTANTS, "microLateralSpeed")
+        if self.controller.getPOV() == (GetInt(PORT_CONSTANTS, "dpadUp") or -1):
+            x = GetFloat(DRIVE_CONSTANTS, "microLateralSpeed")
+        if self.controller.getPOV() == (GetInt(PORT_CONSTANTS, "dpadRight") or -1):
+            y = -GetFloat(DRIVE_CONSTANTS, "microLateralSpeed")
+        if self.controller.getPOV() == (GetInt(PORT_CONSTANTS, "dpadDown") or -1):
+            x = -GetFloat(DRIVE_CONSTANTS, "microLateralSpeed")
+        if self.controller.getPOV() == (GetInt(PORT_CONSTANTS, "dpadLeft") or -1):
+            y = GetFloat(DRIVE_CONSTANTS, "microLateralSpeed")
 
-        if self.controller.getRawButton(GetInt(_PORT_CONSTANTS, "L1")) == 1:
-            theta = GetFloat(_DRIVE_CONSTANTS, "microAngularSpeed")
-        if self.controller.getRawButton(GetInt(_PORT_CONSTANTS, "R1")) == 1:
-            theta = -GetFloat(_DRIVE_CONSTANTS, "microAngularSpeed")
+        if self.controller.getRawButton(GetInt(PORT_CONSTANTS, "L1")) == 1:
+            theta = GetFloat(DRIVE_CONSTANTS, "microAngularSpeed")
+        if self.controller.getRawButton(GetInt(PORT_CONSTANTS, "R1")) == 1:
+            theta = -GetFloat(DRIVE_CONSTANTS, "microAngularSpeed")
 
         self.swerve.Drive(x, y, theta, self.field_relative)

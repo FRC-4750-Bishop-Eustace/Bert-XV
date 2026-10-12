@@ -33,11 +33,9 @@ from hardware import (
     MotorParameters,
     MotorType,
 )
-from utils import CONSTANTS, GetFeedForwardMeters, GetFloat, GetObject, GetPID, GetProfiledPID
+from utils import DRIVE_CONSTANTS, GetFeedForwardMeters, GetFloat, GetPID, GetProfiledPID
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
-
-_DRIVE_CONSTANTS = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
 
 
 class SwerveModule:
@@ -51,14 +49,14 @@ class SwerveModule:
                 MotorMode.BRUSHLESS,
                 False,
                 IdleMode.BRAKE,
-                (math.tau * GetFloat(_DRIVE_CONSTANTS, "wheelRadius") / 60)
-                / GetFloat(_DRIVE_CONSTANTS, "driveReduction"),
-                (GetFloat(_DRIVE_CONSTANTS, "wheelRadius") * math.tau) / GetFloat(_DRIVE_CONSTANTS, "driveReduction"),
+                (math.tau * GetFloat(DRIVE_CONSTANTS, "wheelRadius") / 60)
+                / GetFloat(DRIVE_CONSTANTS, "driveReduction"),
+                (GetFloat(DRIVE_CONSTANTS, "wheelRadius") * math.tau) / GetFloat(DRIVE_CONSTANTS, "driveReduction"),
             ),
         )
         self.lateral_encoder = CreateEncoder(EncoderType.ABSOLUTE, EncoderParameters(self.lateral_motor))
-        self.lateral_pid = GetPID(_DRIVE_CONSTANTS, "lateralPID")
-        self.lateral_ff = GetFeedForwardMeters(_DRIVE_CONSTANTS, "lateralFeedforward")
+        self.lateral_pid = GetPID(DRIVE_CONSTANTS, "lateralPID")
+        self.lateral_ff = GetFeedForwardMeters(DRIVE_CONSTANTS, "lateralFeedforward")
 
         self.angular_motor = CreateMotor(
             MotorType.SPARK_MAX,
@@ -70,8 +68,8 @@ class SwerveModule:
             ),
         )
         self.angular_encoder = CreateEncoder(EncoderType.CANCODER, EncoderParameters(encoder_ids[1]))
-        self.angular_pid = GetProfiledPID(_DRIVE_CONSTANTS, "angularPID")
-        self.angular_ff = GetFeedForwardMeters(_DRIVE_CONSTANTS, "angularFeedforward")
+        self.angular_pid = GetProfiledPID(DRIVE_CONSTANTS, "angularPID")
+        self.angular_ff = GetFeedForwardMeters(DRIVE_CONSTANTS, "angularFeedforward")
 
         self.angular_pid.enableContinuousInput(-math.pi, math.pi)
 

@@ -5,8 +5,8 @@
 [![WPILib CI](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/wpilib-ci.yml/badge.svg)](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/wpilib-ci.yml)
 [![CodeQL](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/codeql.yml/badge.svg)](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/codeql.yml)
 [![pages-build-deployment](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/FRC-4750-Bishop-Eustace/Bert-XV/actions/workflows/pages/pages-build-deployment)
-![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](./.python-version)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 </div>
 
