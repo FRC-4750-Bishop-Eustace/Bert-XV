@@ -20,31 +20,39 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from collections.abc import Hashable
+
 import commands2.cmd as cmd
 from commands import DriveWithJoystick
-from commands2 import Command, InstantCommand
+from commands2 import Command
 from commands2.button import JoystickButton
 from subsystems import Drivetrain
-from utils import CONSTANTS, GetInt, GetObject, Logger
-from wpilib import Field2d, Joystick, PS4Controller, SmartDashboard
-
-_CTRL_CONSTANTS = GetObject(CONSTANTS, "controllers")
-_PORT_CONSTANTS = GetObject(CONSTANTS, "ports")
+from utils import CTRL_CONSTANTS, PORT_CONSTANTS, GetInt, Logger
+from wpilib import Field2d, Joystick, PS4Controller, SendableChooser, SmartDashboard
 
 
 class RobotContainer:
     def __init__(self, logger: "Logger") -> None:
         self.logger = logger
 
-        self.controller = PS4Controller(GetInt(_CTRL_CONSTANTS, "controllerPort"))
-        self.dashboard = Joystick(GetInt(_CTRL_CONSTANTS, "dashboardPort"))
+        self.controller = PS4Controller(GetInt(CTRL_CONSTANTS, "controllerPort"))
+        self.dashboard = Joystick(GetInt(CTRL_CONSTANTS, "dashboardPort"))
 
         self.field = Field2d()
+
+        self.auto_commands: dict[Hashable, Command] = {
+            "None": cmd.none(),
+        }
+        self.auto_chooser: SendableChooser = SendableChooser()
+        for name in self.auto_commands:
+            self.auto_chooser.addOption(str(name), str(name))
+        self.selector = cmd.select(self.auto_commands, self.auto_chooser.getSelected)
 
         self.swerve = Drivetrain(self.logger)
         self.drive = DriveWithJoystick(self.swerve, self.controller)
 
         SmartDashboard.putData("Field", self.field)
+        SmartDashboard.putData("Auto Choices", self.auto_chooser)
 
         self.SetDefaults()
         self.ConfigureBindings()
@@ -53,14 +61,14 @@ class RobotContainer:
         self.swerve.setDefaultCommand(self.drive)
 
     def ConfigureBindings(self) -> None:
-        JoystickButton(self.controller, GetInt(_PORT_CONSTANTS, "faceDown")).onTrue(
-            InstantCommand(
+        JoystickButton(self.controller, GetInt(PORT_CONSTANTS, "faceDown")).onTrue(
+            cmd.runOnce(
                 self.drive.ToggleFieldRelative,
                 self.swerve,
             ),
         )
-        JoystickButton(self.controller, GetInt(_PORT_CONSTANTS, "faceUp")).onTrue(
-            InstantCommand(
+        JoystickButton(self.controller, GetInt(PORT_CONSTANTS, "faceUp")).onTrue(
+            cmd.runOnce(
                 self.drive.ToggleFieldRelative,
                 self.swerve,
             ),
@@ -70,4 +78,4 @@ class RobotContainer:
         self.field.setRobotPose(self.swerve.GetPose())
 
     def GetAutonomousCommand(self) -> Command:
-        return cmd.none()
+        return self.selector
