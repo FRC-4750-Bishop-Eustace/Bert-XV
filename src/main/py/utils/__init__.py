@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .auto_selector import AutonomousSelector
 from .constants import (
     CONSTANTS,
     CTRL_CONSTANTS,
@@ -46,6 +47,7 @@ __all__ = [
     "CTRL_CONSTANTS",
     "DRIVE_CONSTANTS",
     "PORT_CONSTANTS",
+    "AutonomousSelector",
     "GetBool",
     "GetFeedForwardMeters",
     "GetFeedForwardRadians",
