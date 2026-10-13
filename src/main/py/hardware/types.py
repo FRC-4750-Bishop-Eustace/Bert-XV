@@ -204,6 +204,8 @@ class AprilTagData:
     tagDistance: float
     tagArea: float
     timestamp: float
+    ambiguity: float
+    cameraDistance: float
 
 
 @runtime_checkable
@@ -211,4 +213,7 @@ class Camera(Protocol):
     params: CameraParameters
 
     def GetData(self, algo: AprilTagAlgorithmType) -> AprilTagData | None:
+        raise NotImplementedError
+
+    def SetOrientation(self, yaw: float) -> None:
         raise NotImplementedError

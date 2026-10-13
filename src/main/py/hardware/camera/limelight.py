@@ -22,7 +22,7 @@
 
 from hardware.types import AprilTagAlgorithmType, AprilTagData, CameraParameters
 
-from .limelight_helpers import PoseEstimate, SetCameraPoseRobotSpace
+from .limelight_helpers import PoseEstimate, SetCameraPoseRobotSpace, SetRobotOrientation
 
 
 class LimelightCamera:
@@ -45,6 +45,10 @@ class LimelightCamera:
             case _:
                 raise ValueError(f"Unknown AprilTag algorithm type: {algo}")
 
+        fiducials = estimate.fiducials
+        ambiguity = sum(fiducial.ambiguity for fiducial in fiducials) / len(fiducials) if fiducials else 0.0
+        cameraDistance = sum(fiducial.cameraDistance for fiducial in fiducials) / len(fiducials) if fiducials else 0.0
+
         return AprilTagData(
             estimate.pose,
             estimate.latency,
@@ -53,4 +57,9 @@ class LimelightCamera:
             estimate.avgTagDistance,
             estimate.avgTagArea,
             estimate.timestamp,
+            ambiguity,
+            cameraDistance,
         )
+
+    def SetOrientation(self, yaw: float) -> None:
+        SetRobotOrientation(self.params.name, yaw, 0.0, 0.0, 0.0, 0.0, 0.0)

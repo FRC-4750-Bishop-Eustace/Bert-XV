@@ -31,6 +31,7 @@ from wpimath.controller import (
     SimpleMotorFeedforwardMeters,
     SimpleMotorFeedforwardRadians,
 )
+from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Rotation3d, Translation2d, Translation3d
 from wpimath.trajectory import TrapezoidProfile
 
 from .logger import Logger
@@ -124,6 +125,39 @@ def GetProfiledPID(const: Constants, key: str) -> ProfiledPIDController:
             GetFloat(const, "maxAngularVelocity"),
             GetFloat(const, "maxAngularAcceleration"),
         ),
+    )
+
+
+def GetTranslation2d(const: Constants, key: str) -> Translation2d:
+    translation = GetNumbers(const, key, 2)
+    return Translation2d(translation[0], translation[1])
+
+
+def GetTranslation3d(const: Constants, key: str) -> Translation3d:
+    translation = GetNumbers(const, key, 3)
+    return Translation3d(translation[0], translation[1], translation[2])
+
+
+def GetRotation2d(const: Constants, key: str) -> Rotation2d:
+    rotation = GetNumbers(const, key, 1)
+    return Rotation2d.fromDegrees(rotation[0])
+
+
+def GetRotation3d(const: Constants, key: str) -> Rotation3d:
+    rotation = GetNumbers(const, key, 3)
+    return Rotation3d.fromDegrees(rotation[0], rotation[1], rotation[2])
+
+
+def GetPose2d(const: Constants, key: str) -> Pose2d:
+    pose = GetNumbers(const, key, 3)
+    return Pose2d(Translation2d(pose[0], pose[1]), Rotation2d.fromDegrees(pose[2]))
+
+
+def GetPose3d(const: Constants, key: str) -> Pose3d:
+    pose = GetNumbers(const, key, 6)
+    return Pose3d(
+        Translation3d(pose[0], pose[1], pose[2]),
+        Rotation3d.fromDegrees(pose[3], pose[4], pose[5]),
     )
 
 

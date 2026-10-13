@@ -24,7 +24,8 @@ from hardware.types import AprilTagAlgorithmType, AprilTagData, CameraParameters
 from photonlibpy import PhotonCamera as Photon
 from photonlibpy import PhotonPoseEstimator
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpimath.geometry import Transform3d
+from wpilib import Timer
+from wpimath.geometry import Rotation2d, Transform3d
 
 
 class PhotonCamera:
@@ -55,7 +56,10 @@ class PhotonCamera:
             return None
 
         multitag = algo in (AprilTagAlgorithmType.MT1_BLUE, AprilTagAlgorithmType.MT1_RED)
-        estimate = self.estimator.estimateCoprocMultiTagPose(result) if multitag else None
+        if multitag:
+            estimate = self.estimator.estimateCoprocMultiTagPose(result)
+        else:
+            estimate = self.estimator.estimatePnpDistanceTrigSolvePose(result)
         if estimate is None:
             estimate = self.estimator.estimateLowestAmbiguityPose(result)
         if estimate is None:
@@ -64,17 +68,31 @@ class PhotonCamera:
         translations = [target.getBestCameraToTarget().translation() for target in result.getTargets()]
         areas = [target.getArea() for target in result.getTargets()]
         distances = [translation.norm() for translation in translations]
+        tagDistance = sum(distances) / len(distances)
         span = max(
             ((a - b).norm() for i, a in enumerate(translations) for b in translations[i + 1 :]),
             default=0.0,
         )
+
+        if multitag and result.multitagResult is not None:
+            ambiguity = result.multitagResult.estimatedPose.ambiguity
+        else:
+            ambiguities = [
+                target.getPoseAmbiguity() for target in result.getTargets() if target.getPoseAmbiguity() >= 0.0
+            ]
+            ambiguity = min(ambiguities) if ambiguities else 0.0
 
         return AprilTagData(
             estimate.estimatedPose.toPose2d(),
             result.getLatencyMillis(),
             len(translations),
             span,
-            sum(distances) / len(distances),
+            tagDistance,
             sum(areas) / len(areas),
             result.getTimestampSeconds(),
+            ambiguity,
+            tagDistance,
         )
+
+    def SetOrientation(self, yaw: float) -> None:
+        self.estimator.addHeadingData(Timer.getFPGATimestamp(), Rotation2d.fromDegrees(yaw))

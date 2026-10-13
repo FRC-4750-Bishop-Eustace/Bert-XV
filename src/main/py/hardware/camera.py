@@ -22,9 +22,10 @@
 
 from pathlib import Path
 
-from .types import AprilTagData, Camera, CameraParameters, CameraType
+from .types import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType
 
 __all__ = [
+    "AprilTagAlgorithmType",
     "AprilTagData",
     "Camera",
     "CameraParameters",

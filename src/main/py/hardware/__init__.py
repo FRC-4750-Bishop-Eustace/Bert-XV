@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .camera import AprilTagData, Camera, CameraParameters, CameraType, CreateCamera
+from .camera import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType, CreateCamera
 from .encoder import CreateEncoder, Encoder, EncoderParameters, EncoderType
 from .imu import IMU, CreateIMU, IMUParameters, IMUType
 from .motor import CreateMotor, IdleMode, Motor, MotorMode, MotorParameters, MotorType
@@ -28,6 +28,7 @@ from .solenoid import CreateSolenoid, Solenoid, SolenoidParameters, SolenoidType
 
 __all__ = [
     "IMU",
+    "AprilTagAlgorithmType",
     "AprilTagData",
     "Camera",
     "CameraParameters",

@@ -86,6 +86,21 @@
         0.0
       ]
     },
-    "vision": {}
+    "vision": {
+      "cameras": [
+        {
+          "type": "limelight",
+          "name": "limelight",
+          "offset": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    }
   }
 }

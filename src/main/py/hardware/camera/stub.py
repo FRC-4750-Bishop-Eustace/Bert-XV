@@ -28,7 +28,11 @@ from wpimath.geometry import Pose2d
 class StubCamera:
     def __init__(self, params: CameraParameters) -> None:
         self.params = params
-        self.data = AprilTagData(Pose2d(), 0.0, 0, 0.0, 0.0, 0.0, Timer.getFPGATimestamp())
+        self.data = AprilTagData(Pose2d(), 0.0, 0, 0.0, 0.0, 0.0, Timer.getFPGATimestamp(), 0.0, 0.0)
+        self.yaw = 0.0
 
     def GetData(self, _algo: AprilTagAlgorithmType) -> AprilTagData | None:
         return self.data
+
+    def SetOrientation(self, yaw: float) -> None:
+        self.yaw = yaw
