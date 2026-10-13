@@ -24,7 +24,7 @@ import commands2.cmd as cmd
 from commands import DriveWithJoystick
 from commands2 import Command
 from commands2.button import JoystickButton
-from subsystems import Drivetrain
+from subsystems import Drivetrain, Vision
 from utils import CTRL_CONSTANTS, PORT_CONSTANTS, AutonomousSelector, GetInt, Logger
 from wpilib import Field2d, Joystick, PS4Controller, SmartDashboard
 
@@ -42,6 +42,8 @@ class RobotContainer:
 
         self.swerve = Drivetrain(self.logger)
         self.drive = DriveWithJoystick(self.swerve, self.controller)
+
+        self.vision = Vision(self.logger, self.swerve)
 
         SmartDashboard.putData("Field", self.field)
 

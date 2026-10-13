@@ -22,8 +22,10 @@
 
 from .swerve.drivetrain import Drivetrain
 from .swerve.swerve_module import SwerveModule
+from .vision.vision import Vision
 
 __all__ = [
     "Drivetrain",
     "SwerveModule",
+    "Vision",
 ]
