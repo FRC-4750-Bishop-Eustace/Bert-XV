@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Protocol, runtime_checkable
 
-from wpimath.geometry import Pose3d, Rotation3d, Translation3d
+from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Translation3d
 
 
 class MotorType(IntEnum):
@@ -173,4 +173,42 @@ class Solenoid(Protocol):
         raise NotImplementedError
 
     def Toggle(self) -> None:
+        raise NotImplementedError
+
+
+class CameraType(IntEnum):
+    STUB = 0
+    LIMELIGHT = 1
+    PHOTON = 2
+
+
+class AprilTagAlgorithmType(IntEnum):
+    MT1_BLUE = 0
+    MT1_RED = 1
+    MT2_BLUE = 2
+    MT2_RED = 3
+
+
+@dataclass(frozen=True, slots=True)
+class CameraParameters:
+    name: str
+    offset: Pose3d
+
+
+@dataclass(frozen=True, slots=True)
+class AprilTagData:
+    pose: Pose2d
+    latency: float
+    tagCount: int
+    tagSpan: float
+    tagDistance: float
+    tagArea: float
+    timestamp: float
+
+
+@runtime_checkable
+class Camera(Protocol):
+    params: CameraParameters
+
+    def GetData(self, algo: AprilTagAlgorithmType) -> AprilTagData | None:
         raise NotImplementedError

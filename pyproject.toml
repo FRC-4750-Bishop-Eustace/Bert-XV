@@ -40,12 +40,12 @@ components = [
 ]
 requires = [
     "robotpy-commands-v2",
+    "pyntcore",
     "robotpy-navx",
     "phoenix6",
     "robotpy-rev",
-
-    "sleipnirgroup-choreolib",
     "robotpy-urcl",
+    "photonlibpy",
 ]
 
 [tool.setuptools]
