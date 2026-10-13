@@ -145,5 +145,6 @@ def GetFeedForwardRadians(const: Constants, key: str) -> SimpleMotorFeedforwardR
 
 CONSTANTS: Final[Constants] = LoadConstants(Path(getDeployDirectory()) / "constants.json")
 CTRL_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "controllers")
-DRIVE_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
 PORT_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "ports")
+DRIVE_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
+VISION_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "vision")
