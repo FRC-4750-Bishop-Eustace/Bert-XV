@@ -48,6 +48,7 @@ from .constants import (
 )
 from .health import Health
 from .logger import Logger, LogLevel
+from .path_loader import GetPathDirectory, LoadPath, PathPoint
 from .uuid import GetLogDirectory, NewUUID
 
 __all__ = [
@@ -68,6 +69,7 @@ __all__ = [
     "GetNumbers",
     "GetObject",
     "GetPID",
+    "GetPathDirectory",
     "GetPose2d",
     "GetPose3d",
     "GetProfiledPID",
@@ -77,7 +79,9 @@ __all__ = [
     "GetTranslation2d",
     "GetTranslation3d",
     "Health",
+    "LoadPath",
     "LogLevel",
     "Logger",
     "NewUUID",
+    "PathPoint",
 ]
