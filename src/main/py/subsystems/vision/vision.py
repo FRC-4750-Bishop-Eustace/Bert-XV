@@ -43,6 +43,11 @@ class Vision(Subsystem):
                 raise TypeError(f"Expected vision camera entry to be a JSON object, got {type(cam).__name__}")
 
             backend = CameraType.STUB
+            typ = GetString(cam, "type")
+            if typ == "limelight":
+                backend = CameraType.LIMELIGHT
+            elif typ == "photon":
+                backend = CameraType.PHOTON
             self.cameras.append(
                 CreateCamera(backend, CameraParameters(GetString(cam, "name"), GetPose3d(cam, "offset")))
             )
