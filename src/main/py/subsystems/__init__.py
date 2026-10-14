@@ -21,11 +21,13 @@
 # SOFTWARE.
 
 from .swerve.drivetrain import Drivetrain
+from .swerve.pathplanner import DynamicPathPlanner
 from .swerve.swerve_module import SwerveModule
 from .vision.vision import Vision
 
 __all__ = [
     "Drivetrain",
+    "DynamicPathPlanner",
     "SwerveModule",
     "Vision",
 ]

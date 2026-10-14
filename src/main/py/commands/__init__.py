@@ -20,8 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .pathplanning.follow_trajectory import FollowTrajectory
 from .swerve.drive_with_joystick import DriveWithJoystick
 
 __all__ = [
     "DriveWithJoystick",
+    "FollowTrajectory",
 ]
