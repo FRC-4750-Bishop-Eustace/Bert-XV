@@ -66,15 +66,28 @@ class OccupancyProvider(Protocol):
     def GetClearance(self, gx: int, gy: int) -> float:
         raise NotImplementedError
 
+    def BuildClearance(self, force: bool = False) -> None:
+        raise NotImplementedError
+
 
 class AStarPlanner:
-    def __init__(self, map: OccupancyProvider, resolution: float = 0.05) -> None:
+    def __init__(
+        self,
+        map: OccupancyProvider,
+        resolution: float = 0.05,
+        expansionLimit: int = 100000,
+        clearancePenalty: float = 0.1,
+        minClearance: float = 0.1,
+        useFootprint: bool = True,
+    ) -> None:
         self.map = map
         self.resolution = resolution
         self.diagonalCost = math.sqrt(2.0)
         self.cardCost = 1.0
-        self.clearance_penalty = 0.1  # Cost per meter of reduced clearance
-        self.expansion_limit = 10000
+        self.clearancePenalty = clearancePenalty
+        self.expansionLimit = expansionLimit
+        self.minClearance = minClearance
+        self.useFootprint = useFootprint
 
     def Heuristic(self, gx1: int, gy1: int, gx2: int, gy2: int) -> float:
         dx = abs(gx1 - gx2)
@@ -82,6 +95,7 @@ class AStarPlanner:
         return self.cardCost * (dx + dy) + (self.diagonalCost - 2.0 * self.cardCost) * min(dx, dy)
 
     def Plan(self, startX: float, startY: float, goalX: float, goalY: float) -> PlanningResult:
+        self.map.BuildClearance(force=False)
         s = self.map.ToGrid(startX, startY)
         g = self.map.ToGrid(goalX, goalY)
         if s is None or g is None:
@@ -93,11 +107,10 @@ class AStarPlanner:
         if s.gx == g.gx and s.gy == g.gy:
             return PlanningResult(True, Route(points=[(startX, startY)]), 1, "zero distance")
 
-        maxG = 1000
+        maxG = 2000
         if abs(s.gx - g.gx) > maxG or abs(s.gy - g.gy) > maxG:
             return PlanningResult(False, reason="goal too far")
 
-        # A* algorithm
         openHeap: list[tuple[float, int, int]] = []
         nodesExp = 0
 
@@ -119,7 +132,7 @@ class AStarPlanner:
         ]
 
         while openHeap:
-            if nodesExp > self.expansion_limit:
+            if nodesExp > self.expansionLimit:
                 return PlanningResult(False, reason="expansion limit exceeded", nodesExpanded=nodesExp)
 
             _, cx, cy = heapq.heappop(openHeap)
@@ -136,14 +149,13 @@ class AStarPlanner:
                 if self.map.IsBlocked(nx, ny):
                     continue
 
-                # Prevent diagonal corner cutting
                 if dx != 0 and dy != 0 and (self.map.IsBlocked(cx + dx, cy) or self.map.IsBlocked(cx, cy + dy)):
                     continue
 
                 moveCost = self.diagonalCost if (dx != 0 and dy != 0) else self.cardCost
                 clearance = self.map.GetClearance(nx, ny)
-                if clearance < 0.1:
-                    moveCost += (0.1 - clearance) * 10.0
+                if clearance < self.minClearance:
+                    moveCost += (self.minClearance - clearance) * 10.0
 
                 ng = gScore.get((cx, cy), 1e18) + moveCost
                 keyn = (nx, ny)
@@ -165,7 +177,6 @@ class AStarPlanner:
             path.append(cur)
             if cur not in came_from:
                 break
-
             cur = came_from[cur]
 
         path.append((s.gx, s.gy))

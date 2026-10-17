@@ -23,6 +23,8 @@
 from __future__ import annotations
 
 import math
+from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
 
 __all__ = [
@@ -45,22 +47,21 @@ class GridMap:
         fieldLength: float,
         resolution: float = 0.05,
         costap: CostMap | None = None,
+        inflationRadius: float = 0.0,
     ) -> None:
         self.fieldWidth = fieldWidth
         self.fieldLength = fieldLength
         self.resolution = resolution
         self.costap = costap or CostMap()
+        self.inflationRadius = inflationRadius
 
         self.gridx = max(1, math.ceil(self.fieldWidth / self.resolution))
         self.gridy = max(1, math.ceil(self.fieldLength / self.resolution))
         self.grid = bytearray(self.gridx * self.gridy)
         self.clearanceGrid = bytearray(self.gridx * self.gridy)  # Store distance class 0-255
+        self.clearanceDirty = True
 
     def ToGrid(self, x: float, y: float) -> GridCoord | None:
-        # Allow slight tolerance
-        if not (0.0 <= x <= self.fieldWidth + 1e-9 and 0.0 <= y <= self.fieldLength + 1e-9):
-            pass
-
         gx = math.floor(x / self.resolution)
         gy = math.floor(y / self.resolution)
         if gx < 0 or gy < 0 or gx >= self.gridx or gy >= self.gridy:
@@ -85,6 +86,77 @@ class GridMap:
             return
 
         self.grid[self.Index(gx, gy)] = 255 if blocked else 0
+        self.clearanceDirty = True
+
+    def ClearObstacles(self) -> None:
+        for i in range(len(self.grid)):
+            self.grid[i] = 0
+        self.clearanceDirty = True
+
+    def AddObstacleCircle(self, x: float, y: float, radius: float) -> None:
+        r = max(radius, self.inflationRadius)
+        g = self.ToGrid(x, y)
+        if g is None:
+            return
+
+        rCells = math.ceil(r / self.resolution)
+        for dy in range(-rCells, rCells + 1):
+            for dx in range(-rCells, rCells + 1):
+                gx, gy = g.gx + dx, g.gy + dy
+                if self.OutOfBounds(gx, gy):
+                    continue
+
+                wx, wy = self.ToWorld(gx, gy)
+                d = math.hypot(wx - x, wy - y)
+                if d <= r + 1e-3:
+                    self.grid[self.Index(gx, gy)] = 255
+
+        self.clearanceDirty = True
+
+    def AddObstaclePolygon(self, points: list[tuple[float, float]]) -> None:
+        if len(points) < 3:
+            return
+
+        minx = min(p[0] for p in points)
+        maxx = max(p[0] for p in points)
+        miny = min(p[1] for p in points)
+        maxy = max(p[1] for p in points)
+
+        sx = self.ToGrid(minx, miny)
+        ex = self.ToGrid(maxx, maxy)
+        if sx is None or ex is None:
+            return
+
+        for gy in range(sx.gy, ex.gy + 2):
+            for gx in range(sx.gx, ex.gx + 2):
+                if self.OutOfBounds(gx, gy):
+                    continue
+
+                wx, wy = self.ToWorld(gx, gy)
+                if self.PointInPolygon(wx, wy, points):
+                    self.grid[self.Index(gx, gy)] = 255
+
+        self.clearanceDirty = True
+
+    def PointInPolygon(self, x: float, y: float, poly: list[tuple[float, float]]) -> bool:
+        inside = False
+        n = len(poly)
+        j = n - 1
+
+        for i in range(n):
+            xi, yi = poly[i]
+            xj, yj = poly[j]
+            intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi)
+            if intersect:
+                inside = not inside
+
+            j = i
+
+        return inside
+
+    def UpdateObstacles(self, updater: Callable[[GridMap], None]) -> None:
+        updater(self)
+        self.clearanceDirty = True
 
     def OutOfBounds(self, gx: int, gy: int) -> bool:
         return gx < 0 or gy < 0 or gx >= self.gridx or gy >= self.gridy
@@ -92,23 +164,23 @@ class GridMap:
     def InBounds(self, gx: int, gy: int) -> bool:
         return not self.OutOfBounds(gx, gy)
 
-    def BuildClearance(self) -> None:
-        # Simple 2D distance transform approximation using BFS from obstacles
-        INF = 255
+    def BuildClearance(self, force: bool = False) -> None:
+        if not force and not self.clearanceDirty:
+            return
+
         for i in range(len(self.clearanceGrid)):
             if self.grid[i] == 255:
                 self.clearanceGrid[i] = 0
             else:
-                self.clearanceGrid[i] = INF
+                self.clearanceGrid[i] = 255
 
-        queue: list[tuple[int, int]] = []
-        head = 0
+        queue: deque[tuple[int, int]] = deque()
         for gy in range(self.gridy):
             for gx in range(self.gridx):
                 if self.clearanceGrid[self.Index(gx, gy)] == 0:
                     queue.append((gx, gy))
 
-        # BFS
+        # 8-neighborhood for better distance approximation
         neighbors = [
             (-1, 0),
             (1, 0),
@@ -120,25 +192,23 @@ class GridMap:
             (1, 1),
         ]
 
-        while head < len(queue):
-            cx, cy = queue[head]
-            head += 1
+        while queue:
+            cx, cy = queue.popleft()
             cval = self.clearanceGrid[self.Index(cx, cy)]
-
             for nx, ny in neighbors:
-                ng = cx + nx
-                nh = cy + ny
-                if ng < 0 or nh < 0 or ng >= self.gridx or nh >= self.gridy:
+                ng, nh = cx + nx, cy + ny
+                if self.OutOfBounds(ng, nh):
                     continue
+                idx = self.Index(ng, nh)
+                nd = cval + 1
+                if nd < self.clearanceGrid[idx]:
+                    self.clearanceGrid[idx] = min(255, nd)
+                    queue.append((ng, nh))
 
-                if self.clearanceGrid[self.Index(ng, nh)] > cval + 1:
-                    nd = min(255, cval + 1)
-                    self.clearanceGrid[self.Index(ng, nh)] = nd
-
-                    if nd < INF:
-                        queue.append((ng, nh))
+        self.clearanceDirty = False
 
     def GetClearance(self, gx: int, gy: int) -> float:
+        self.BuildClearance()
         if self.OutOfBounds(gx, gy):
             return 0.0
 

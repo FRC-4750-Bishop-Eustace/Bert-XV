@@ -102,5 +102,20 @@
         }
       ]
     }
+  },
+  "planning": {
+    "resolution": 0.05,
+    "expansionLimit": 200000,
+    "clearancePenalty": 0.1,
+    "minClearance": 0.1,
+    "inflationRadius": 0.15,
+    "headingCandidates": 32,
+    "smoothingSpacing": 0.05,
+    "smoothingIterations": 5,
+    "replanAttempts": 3,
+    "maxAccel": 3.0,
+    "maxAngAccel": 6.0,
+    "goalTolerance": 0.1,
+    "useFootprint": true
   }
 }

@@ -36,11 +36,11 @@ class PathPoint:
     heading: float
 
 
-def LoadPathFile(path: Path) -> list[PathPoint]:
+def LoadPathFile(path: str | Path) -> list[PathPoint]:
     pts: list[PathPoint] = []
-
     try:
-        with path.open("rb") as f:
+        ppath = Path(path) if isinstance(path, str) else path
+        with ppath.open("rb") as f:
             d = f.read()
 
         if len(d) < 12:
@@ -56,13 +56,18 @@ def LoadPathFile(path: Path) -> list[PathPoint]:
 
         count = struct.unpack("<I", d[8:12])[0]
         off = 12
+
+        # Skip padding if present
+        if off + 8 <= len(d) and count > 0:
+            # Heuristic: in our format after count, we might have padding; but we wrote directly
+            pass
+
         for _ in range(count):
             if off + 12 > len(d):
                 break
 
             x, y, h = struct.unpack("<fff", d[off : off + 12])
             off += 12
-
             pts.append(PathPoint(x=x, y=y, heading=h))
 
     except Exception:
@@ -71,10 +76,13 @@ def LoadPathFile(path: Path) -> list[PathPoint]:
     return pts
 
 
-def SavePathFile(path: Path, points: list[PathPoint]) -> None:
+def SavePathFile(path: str | Path, points: list[PathPoint]) -> None:
     data = struct.pack("<4sI", b"PATH", 1)
     data += struct.pack("<I", len(points))
     for p in points:
         data += struct.pack("<fff", p.x, p.y, p.heading)
-    with path.open("wb") as f:
+
+    ppath = Path(path) if isinstance(path, str) else path
+    ppath.parent.mkdir(parents=True, exist_ok=True)
+    with ppath.open("wb") as f:
         f.write(data)

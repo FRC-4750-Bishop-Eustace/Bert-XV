@@ -60,13 +60,10 @@ class HeadingOptimizer:
         n = len(pathPoints)
         cand = self.headingCandidates
 
-        # Discretize headings
         headingsCand: list[float] = [self.Wrap(-math.pi + 2.0 * math.pi * i / cand) for i in range(cand)]
 
-        # Simple greedy by minimizing angular distance to next with smoothness - DP-lite
         res: list[float] = [0.0] * n
 
-        # Head
         best = 0
         bestd = abs(self.Wrap(headingsCand[0] - startHeading))
         for i in range(cand):
@@ -95,6 +92,5 @@ class HeadingOptimizer:
 
             res[i] = headingsCand[best]
 
-        # Force tail
         res[-1] = self.Wrap(goalHeading)
         return HeadingProfile(res)

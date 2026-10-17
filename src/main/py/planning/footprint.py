@@ -26,7 +26,11 @@ import math
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from .gridmap import GridMap
+
 __all__ = [
+    "FootprintChecker",
+    "IsFootprintClear",
     "IsPathClearLineOfSight",
     "RobotCenterRadius",
     "RobotFootprint",
@@ -51,9 +55,70 @@ class RobotFootprint:
     def CircumscribedRadius(self) -> float:
         return 0.5 * math.sqrt((self.length**2) + (self.width**2)) + self.margin
 
+    @property
+    def InscribedRadius(self) -> float:
+        return min(self.HalfLength, self.HalfWidth) + self.margin
+
 
 def RobotCenterRadius(length: float, width: float, margin: float = 0.0) -> float:
     return 0.5 * math.sqrt((length**2) + (width**2)) + margin
+
+
+class FootprintChecker:
+    def __init__(self, gridMap: GridMap, footprint: RobotFootprint, resolution: float = 0.05) -> None:
+
+        self.gridMap = gridMap
+        self.footprint = footprint
+        self.resolution = resolution
+        self.checkResolution = min(resolution, 0.01)
+
+    def IsClear(self, x: float, y: float, theta: float = 0.0) -> bool:
+        r = self.footprint.CircumscribedRadius
+
+        # Sample points in footprint or use grid cells
+        if r < 1e-3:
+            g = self.gridMap.ToGrid(x, y)
+            return g is not None and not self.gridMap.IsBlocked(g.gx, g.gy)
+
+        rCells = math.ceil(r / self.gridMap.resolution)
+        g0 = self.gridMap.ToGrid(x, y)
+        if g0 is None:
+            return False
+
+        cosT = math.cos(theta)
+        sinT = math.sin(theta)
+        halfL = self.footprint.HalfLength
+        halfW = self.footprint.HalfWidth
+
+        # Check grid cells within circumscribed radius
+        for dy in range(-rCells, rCells + 1):
+            for dx in range(-rCells, rCells + 1):
+                gx, gy = g0.gx + dx, g0.gy + dy
+                if self.gridMap.OutOfBounds(gx, gy):
+                    return False
+                if self.gridMap.IsBlocked(gx, gy):
+                    wx, wy = self.gridMap.ToWorld(gx, gy)
+
+                    # Transform to robot frame
+                    rx = (wx - x) * cosT + (wy - y) * sinT
+                    ry = -(wx - x) * sinT + (wy - y) * cosT
+                    if abs(rx) <= halfL + 0.01 and abs(ry) <= halfW + 0.01:
+                        return False
+        return True
+
+    def CheckCollision(self, x: float, y: float, theta: float = 0.0) -> bool:
+        return not self.IsClear(x, y, theta)
+
+
+def IsFootprintClear(
+    x: float,
+    y: float,
+    theta: float,
+    footprint: RobotFootprint,
+    gridMap: GridMap,
+) -> bool:
+    checker = FootprintChecker(gridMap, footprint)
+    return checker.IsClear(x, y, theta)
 
 
 def IsPathClearLineOfSight(
@@ -61,25 +126,29 @@ def IsPathClearLineOfSight(
     py1: float,
     px2: float,
     py2: float,
-    occupancyQuery: Callable[..., bool],  # Function f(x,y)->bool (True if blocked)
+    occupancyQuery: Callable[..., bool],
     footprint: RobotFootprint | None = None,
 ) -> bool:
-    # Simple grid-step based LOS check; caller can pass in more accurate
     dx = px2 - px1
     dy = py2 - py1
     dist = math.hypot(dx, dy)
     if dist < 1e-6:
         return True
 
-    steps = max(1, int(dist / 0.02))  # Sample every 2cm
+    steps = max(1, int(dist / 0.02))
     for i in range(1, steps + 1):
         t = i / steps
         x = px1 + dx * t
         y = py1 + dy * t
 
         try:
-            if occupancyQuery(x, y, footprint):
-                return False
+            if footprint is not None:
+                if occupancyQuery(x, y, 0.0):
+                    return False
+            else:
+                if occupancyQuery(x, y):
+                    return False
+
         except Exception:
             pass
 

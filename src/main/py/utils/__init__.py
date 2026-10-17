@@ -85,3 +85,8 @@ __all__ = [
     "NewUUID",
     "PathPoint",
 ]
+
+try:
+    from .constants import PLANNING_CONSTANTS
+except Exception:
+    PLANNING_CONSTANTS = {}

@@ -43,12 +43,16 @@ class CollisionChecker(Protocol):
     def IsCollision(self, x: float, y: float, theta: float | None = None) -> bool:
         raise NotImplementedError
 
+    def IsClear(self, x: float, y: float, theta: float | None = None) -> bool:
+        raise NotImplementedError
+
 
 class Smoother:
-    def __init__(self, collisionChecker: CollisionChecker | None = None) -> None:
+    def __init__(self, collisionChecker: CollisionChecker | None = None, maxIterations: int = 5) -> None:
         self.collisionChecker = collisionChecker
+        self.maxIterations = maxIterations
 
-    def removeRedundant(self, points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
+    def RemoveRedundant(self, points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
         if len(points) <= 2:
             return list(points)
 
@@ -64,13 +68,12 @@ class Smoother:
         res.append(points[-1])
         return res
 
-    def smooth(self, points: Sequence[tuple[float, float]], spacing: float = 0.1) -> SmoothPath:
+    def Smooth(self, points: Sequence[tuple[float, float]], spacing: float = 0.1) -> SmoothPath:
         if len(points) < 2:
             return SmoothPath(list(points))
 
-        pts = self.removeRedundant(points)
+        pts = self.RemoveRedundant(points)
 
-        # Simple linear resampling as a minimal safe baseline
         res: list[tuple[float, float]] = [pts[0]]
         for i in range(len(pts) - 1):
             p0 = pts[i]
@@ -85,4 +88,27 @@ class Smoother:
                 res.append((p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t))
 
         res.append(pts[-1])
+
+        # Apply basic collision-aware refinement if checker available
+        if self.collisionChecker is not None and len(res) > 2:
+            for _ in range(self.maxIterations):
+                changed = False
+                for i in range(1, len(res) - 1):
+                    prevp = res[i - 1]
+                    res[i]
+                    nextp = res[i + 1]
+                    midx = (prevp[0] + nextp[0]) * 0.5
+                    midy = (prevp[1] + nextp[1]) * 0.5
+
+                    try:
+                        if self.collisionChecker.IsClear(midx, midy, 0.0):
+                            res[i] = (midx, midy)
+                            changed = True
+
+                    except Exception:
+                        pass
+
+                if not changed:
+                    break
+
         return SmoothPath(res)

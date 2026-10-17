@@ -28,7 +28,7 @@ from utils import DRIVE_CONSTANTS, GetFloat, GetInt, GetPID, GetProfiledPID, Log
 from wpilib import SmartDashboard
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Rotation3d, Translation2d
-from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics
+from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveModuleState
 
 from .swerve_module import SwerveModule
 
@@ -132,6 +132,15 @@ class Drivetrain(Subsystem):
         )
         self.kinematics.desaturateWheelSpeeds(states, GetFloat(DRIVE_CONSTANTS, "maxLateralSpeed"))
 
+        self.modules[0].SetDesiredState(states[0])
+        self.modules[1].SetDesiredState(states[1])
+        self.modules[2].SetDesiredState(states[2])
+        self.modules[3].SetDesiredState(states[3])
+
+    def SetModuleStates(
+        self, states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]
+    ) -> None:
+        self.kinematics.desaturateWheelSpeeds(states, GetFloat(DRIVE_CONSTANTS, "maxLateralSpeed"))
         self.modules[0].SetDesiredState(states[0])
         self.modules[1].SetDesiredState(states[1])
         self.modules[2].SetDesiredState(states[2])

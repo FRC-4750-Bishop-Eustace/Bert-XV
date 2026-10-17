@@ -182,3 +182,9 @@ CTRL_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "controllers")
 PORT_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "ports")
 DRIVE_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
 VISION_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "vision")
+
+
+try:
+    PLANNING_CONSTANTS = CONSTANTS.get("planning", {})
+except Exception:
+    PLANNING_CONSTANTS = {}

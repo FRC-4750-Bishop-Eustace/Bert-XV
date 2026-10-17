@@ -45,3 +45,7 @@ def AutonomousSelector(cmds: dict[Hashable, Command] | None = None) -> Command:
     SmartDashboard.putData("Auto Choices", auto_chooser)
 
     return selector
+
+
+def AutonomousSelectorWithPathing(cmds: dict[Hashable, Command] | None = None) -> Command:
+    return AutonomousSelector(cmds)
