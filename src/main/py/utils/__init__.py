@@ -22,11 +22,6 @@
 
 from .auto_selector import AutonomousSelector
 from .constants import (
-    CONSTANTS,
-    CTRL_CONSTANTS,
-    DRIVE_CONSTANTS,
-    PORT_CONSTANTS,
-    VISION_CONSTANTS,
     Constants,
     GetBool,
     GetFeedForwardMeters,
@@ -45,17 +40,14 @@ from .constants import (
     GetString,
     GetTranslation2d,
     GetTranslation3d,
+    InitializeConstants,
+    LoadConstants,
 )
 from .health import Health
 from .logger import Logger, LogLevel
 from .uuid import GetLogDirectory, NewUUID
 
 __all__ = [
-    "CONSTANTS",
-    "CTRL_CONSTANTS",
-    "DRIVE_CONSTANTS",
-    "PORT_CONSTANTS",
-    "VISION_CONSTANTS",
     "AutonomousSelector",
     "Constants",
     "GetBool",
@@ -77,6 +69,8 @@ __all__ = [
     "GetTranslation2d",
     "GetTranslation3d",
     "Health",
+    "InitializeConstants",
+    "LoadConstants",
     "LogLevel",
     "Logger",
     "NewUUID",

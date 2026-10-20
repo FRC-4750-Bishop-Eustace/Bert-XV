@@ -24,7 +24,8 @@ import time
 
 from wpilib import DriverStation, RobotController, SmartDashboard
 
-from .constants import CONSTANTS, GetFloat
+from . import constants
+from .constants import GetFloat
 from .logger import Logger
 
 
@@ -55,15 +56,15 @@ class Health:
             self.brownout = True
             self.TriggerFault("Robot brownout detected")
 
-        elif voltage <= GetFloat(CONSTANTS, "lowVoltage"):
+        elif voltage <= GetFloat(constants.CONSTANTS, "lowVoltage"):
             # Check for (and ignore) voltage spikes
             now = time.monotonic()
             if self.lowVoltageStart is None:
                 self.lowVoltageStart = now
-            elif now - self.lowVoltageStart >= GetFloat(CONSTANTS, "voltageDebounce"):
+            elif now - self.lowVoltageStart >= GetFloat(constants.CONSTANTS, "voltageDebounce"):
                 self.lowVoltageStart = None
 
-                if voltage <= GetFloat(CONSTANTS, "criticalVoltage"):
+                if voltage <= GetFloat(constants.CONSTANTS, "criticalVoltage"):
                     self.TriggerFault(
                         f"Critical battery percentage: {(100.0 * voltage / 12.0):.1f}% ({voltage:.2f}V)", True
                     )
@@ -72,14 +73,14 @@ class Health:
         else:
             self.lowVoltageStart = None
 
-        if temperature >= GetFloat(CONSTANTS, "highCPUTemperature"):
-            if temperature >= GetFloat(CONSTANTS, "criticalCPUTemperature"):
+        if temperature >= GetFloat(constants.CONSTANTS, "highCPUTemperature"):
+            if temperature >= GetFloat(constants.CONSTANTS, "criticalCPUTemperature"):
                 self.TriggerFault(f"Critical CPU temperature: {temperature:.2f} °C", True)
             else:
                 self.TriggerFault(f"High CPU temperature: {temperature:.2f} °C")
 
-        if can.percentBusUtilization >= GetFloat(CONSTANTS, "highCANUtilization"):
-            if can.percentBusUtilization >= GetFloat(CONSTANTS, "criticalCANUtilization"):
+        if can.percentBusUtilization >= GetFloat(constants.CONSTANTS, "highCANUtilization"):
+            if can.percentBusUtilization >= GetFloat(constants.CONSTANTS, "criticalCANUtilization"):
                 self.TriggerFault(f"Max CAN bus utilization used: {can.percentBusUtilization}%", True)
             else:
                 self.TriggerFault(f"High CAN bus utilization used: {can.percentBusUtilization}%")

@@ -27,9 +27,11 @@ sys.path.insert(0, str(Path(__file__).parent / "src" / "main" / "py"))
 
 from commands2 import Command, CommandScheduler, TimedCommandRobot
 from robot_container import RobotContainer
-from urcl import URCL
+from utils.constants import InitializeConstants
 from utils.health import Health
 from utils.logger import Logger
+
+CONSTANTS_PROFILE = "default"
 
 
 class Robot(TimedCommandRobot):
@@ -39,7 +41,15 @@ class Robot(TimedCommandRobot):
     def robotInit(self) -> None:
         self._logger = Logger("robot")  # `self.logger` already exists as an internal method of `TimedCommandRobot`
 
-        URCL.start()
+        InitializeConstants(CONSTANTS_PROFILE)
+
+        try:
+            from urcl import URCL
+
+            URCL.start()
+
+        except Exception:
+            self._logger.Warning("URCL could not be found")
 
         self.robot = RobotContainer(self._logger)
         self.health = Health(self._logger)

@@ -23,7 +23,7 @@
 from hardware.types import EncoderParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import CANcoder
-from utils import CONSTANTS, GetString
+from utils import GetString, constants
 
 
 class CANcoderEncoder:
@@ -31,7 +31,7 @@ class CANcoderEncoder:
         assert isinstance(params.device_id, int)
 
         self.params = params
-        self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
+        self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(GetString(constants.CONSTANTS, "canbus")))
 
     def GetPosition(self) -> float | None:
         return self.encoder.get_position().value

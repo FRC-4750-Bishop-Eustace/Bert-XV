@@ -22,7 +22,7 @@
 
 import json
 from pathlib import Path
-from typing import Final, cast
+from typing import cast
 
 from wpilib import getDeployDirectory
 from wpimath.controller import (
@@ -40,16 +40,108 @@ type JSONValue = int | float | str | bool | list[JSONValue] | dict[str, JSONValu
 type Constants = dict[str, JSONValue]
 
 
-def LoadConstants(path: Path) -> Constants:
-    logger = Logger("constants")
+def DeepMerge(base: Constants, override: Constants) -> Constants:
+    result: Constants = dict(base)
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            merged = DeepMerge(cast(Constants, result[key]), value)
+            result[key] = merged
+
+        else:
+            result[key] = value
+
+    return result
+
+
+def LoadJSONFile(path: Path, logger: Logger) -> Constants | None:
     try:
         with path.open("r", encoding="utf-8", buffering=1) as file:
-            return cast(Constants, json.load(file))
-    except FileNotFoundError as e:
-        logger.Except("Constants file not found", e, path=path)
+            data = json.load(file)
+            if isinstance(data, dict):
+                return cast(Constants, data)
+
+            logger.Warning(f"JSON file '{path}' does not contain a top-level object, skipping")
+            return None
+
+    except FileNotFoundError:
+        return None
+
     except json.JSONDecodeError as e:
         logger.Except("Failed to parse constants file", e, path=path)
-    return {}
+        return None
+
+    except Exception as e:
+        logger.Except("Failed to load constants file", e, path=path)
+        return None
+
+
+def LoadFromDirectory(directory: Path, logger: Logger) -> Constants:
+    merged: Constants = {}
+    if not directory.exists() or not directory.is_dir():
+        return merged
+
+    json_files = sorted(directory.rglob("*.json"))
+    for json_file in json_files:
+        if any(part.startswith(".") for part in json_file.relative_to(directory).parts):
+            continue
+
+        data = LoadJSONFile(json_file, logger)
+        if data is not None:
+            merged = DeepMerge(merged, data)
+
+    return merged
+
+
+def LoadConstants(profile: str | Path | None = None) -> Constants:
+    logger = Logger("constants")
+    deploy_dir = Path(getDeployDirectory())
+
+    merged: Constants = {}
+
+    if profile is not None:
+        profile_path = Path(profile) if isinstance(profile, str) else profile
+        if profile_path.is_absolute() and profile_path.is_dir():
+            merged = LoadFromDirectory(profile_path, logger)
+            return merged
+
+        # Treat as profile name, look in common locations
+        profile_name = profile_path.name if profile_path.name else str(profile)
+        profile_locations = [
+            deploy_dir / "profiles" / profile_name,
+            deploy_dir / profile_name,
+            deploy_dir / "users" / profile_name,
+        ]
+
+        for ploc in profile_locations:
+            if ploc.is_dir():
+                merged = LoadFromDirectory(ploc, logger)
+                if merged:
+                    return merged
+
+        logger.Warning(f"No constants found for profile '{profile_name}'")
+
+    # If no profile specified or not found, try default profile locations
+    default_locations = [
+        deploy_dir / "profiles" / "default",
+        deploy_dir / "default",
+    ]
+
+    for dloc in default_locations:
+        if dloc.is_dir():
+            merged = DeepMerge(merged, LoadFromDirectory(dloc, logger))
+
+    # Fallback to legacy single file
+    if not merged:
+        legacy_path = deploy_dir / "constants.json"
+        legacy_data = LoadJSONFile(legacy_path, logger)
+
+        if legacy_data is not None:
+            merged = legacy_data
+
+        else:
+            logger.Except("Constants file not found", FileNotFoundError(str(legacy_path)), path=legacy_path)
+
+    return merged
 
 
 def GetInt(const: Constants, key: str) -> int:
@@ -76,7 +168,7 @@ def GetString(const: Constants, key: str) -> str:
 def GetBool(const: Constants, key: str) -> bool:
     value = const[key]
     if not isinstance(value, bool):
-        raise TypeError(f"Expected constants entry 'key' to be a boolean, got {type(value).__name__}")
+        raise TypeError(f"Expected constants entry '{key}' to be a boolean, got {type(value).__name__}")
     return value
 
 
@@ -108,11 +200,7 @@ def GetNumbers(const: Constants, key: str, count: int) -> list[float]:
 
 def GetPID(const: Constants, key: str) -> PIDController:
     pid = GetNumbers(const, key, 3)
-    return PIDController(
-        pid[0],
-        pid[1],
-        pid[2],
-    )
+    return PIDController(pid[0], pid[1], pid[2])
 
 
 def GetProfiledPID(const: Constants, key: str) -> ProfiledPIDController:
@@ -163,22 +251,37 @@ def GetPose3d(const: Constants, key: str) -> Pose3d:
 
 def GetFeedForwardMeters(const: Constants, key: str) -> SimpleMotorFeedforwardMeters:
     ff = GetNumbers(const, key, 2)
-    return SimpleMotorFeedforwardMeters(
-        ff[0],
-        ff[1],
-    )
+    return SimpleMotorFeedforwardMeters(ff[0], ff[1])
 
 
 def GetFeedForwardRadians(const: Constants, key: str) -> SimpleMotorFeedforwardRadians:
     ff = GetNumbers(const, key, 2)
-    return SimpleMotorFeedforwardRadians(
-        ff[0],
-        ff[1],
-    )
+    return SimpleMotorFeedforwardRadians(ff[0], ff[1])
 
 
-CONSTANTS: Final[Constants] = LoadConstants(Path(getDeployDirectory()) / "constants.json")
-CTRL_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "controllers")
-PORT_CONSTANTS: Final[Constants] = GetObject(CONSTANTS, "ports")
-DRIVE_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "drivetrain")
-VISION_CONSTANTS: Final[Constants] = GetObject(GetObject(CONSTANTS, "subsystems"), "vision")
+def __getattr__(name: str) -> Constants:
+    if name == "CONSTANTS" or name.endswith("_CONSTANTS"):
+        raise AttributeError(f"Constants '{name}' accessed before InitializeConstants() was called")
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def InitializeConstants(profile: str | Path | None = None) -> None:
+    constants = LoadConstants(profile)
+
+    generated: dict[str, Constants] = {"CONSTANTS": constants}
+    for key, value in constants.items():
+        if not isinstance(value, dict):
+            continue
+
+        generated[f"{key.upper()}_CONSTANTS"] = value
+        if key == "subsystems":
+            for subsystem, subsystem_constants in value.items():
+                if isinstance(subsystem_constants, dict):
+                    generated[f"{subsystem.upper()}_CONSTANTS"] = subsystem_constants
+
+    # Drop any constants generated by a previous initialization so stale names don't linger
+    for name in [n for n in globals() if n == "CONSTANTS" or n.endswith("_CONSTANTS")]:
+        del globals()[name]
+
+    globals().update(generated)

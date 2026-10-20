@@ -23,14 +23,14 @@
 from hardware.types import IMUParameters
 from phoenix6.canbus import CANBus
 from phoenix6.hardware import Pigeon2
-from utils import CONSTANTS, GetString
+from utils import GetString, constants
 from wpimath.geometry import Pose3d, Rotation3d, Translation3d
 
 
 class Pigeon2IMU:
     def __init__(self, params: IMUParameters) -> None:
         self.params = params
-        self.imu = Pigeon2(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
+        self.imu = Pigeon2(device_id=params.device_id, canbus=CANBus(GetString(constants.CONSTANTS, "canbus")))
 
     def GetPosition(self) -> Translation3d | None:
         return Translation3d(

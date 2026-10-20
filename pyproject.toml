@@ -14,7 +14,7 @@ authors = [
 license = "MIT"
 license-files = [ "./LICENSE" ]
 dependencies = [
-    "robotpy>=2026.2.2", # Use "2027.0.0a5.post1" for latest SystemCore update (unstable)
+    "robotpy>=2026.2.2", # Use "2027.0.0a7" for latest SystemCore update (unstable)
 ]
 
 [dependency-groups]
@@ -28,16 +28,7 @@ dev = [
 ]
 
 [tool.robotpy]
-robotpy_version = "2026.2.2" # Use "2027.0.0a5.post1" for latest SystemCore update (unstable)
-components = [
-    "apriltag",
-    # "commands2",
-    "cscore",
-    # "navx",
-    # "phoenix6",
-    # "rev",
-    "sim",
-]
+robotpy_version = "2026.2.2" # Use "2027.0.0a7" for latest SystemCore update (unstable)
 requires = [
     "robotpy-commands-v2",
     "pyntcore",

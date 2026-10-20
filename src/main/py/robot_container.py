@@ -25,7 +25,7 @@ from commands import DriveWithJoystick
 from commands2 import Command
 from commands2.button import JoystickButton
 from subsystems import Drivetrain, Vision
-from utils import CTRL_CONSTANTS, PORT_CONSTANTS, AutonomousSelector, GetInt, Logger
+from utils import AutonomousSelector, GetInt, Logger, constants
 from wpilib import Field2d, Joystick, PS4Controller, SmartDashboard
 
 
@@ -33,8 +33,8 @@ class RobotContainer:
     def __init__(self, logger: "Logger") -> None:
         self.logger = logger
 
-        self.controller = PS4Controller(GetInt(CTRL_CONSTANTS, "controllerPort"))
-        self.dashboard = Joystick(GetInt(CTRL_CONSTANTS, "dashboardPort"))
+        self.controller = PS4Controller(GetInt(constants.CONTROLLERS_CONSTANTS, "controllerPort"))
+        self.dashboard = Joystick(GetInt(constants.CONTROLLERS_CONSTANTS, "dashboardPort"))
 
         self.field = Field2d()
 
@@ -54,13 +54,13 @@ class RobotContainer:
         self.swerve.setDefaultCommand(self.drive)
 
     def ConfigureBindings(self) -> None:
-        JoystickButton(self.controller, GetInt(PORT_CONSTANTS, "faceDown")).onTrue(
+        JoystickButton(self.controller, GetInt(constants.PORTS_CONSTANTS, "faceDown")).onTrue(
             cmd.runOnce(
                 self.drive.ToggleFieldRelative,
                 self.swerve,
             ),
         )
-        JoystickButton(self.controller, GetInt(PORT_CONSTANTS, "faceUp")).onTrue(
+        JoystickButton(self.controller, GetInt(constants.PORTS_CONSTANTS, "faceUp")).onTrue(
             cmd.runOnce(
                 self.drive.ToggleFieldRelative,
                 self.swerve,

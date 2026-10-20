@@ -22,7 +22,7 @@
 
 from commands2 import Subsystem
 from hardware import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType, CreateCamera
-from utils import VISION_CONSTANTS, GetList, GetPose3d, GetString, Logger
+from utils import GetList, GetPose3d, GetString, Logger, constants
 from wpilib import Timer
 from wpimath.geometry import Pose2d
 
@@ -38,7 +38,7 @@ class Vision(Subsystem):
         self.stddevs = (1.0, 1.0, 1.0)
 
         self.cameras = []
-        for cam in GetList(VISION_CONSTANTS, "cameras"):
+        for cam in GetList(constants.VISION_CONSTANTS, "cameras"):
             if not isinstance(cam, dict):
                 raise TypeError(f"Expected vision camera entry to be a JSON object, got {type(cam).__name__}")
 

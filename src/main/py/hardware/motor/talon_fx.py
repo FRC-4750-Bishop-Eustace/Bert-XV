@@ -25,13 +25,13 @@ from phoenix6.canbus import CANBus
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
-from utils import CONSTANTS, GetString
+from utils import GetString, constants
 
 
 class TalonFXMotor:
     def __init__(self, params: MotorParameters) -> None:
         self.params = params
-        self.motor = TalonFX(device_id=params.device_id, canbus=CANBus(GetString(CONSTANTS, "canbus")))
+        self.motor = TalonFX(device_id=params.device_id, canbus=CANBus(GetString(constants.CONSTANTS, "canbus")))
 
         self.SetParams(self.params)
 

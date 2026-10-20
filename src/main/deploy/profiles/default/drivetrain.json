@@ -1,0 +1,46 @@
+{
+  "chassisHalfLength": 0.3429,
+  "wheelRadius": 0.0492,
+  "driveReduction": 6.74603174603,
+  "encoderResolution": 4096,
+  "maxAngularVelocity": 1000,
+  "maxAngularAcceleration": 1000,
+  "maxLateralSpeed": 4.6,
+  "maxAngularSpeed": 5,
+  "microLateralSpeed": 0.2,
+  "microAngularSpeed": 3.0,
+  "frontLeftLateralMotor": 1,
+  "frontLeftAngularMotor": 8,
+  "frontLeftLateralEncoder": 1,
+  "frontLeftAngularEncoder": 12,
+  "frontRightLateralMotor": 4,
+  "frontRightAngularMotor": 5,
+  "frontRightLateralEncoder": 4,
+  "frontRightAngularEncoder": 9,
+  "backLeftLateralMotor": 7,
+  "backLeftAngularMotor": 6,
+  "backLeftLateralEncoder": 7,
+  "backLeftAngularEncoder": 10,
+  "backRightLateralMotor": 2,
+  "backRightAngularMotor": 3,
+  "backRightLateralEncoder": 2,
+  "backRightAngularEncoder": 11,
+  "lateralPID": [
+    0.02,
+    0.0,
+    0.0
+  ],
+  "angularPID": [
+    7.8,
+    0.0,
+    0.055
+  ],
+  "lateralFeedforward": [
+    0.0,
+    2.2
+  ],
+  "angularFeedforward": [
+    0.0,
+    0.0
+  ]
+}

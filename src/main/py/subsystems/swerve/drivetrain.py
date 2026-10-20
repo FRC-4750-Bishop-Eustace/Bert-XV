@@ -24,7 +24,7 @@ import math
 
 from commands2 import Subsystem
 from hardware import CreateIMU, IMUParameters, IMUType
-from utils import DRIVE_CONSTANTS, GetFloat, GetInt, GetPID, GetProfiledPID, Logger
+from utils import GetFloat, GetInt, GetPID, GetProfiledPID, Logger, constants
 from wpilib import SmartDashboard
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Rotation3d, Translation2d
@@ -40,53 +40,54 @@ class Drivetrain(Subsystem):
         self.modules: list[SwerveModule] = [
             SwerveModule(  # Front left
                 [
-                    GetInt(DRIVE_CONSTANTS, "frontLeftLateralMotor"),
-                    GetInt(DRIVE_CONSTANTS, "frontLeftAngularMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontLeftLateralMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontLeftAngularMotor"),
                 ],
                 [
-                    GetInt(DRIVE_CONSTANTS, "frontLeftLateralEncoder"),
-                    GetInt(DRIVE_CONSTANTS, "frontLeftAngularEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontLeftLateralEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontLeftAngularEncoder"),
                 ],
             ),
             SwerveModule(  # Front right
                 [
-                    GetInt(DRIVE_CONSTANTS, "frontRightLateralMotor"),
-                    GetInt(DRIVE_CONSTANTS, "frontRightAngularMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontRightLateralMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontRightAngularMotor"),
                 ],
                 [
-                    GetInt(DRIVE_CONSTANTS, "frontRightLateralEncoder"),
-                    GetInt(DRIVE_CONSTANTS, "frontRightAngularEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontRightLateralEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "frontRightAngularEncoder"),
                 ],
             ),
             SwerveModule(  # Back right
                 [
-                    GetInt(DRIVE_CONSTANTS, "backRightLateralMotor"),
-                    GetInt(DRIVE_CONSTANTS, "backRightAngularMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backRightLateralMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backRightAngularMotor"),
                 ],
                 [
-                    GetInt(DRIVE_CONSTANTS, "backRightLateralEncoder"),
-                    GetInt(DRIVE_CONSTANTS, "backRightAngularEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backRightLateralEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backRightAngularEncoder"),
                 ],
             ),
             SwerveModule(  # Back left
                 [
-                    GetInt(DRIVE_CONSTANTS, "backLeftLateralMotor"),
-                    GetInt(DRIVE_CONSTANTS, "backLeftAngularMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backLeftLateralMotor"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backLeftAngularMotor"),
                 ],
                 [
-                    GetInt(DRIVE_CONSTANTS, "backLeftLateralEncoder"),
-                    GetInt(DRIVE_CONSTANTS, "backLeftAngularEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backLeftLateralEncoder"),
+                    GetInt(constants.DRIVETRAIN_CONSTANTS, "backLeftAngularEncoder"),
                 ],
             ),
         ]
 
         self.gyro = CreateIMU(IMUType.NAVX, IMUParameters(0))
 
+        half_length = GetInt(constants.DRIVETRAIN_CONSTANTS, "chassisHalfLength")
         self.kinematics = SwerveDrive4Kinematics(
-            Translation2d(GetInt(DRIVE_CONSTANTS, "chassisHalfLength"), GetInt(DRIVE_CONSTANTS, "chassisHalfLength")),
-            Translation2d(GetInt(DRIVE_CONSTANTS, "chassisHalfLength"), -GetInt(DRIVE_CONSTANTS, "chassisHalfLength")),
-            Translation2d(-GetInt(DRIVE_CONSTANTS, "chassisHalfLength"), -GetInt(DRIVE_CONSTANTS, "chassisHalfLength")),
-            Translation2d(-GetInt(DRIVE_CONSTANTS, "chassisHalfLength"), GetInt(DRIVE_CONSTANTS, "chassisHalfLength")),
+            Translation2d(half_length, half_length),
+            Translation2d(half_length, -half_length),
+            Translation2d(-half_length, -half_length),
+            Translation2d(-half_length, half_length),
         )
         self.estimator = SwerveDrive4PoseEstimator(
             self.kinematics,
@@ -105,8 +106,8 @@ class Drivetrain(Subsystem):
         self.gyro.Reset()
         self.logger.Debug("IMU reset on startup")
 
-        self.lateralPid = GetPID(DRIVE_CONSTANTS, "lateralPID")
-        self.angularPid = GetProfiledPID(DRIVE_CONSTANTS, "angularPID")
+        self.lateralPid = GetPID(constants.DRIVETRAIN_CONSTANTS, "lateralPID")
+        self.angularPid = GetProfiledPID(constants.DRIVETRAIN_CONSTANTS, "angularPID")
         self.angularPid.enableContinuousInput(-math.pi, math.pi)
 
         SmartDashboard.putData("swerve/lateralPID", self.lateralPid)
@@ -130,7 +131,7 @@ class Drivetrain(Subsystem):
                 period,
             ),
         )
-        self.kinematics.desaturateWheelSpeeds(states, GetFloat(DRIVE_CONSTANTS, "maxLateralSpeed"))
+        self.kinematics.desaturateWheelSpeeds(states, GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed"))
 
         self.modules[0].SetDesiredState(states[0])
         self.modules[1].SetDesiredState(states[1])
