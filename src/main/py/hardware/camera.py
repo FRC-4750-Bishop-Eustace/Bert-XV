@@ -22,6 +22,8 @@
 
 from pathlib import Path
 
+from utils.vendor import RequireImport
+
 from .types import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType
 
 __all__ = [
@@ -38,14 +40,18 @@ __path__ = [str(Path(__file__).resolve().parent / "camera")]
 
 
 def CreateCamera(backend: CameraType, params: CameraParameters) -> "Camera":
-    from .camera.limelight import LimelightCamera
-    from .camera.photon import PhotonCamera
-    from .camera.stub import StubCamera
-
     if backend == CameraType.STUB:
+        from .camera.stub import StubCamera
+
         return StubCamera(params)
     if backend == CameraType.LIMELIGHT:
+        RequireImport("ntcore")
+        from .camera.limelight import LimelightCamera
+
         return LimelightCamera(params)
     if backend == CameraType.PHOTON:
+        RequireImport("photonlibpy", "robotpy_apriltag")
+        from .camera.photon import PhotonCamera
+
         return PhotonCamera(params)
     raise ValueError(f"Unknown camera type: {backend}")

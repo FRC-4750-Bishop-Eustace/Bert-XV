@@ -22,6 +22,8 @@
 
 from pathlib import Path
 
+from utils.vendor import RequireImport
+
 from .types import IMU, IMUParameters, IMUType
 
 __all__ = [
@@ -36,17 +38,22 @@ __path__ = [str(Path(__file__).resolve().parent / "imu")]
 
 
 def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
-    from .imu.adis16470 import ADIS16470IMU
-    from .imu.navx import NavXIMU
-    from .imu.pigeon2 import Pigeon2IMU
-    from .imu.stub import StubIMU
-
     if backend == IMUType.STUB:
+        from .imu.stub import StubIMU
+
         return StubIMU(params)
     if backend == IMUType.ADIS16470:
+        from .imu.adis16470 import ADIS16470IMU
+
         return ADIS16470IMU(params)
     if backend == IMUType.NAVX:
+        RequireImport("navx")
+        from .imu.navx import NavXIMU
+
         return NavXIMU(params)
     if backend == IMUType.PIGEON2:
+        RequireImport("phoenix6")
+        from .imu.pigeon2 import Pigeon2IMU
+
         return Pigeon2IMU(params)
     raise ValueError(f"Unknown IMU type: {backend}")

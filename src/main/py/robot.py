@@ -30,6 +30,7 @@ from robot_container import RobotContainer
 from utils.constants import InitializeConstants
 from utils.health import Health
 from utils.logger import Logger
+from utils.vendor import VENDOR_LIBRARIES, CheckImport
 
 CONSTANTS_PROFILE = "default"
 
@@ -50,6 +51,14 @@ class Robot(TimedCommandRobot):
 
         except Exception:
             self._logger.Warning("URCL could not be found")
+
+        for module, name in VENDOR_LIBRARIES.items():
+            if module == "urcl":
+                continue
+
+            error = CheckImport(module)
+            if error is not None:
+                self._logger.Warning(f"{name} could not be found", module=module, error=str(error))
 
         self.robot = RobotContainer(self._logger)
         self.health = Health(self._logger)

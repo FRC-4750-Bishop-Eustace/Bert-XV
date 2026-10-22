@@ -22,6 +22,8 @@
 
 from pathlib import Path
 
+from utils.vendor import RequireImport
+
 from .types import IdleMode, Motor, MotorMode, MotorParameters, MotorType
 
 __all__ = [
@@ -38,20 +40,28 @@ __path__ = [str(Path(__file__).resolve().parent / "motor")]
 
 
 def CreateMotor(backend: MotorType, params: MotorParameters) -> "Motor":
-    from .motor.spark_flex import SparkFlexMotor
-    from .motor.spark_max import SparkMAXMotor
-    from .motor.stub import StubMotor
-    from .motor.talon_fx import TalonFXMotor
-    from .motor.talon_fxs import TalonFXSMotor
-
     if backend == MotorType.STUB:
+        from .motor.stub import StubMotor
+
         return StubMotor(params)
     if backend == MotorType.SPARK_MAX:
+        RequireImport("rev")
+        from .motor.spark_max import SparkMAXMotor
+
         return SparkMAXMotor(params)
     if backend == MotorType.SPARK_FLEX:
+        RequireImport("rev")
+        from .motor.spark_flex import SparkFlexMotor
+
         return SparkFlexMotor(params)
     if backend == MotorType.TALON_FX:
+        RequireImport("phoenix6")
+        from .motor.talon_fx import TalonFXMotor
+
         return TalonFXMotor(params)
     if backend == MotorType.TALON_FXS:
+        RequireImport("phoenix6")
+        from .motor.talon_fxs import TalonFXSMotor
+
         return TalonFXSMotor(params)
     raise ValueError(f"Unknown motor type: {backend}")

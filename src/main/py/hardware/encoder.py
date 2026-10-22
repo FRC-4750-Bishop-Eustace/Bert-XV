@@ -22,6 +22,8 @@
 
 from pathlib import Path
 
+from utils.vendor import RequireImport
+
 from .types import Encoder, EncoderParameters, EncoderType
 
 __all__ = [
@@ -36,17 +38,22 @@ __path__ = [str(Path(__file__).resolve().parent / "encoder")]
 
 
 def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
-    from .encoder.absolute_encoder import AbsoluteEncoder
-    from .encoder.cancoder import CANcoderEncoder
-    from .encoder.stub import StubEncoder
-    from .encoder.wpi_encoder import WPIEncoder
-
     if backend == EncoderType.STUB:
+        from .encoder.stub import StubEncoder
+
         return StubEncoder(params)
     if backend == EncoderType.WPI:
+        from .encoder.wpi_encoder import WPIEncoder
+
         return WPIEncoder(params)
     if backend == EncoderType.CANCODER:
+        RequireImport("phoenix6")
+        from .encoder.cancoder import CANcoderEncoder
+
         return CANcoderEncoder(params)
     if backend == EncoderType.ABSOLUTE:
+        RequireImport("rev")
+        from .encoder.absolute_encoder import AbsoluteEncoder
+
         return AbsoluteEncoder(params)
     raise ValueError(f"Unknown encoder type: {backend}")

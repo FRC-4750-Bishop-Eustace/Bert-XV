@@ -88,6 +88,7 @@ def LoadFromDirectory(directory: Path, logger: Logger) -> Constants:
         data = LoadJSONFile(json_file, logger)
         if data is not None:
             merged = DeepMerge(merged, data)
+            merged = DeepMerge(merged, {json_file.stem: data})
 
     return merged
 
@@ -261,7 +262,10 @@ def GetFeedForwardRadians(const: Constants, key: str) -> SimpleMotorFeedforwardR
 
 def __getattr__(name: str) -> Constants:
     if name == "CONSTANTS" or name.endswith("_CONSTANTS"):
-        raise AttributeError(f"Constants '{name}' accessed before InitializeConstants() was called")
+        if "CONSTANTS" not in globals():
+            raise AttributeError(f"Constants '{name}' accessed before InitializeConstants() was called")
+
+        raise AttributeError(f"Constants '{name}' not found in the loaded constants")
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
