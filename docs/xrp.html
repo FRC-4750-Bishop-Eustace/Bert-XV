@@ -91,7 +91,7 @@ footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
     <div class="topnav-inner">
       <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
       <span class="pill">XRP V1 + BETA</span>
-      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html" class="active">XRP Build</a></li><li><a href="vision.html">Video Pipeline</a></li></ul>
+      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html" class="active">XRP Build</a></li><li><a href="vision.html">Video Pipeline</a></li><li><a href="roadmap.html">Roadmap</a></li></ul>
       <a class="btn-deploy" href="index.html">BACK TO LAB BENCH</a>
     </div>
   </nav>
@@ -105,7 +105,7 @@ footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
       </div>
     </header>
     
-    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#1-kit-contents-and-assembly-checklist">1. Kit contents and assembly checklist</a></li><li><a href="#2-power">2. Power</a></li><li><a href="#3-firmware-wpilib-xrp-uf2">3. Firmware (WPILib XRP UF2)</a></li><li><a href="#4-robotpy-setup-2026x-latest-on-pypi-is-2026211">4. RobotPy setup (2026.x, latest on PyPI is 2026.2.1.1)</a></li><li><a href="#5-first-drive-robotpy">5. First-drive robot.py</a></li><li><a href="#6-calibration">6. Calibration</a></li><li><a href="#7-mounting-the-pi-zero-2-w-ov9281">7. Mounting the Pi Zero 2 W + OV9281</a></li><li><a href="#8-networking">8. Networking</a></li><li><a href="#9-apriltag-pose-fusion-summary-of-workspacefpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of /workspace/fpga-apriltag-xrp-test-plan.md)</a></li><li><a href="#what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</a></li></ol></nav>
+    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#1-kit-contents-and-assembly-checklist">1. Kit contents and assembly checklist</a></li><li><a href="#2-power">2. Power</a></li><li><a href="#3-firmware-wpilib-xrp-uf2">3. Firmware (WPILib XRP UF2)</a></li><li><a href="#4-robotpy-setup-2026x-latest-on-pypi-is-2026211">4. RobotPy setup (2026.x, latest on PyPI is 2026.2.1.1)</a></li><li><a href="#5-first-drive-robotpy">5. First-drive robot.py</a></li><li><a href="#6-calibration">6. Calibration</a></li><li><a href="#7-mounting-the-pi-zero-2-w-ov9281">7. Mounting the Pi Zero 2 W + OV9281</a></li><li><a href="#8-networking">8. Networking</a></li><li><a href="#9-apriltag-pose-fusion-summary-of-fpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of fpga-apriltag-xrp-test-plan.md)</a></li><li><a href="#what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</a></li></ol></nav>
     <main class="doc">
 <p class="callout">Draft, Oct 26 2026. Anything marked <span class="flag">UNVERIFIED</span> wasn't confirmed in current docs. Sources checked: docs.wpilib.org (XRP Hardware/Imaging, Hardware Support, Programming the XRP, pyproject.toml), SparkFun XRP Controller hardware overview, xrp.discourse.group, PyPI robotpy 2026.2.1.1, Chief Delphi RobotPy+XRP thread.</p>
 <h2 id="1-kit-contents-and-assembly-checklist">1. Kit contents and assembly checklist</h2>
@@ -386,7 +386,7 @@ class MyRobot(wpilib.TimedRobot):
 <li class="callout">Addresses: the XRP AP doesn't appear to offer DHCP reservations (<span class="flag">UNVERIFIED</span>), so use <strong>static IPs</strong>: laptop <code>192.168.42.10</code>, Pi <code>192.168.42.20</code> (outside the DHCP pool, <span class="flag">UNVERIFIED</span> pool range; check the leases first). Or use mDNS: Pi <code>hostname.local</code> and the laptop's <code>.local</code> name. Mixed Windows mDNS can be flaky, so prefer a static IP for the NT server address on the Pi.</li>
 <li>Pi NT client: <code>ntcore.NetworkTableInstance.getDefault().setServer("192.168.42.10"); startClient4("pi-vision")</code>.</li>
 </ul>
-<h2 id="9-apriltag-pose-fusion-summary-of-workspacefpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of <code>/workspace/fpga-apriltag-xrp-test-plan.md</code>)</h2>
+<h2 id="9-apriltag-pose-fusion-summary-of-fpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of <code>fpga-apriltag-xrp-test-plan.md</code>)</h2>
 <ul>
 <li><strong>Topic:</strong> <code>/vision/tag_data</code> (double[]), 10 doubles per tag: <code>[id, x, y, z, qw, qx, qy, qz, ambiguity, margin]</code>, published atomically per frame. <code>/vision/timestamp</code> (int, capture time in NT µs). <code>/vision/tags</code> (Pose3d[] struct) is for AdvantageScope only.</li>
 <li><strong>Estimator:</strong> <code>DifferentialDrivePoseEstimator(kinematics(track_width), gyro Rotation2d, L, R, initialPose)</code>. <code>update()</code> every loop with gyro + encoders.</li>
@@ -405,7 +405,7 @@ class MyRobot(wpilib.TimedRobot):
 <li>Tag size and placement for the test course (from the comparison plan).</li>
 </ol>
     </main>
-    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a></footer>
+    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a> · <a href="roadmap.html">Roadmap</a></footer>
   </div>
 </body>
 </html>
