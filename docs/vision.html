@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video Pipeline Prototyping — Lab Bench Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+:root {
+      --canvas: #faf8ff;
+      --surface: #ffffff;
+      --tint: #f2f3ff;
+      --dim: #d2d9f4;
+      --border: #94a3b8;
+      --border-soft: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #1d4ed8;
+      --primary-active: #0052cc;
+      --cta: #ea580c;
+      --cta-hover: #c2410c;
+      --caution: #f59e0b;
+      --caution-dark: #d97706;
+      --pass: #10b981;
+      --pass-dark: #059669;
+      --standin: #6366f1;
+      --standin-dark: #4338ca;
+      --radius: 4px;
+      --shadow: 0 2px 0 0 #94a3b8;
+      --nav-h: 64px;
+      --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 20px)}
+body{font-family:var(--font);background-color:var(--canvas);background-image:linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px);background-size:24px 24px;color:var(--text);line-height:1.55}
+a{color:var(--primary)} a:hover{color:var(--primary-active)}
+code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px solid var(--dim);border-radius:3px;padding:0 .25em}
+.topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+.topnav-inner{max-width:1280px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+.nav-brand{font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--primary);white-space:nowrap}
+.pill{font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;border:1.5px solid var(--standin);background:#eef2ff;color:var(--standin-dark);white-space:nowrap}
+.nav-links{display:flex;list-style:none;gap:.1rem;flex:1;justify-content:center;overflow-x:auto}
+.nav-links a{display:block;padding:.4rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius);white-space:nowrap;border:1.5px solid transparent}
+.nav-links a:hover{color:var(--primary);background:var(--tint)}
+.nav-links a.active{color:var(--primary-active);background:var(--tint);border-color:var(--dim)}
+.btn-deploy{flex-shrink:0;background:var(--cta);color:#fff;border:2px solid #9a3412;border-radius:var(--radius);box-shadow:0 2px 0 0 #9a3412;padding:.45rem .85rem;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-decoration:none;white-space:nowrap}
+.btn-deploy:hover{background:var(--cta-hover);color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem 3.5rem}
+.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.15rem 1.25rem;margin-bottom:1.25rem}
+.card.tint{background:var(--tint)}
+.hero{padding:2rem 0 .5rem}
+.hero h1{font-size:clamp(1.6rem,4vw,2.15rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:.6rem 0}
+.hero-lead{color:var(--text-muted);max-width:70ch}
+.badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.05em;padding:.2rem .5rem;border-radius:var(--radius);border:1.5px solid;margin-right:.35rem}
+.badge-blue{background:#dbeafe;border-color:var(--primary);color:var(--primary-active)}
+.badge-orange{background:#ffedd5;border-color:var(--cta);color:#9a3412}
+.badge-pass{background:#d1fae5;border-color:var(--pass-dark);color:var(--pass-dark)}
+.badge-standin{background:#eef2ff;border-color:var(--standin);color:var(--standin-dark)}
+.badge-caution{background:#fef3c7;border-color:var(--caution-dark);color:#92400e}
+.toc ol{columns:2;padding-left:1.2rem;font-size:.9rem} .toc li{margin:.15rem 0}
+.toc h2,.doc h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em;margin:2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
+.toc h2{margin-top:0}
+.doc h1{font-size:1.5rem;margin:1.5rem 0 .6rem}
+.doc h3{font-size:1.05rem;margin:1.3rem 0 .5rem;color:var(--primary-active)}
+.doc p,.doc ul,.doc ol{margin:.55rem 0} .doc ul,.doc ol{padding-left:1.4rem} .doc li{margin:.2rem 0}
+.doc hr{border:0;border-top:2px dashed var(--border-soft);margin:1.5rem 0}
+.doc table{width:100%;border-collapse:collapse;margin:.9rem 0;font-size:.85rem;background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow)}
+.doc th{background:var(--tint);text-align:left;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border-bottom:2px solid var(--border)}
+.doc th,.doc td{padding:.45rem .6rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
+.doc tr:nth-child(even) td{background:#fbfbff}
+.tbl{overflow-x:auto}
+.doc pre{background:#0f172a;color:#e2e8f0;border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.9rem 1rem;overflow-x:auto;margin:.9rem 0;font-size:.82rem;line-height:1.45}
+.doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
+.callout{border-left:4px solid var(--caution-dark);background:#fffbeb;padding:.45rem .7rem;border-radius:var(--radius)}
+.doc li.callout{list-style-position:inside;margin-left:-1.4rem}
+.flag{font-family:var(--mono);font-size:.68rem;font-weight:700;background:#fef3c7;color:#92400e;border:1.5px solid var(--caution-dark);border-radius:3px;padding:0 .3rem}
+.flag.blocked{background:#ffedd5;color:#9a3412;border-color:var(--cta)}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.status-grid .card{margin:0} .status-grid h3{font-size:.95rem;margin:.4rem 0} .status-grid p{font-size:.85rem;color:var(--text-muted)}
+footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
+@media (max-width:800px){.status-grid{grid-template-columns:1fr 1fr}.toc ol{columns:1}.nav-links{display:none}}
+
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Lab bench navigation">
+    <div class="topnav-inner">
+      <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
+      <span class="pill">3 (+1) PATHS</span>
+      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html">XRP Build</a></li><li><a href="vision.html" class="active">Video Pipeline</a></li></ul>
+      <a class="btn-deploy" href="index.html">BACK TO LAB BENCH</a>
+    </div>
+  </nav>
+  <div class="wrap">
+    <header class="hero">
+      <div class="card">
+        <div><span class="badge badge-orange">DRAFT V2</span><span class="badge badge-blue">APRILTAG → XRP</span><span class="badge badge-caution">UNTESTED ON HARDWARE</span></div>
+        <h1>Video Pipeline Prototyping</h1>
+        <p class="hero-lead">Three (+1) AprilTag video paths compared side by side with one shared test protocol, NetworkTables schema, fusion code, scoring table and go/no-go criteria — all ending at the XRP (RobotPy). Draft — nothing run on hardware.</p>
+        <p class="hero-lead" style="margin-top:.6rem"><a href="index.html">← Back to Lab Bench</a></p>
+      </div>
+    </header>
+    <section class="status-grid" aria-label="Path status"><div class="card"><span class="badge badge-pass">READY TO START</span><h3>B: Pi Zero 2 W + OV9281</h3><p>All parts on hand. Milestone 1 and the reference baseline.</p></div><div class="card"><span class="badge badge-orange">BLOCKED</span><h3>A: EPM11 + OV2640</h3><p>Waiting on the MCP1700-2802E/TO and -1202E/TO LDOs.</p></div><div class="card"><span class="badge badge-caution">WAITING ON SENSOR</span><h3>C: Tang 25K + MT9V034</h3><p>Short-term MT9V034 host; starts when the sensor arrives.</p></div><div class="card"><span class="badge badge-standin">LATER PHASE</span><h3>A2: EPM11 + MT9V034</h3><p>Global-shutter option on the EPM11 after C proves the sensor.</p></div></section><div style="height:1.25rem"></div>
+    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#summary-and-test-order">Summary and test order</a></li><li><a href="#s1-shared-test-protocol-identical-for-every-path">S1. Shared test protocol (identical for every path)</a></li><li><a href="#s2-shared-networktables-schema-all-paths-publish-identically">S2. Shared NetworkTables schema (all paths publish identically)</a></li><li><a href="#s3-shared-xrp-laptop-fusion-one-copy-for-all-paths">S3. Shared XRP / laptop fusion (one copy for all paths)</a></li><li><a href="#path-b-milestone-1-test-first-pi-zero-2-w-ov9281-csi">Path B (Milestone 1, TEST FIRST): Pi Zero 2 W + OV9281 (CSI)</a></li><li><a href="#path-a-epm11-gw1nr-9-ov2640-75mm-dvp-blocked-waiting-on-mcp1700-ldos">Path A: EPM11 (GW1NR-9) + OV2640-75MM DVP — BLOCKED (waiting on MCP1700 LDOs)</a></li><li><a href="#path-c-tang-primer-25k-gw5a-lv25mg121-mt9v034-dvp-short-term">Path C: Tang Primer 25K (GW5A-LV25MG121) + MT9V034 DVP (short-term)</a></li><li><a href="#path-a2-phase-2-mt9v034-global-shutter-on-the-epm11">Path A2 (Phase 2): MT9V034 global shutter on the EPM11</a></li><li><a href="#s4-weighted-scoring-fill-in-after-s1-runs-score-15-per-row">S4. Weighted scoring (fill in after S1 runs; score 1–5 per row)</a></li><li><a href="#s5-go-no-go-criteria-per-path">S5. Go / no-go criteria (per path)</a></li><li><a href="#s6-open-questions">S6. Open questions</a></li></ol></nav>
+    <main class="doc">
+<p><strong>Owner:</strong> Controls · <strong>Status:</strong> Draft v2 (2026-10-26) · <strong>Budget:</strong> $0, draft only. Parts lists are for Parts Scout.
+<strong>Supersedes for planning:</strong> <code>fpga-apriltag-xrp-test-plan.md</code> (v1, 2026-10-17), which is kept unchanged. Its Pi-side code, NT schema and laptop fusion code are reused here <strong>once</strong> (§S2–S3).</p>
+<h2 id="summary-and-test-order">Summary and test order</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Path</th>
+<th>Hardware</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 (start now)</strong></td>
+<td><strong>B:</strong> Pi Zero 2 W + OV9281 global-shutter mono over CSI</td>
+<td>all parts on hand (Paul, 10-26)</td>
+<td><strong>Ready.</strong> This is Milestone 1 and gives the reference baseline.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>C:</strong> Tang Primer 25K (GW5A-25) + MT9V034 DVP (short-term host)</td>
+<td>Tang 25K + Dock on hand? Sensor arriving</td>
+<td>Waiting on the sensor</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>A:</strong> EPM11 (GW1NR-9) + OV2640-75MM DVP</td>
+<td>owned except the LDOs</td>
+<td><span class="flag blocked">BLOCKED</span> until the MCP1700-2802E/TO and -1202E/TO arrive</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>A2 (Phase 2):</strong> EPM11 + MT9V034 global shutter</td>
+<td>EPM11 + the MT9V034 from Path C</td>
+<td>After C proves the sensor; it can't be wired at the same time as A</td>
+</tr>
+</tbody>
+</table></div>
+<p>Every path ends at the same <code>/vision/*</code> NetworkTables topics, so the laptop fusion code (§S3) is the same for all of them. B goes first because it has no custom hardware: it proves NT, fusion and the measurement rig, and sets the bar the FPGA paths must beat.</p>
+<hr />
+<h2 id="s1-shared-test-protocol-identical-for-every-path">S1. Shared test protocol (identical for every path)</h2>
+<ul>
+<li><strong>Tag:</strong> tag36h11 ID 1, 6.5 in (165.1 mm) black edge, measured after printing, on matte foam board. IDs 2–3 for the multi-tag test.</li>
+<li><strong>Distances:</strong> 0.5, 1.0, 1.5, 2.0, 3.0 m, measured lens-to-tag-face with a tape on a floor-taped rail. Tag head-on, plus 1.0 m at ±30° yaw and 0.10 m lateral offset.</li>
+<li><strong>Lighting:</strong> two fixed conditions, logged with a phone lux app: <strong>L1</strong> room lights (~300–500 lux at the tag) and <strong>L2</strong> a single desk lamp 1 m off-axis (~100 lux). No sunlight.</li>
+<li><strong>Mount:</strong> camera on the same tripod/bench block at 15 cm height, level. Calibrate each path at its test resolution (9×6, 25 mm checkerboard, 25–40 views; RMS &lt; 0.5 px).</li>
+<li><strong>Detector config (same on all paths):</strong> <code>addFamily("tag36h11", 1)</code>, <code>quadDecimate</code> = 1.0 at ≤ 400 px wide or 2.0 at ≥ 640 px, <code>minClusterPixels = 20</code>, <code>criticalAngle = 10°</code>, <code>refineEdges = True</code>, <code>numThreads</code> = core count − 1.</li>
+<li><strong>Run length:</strong> 300 frames per distance and lighting condition, plus a 30-minute soak at 1.0 m.</li>
+<li><strong>End-to-end latency (same method for all), the "blink test":</strong> a laptop script (the laptop is the NT server) shows and hides the tag full-screen on a 60 Hz monitor at random 1–2 s intervals and records the NT time <code>t_show</code> (<code>ntcore._now()</code>). Latency = NT receive time of the first <code>/vision/tag_data</code> containing ID 1 − <code>t_show</code> − display lag (measure once with a phone at 240 fps slow-mo; typically about 1–2 frames). Use 50 trials and report the median and p95. Also log each path's self-reported <code>/vision/latency_ms</code> (capture → publish) to split sensor/link from detection.</li>
+<li><strong>Pi CPU load:</strong> <code>pidstat -u -p &lt;pid&gt; 1</code> plus <code>top -b -d1</code>, averaged over the 300-frame run. Report % of all cores and the hottest core. Record <code>vcgencmd measure_temp</code> and <code>vcgencmd get_throttled</code> (must be <code>0x0</code>).</li>
+<li><strong>Power:</strong> a USB-C inline power meter between supply and board, averaged over 60 s. Log idle and detecting separately. For FPGA paths, measure FPGA board + Pi.</li>
+<li><strong>Logged per run:</strong> fps (published frames/s at NT), detect rate %, false IDs, range error and 1σ jitter, latency median/p95, CPU %, temperature, power W, CRC errors (FPGA paths).</li>
+</ul>
+<h2 id="s2-shared-networktables-schema-all-paths-publish-identically">S2. Shared NetworkTables schema (all paths publish identically)</h2>
+<p>The laptop robot program is the NT4 server (port 5810). Each vision host is <code>startClient4("&lt;path-name&gt;")</code>, for example <code>vision-B</code>, <code>vision-A</code>, <code>vision-C</code>.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Type</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/vision/tag_data</code></td>
+<td>double[]</td>
+<td><strong>Atomic per-frame packet:</strong> 10 doubles per tag <code>[id, x, y, z, qw, qx, qy, qz, ambiguity, margin]</code>. Camera→tag in the NWU camera frame (x fwd, y left, z up). Published with <code>set(value, t_capture_us)</code>.</td>
+</tr>
+<tr>
+<td><code>/vision/tags</code></td>
+<td>struct Pose3d[]</td>
+<td>Same poses, for AdvantageScope/Glass</td>
+</tr>
+<tr>
+<td><code>/vision/timestamp</code></td>
+<td>int</td>
+<td>capture time in NT µs</td>
+</tr>
+<tr>
+<td><code>/vision/latency_ms</code></td>
+<td>double</td>
+<td>capture → publish</td>
+</tr>
+<tr>
+<td><code>/vision/frame_count</code></td>
+<td>int</td>
+<td>sensor/FPGA frame id</td>
+</tr>
+<tr>
+<td><code>/vision/crc_errors</code></td>
+<td>int</td>
+<td>FPGA paths only (always 0 on B)</td>
+</tr>
+<tr>
+<td><code>/vision/heartbeat</code></td>
+<td>int</td>
+<td>+1 per loop</td>
+</tr>
+<tr>
+<td><code>/vision/source</code></td>
+<td>string</td>
+<td><code>"B-ov9281"</code>, <code>"A-ov2640"</code>, <code>"C-mt9v034-tang"</code>, <code>"A2-mt9v034-epm11"</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Only one path publishes at a time; the comparison runs are sequential.</p>
+<p>The detection-and-publish core is common. Each path only differs in <strong>how it gets a gray <code>numpy</code> HxW uint8 image and a capture timestamp</strong>:</p>
+<pre><code class="language-python"># vision_common.py: shared by all paths
+import math, ntcore, robotpy_apriltag as at
+from wpimath.geometry import CoordinateSystem, Pose3d
+
+class TagPipeline:
+    def __init__(self, server, name, fx, fy, cx, cy, tag_m=0.1651, threads=3, decimate=1.0, source=&quot;&quot;):
+        self.det = at.AprilTagDetector(); self.det.addFamily(&quot;tag36h11&quot;, 1)
+        c = self.det.getConfig(); c.quadDecimate = decimate; c.numThreads = threads
+        c.refineEdges = True; c.decodeSharpening = 0.25; self.det.setConfig(c)
+        q = self.det.getQuadThresholdParameters(); q.minClusterPixels = 20
+        q.criticalAngle = math.radians(10); self.det.setQuadThresholdParameters(q)  # WPILib default 300 drops small tags
+        self.est = at.AprilTagPoseEstimator(at.AprilTagPoseEstimator.Config(tag_m, fx, fy, cx, cy))
+        nt = ntcore.NetworkTableInstance.getDefault(); nt.setServer(server); nt.startClient4(name)
+        o = ntcore.PubSubOptions(sendAll=True, keepDuplicates=True)
+        self.p_data = nt.getDoubleArrayTopic(&quot;/vision/tag_data&quot;).publish(o)
+        self.p_tags = nt.getStructArrayTopic(&quot;/vision/tags&quot;, Pose3d).publish(o)
+        self.p_ts = nt.getIntegerTopic(&quot;/vision/timestamp&quot;).publish(o)
+        self.p_lat = nt.getDoubleTopic(&quot;/vision/latency_ms&quot;).publish()
+        self.p_cnt = nt.getIntegerTopic(&quot;/vision/frame_count&quot;).publish()
+        self.p_crc = nt.getIntegerTopic(&quot;/vision/crc_errors&quot;).publish()
+        self.p_hb = nt.getIntegerTopic(&quot;/vision/heartbeat&quot;).publish()
+        nt.getStringTopic(&quot;/vision/source&quot;).publish().set(source)
+        self.hb = 0; self.nt = nt
+
+    def process(self, gray, t_cap_us, frame_id, crc_errors=0):
+        self.hb += 1; self.p_hb.set(self.hb)
+        poses, data = [], []
+        for d in self.det.detect(gray):
+            if d.getHamming() &gt; 1 or d.getDecisionMargin() &lt; 30:
+                continue
+            e = self.est.estimateOrthogonalIteration(d, 50)
+            t = CoordinateSystem.convert(e.pose1, CoordinateSystem.EDN(), CoordinateSystem.NWU())
+            qq = t.rotation().getQuaternion()
+            poses.append(Pose3d(t.translation(), t.rotation()))
+            data += [d.getId(), t.X(), t.Y(), t.Z(), qq.W(), qq.X(), qq.Y(), qq.Z(), e.getAmbiguity(), d.getDecisionMargin()]
+        self.p_data.set(data, t_cap_us); self.p_tags.set(poses, t_cap_us); self.p_ts.set(t_cap_us, t_cap_us)
+        self.p_cnt.set(frame_id); self.p_crc.set(crc_errors)
+        self.p_lat.set((ntcore._now() - t_cap_us) / 1000.0)
+        return len(poses)
+</code></pre>
+<p>The FPGA paths (A, A2, C) feed it from the SPI framed-protocol reader in v1 §1–2b, unchanged: sync <code>A5 5A C3 3C</code>, frame_id, W/H, format, flags, age_ms, payload, CRC-32. Capture time = <code>t_read − age_ms·1000</code>.</p>
+<h2 id="s3-shared-xrp-laptop-fusion-one-copy-for-all-paths">S3. Shared XRP / laptop fusion (one copy for all paths)</h2>
+<p><code>pyproject.toml</code>:</p>
+<pre><code class="language-toml">[tool.robotpy]
+robotpy_version = &quot;2026.2.2&quot;
+components = [&quot;xrp&quot;, &quot;apriltag&quot;]
+requires = []
+</code></pre>
+<p>Run <code>python -m robotpy sync</code>, connect the laptop to the <code>XRP-xxxx</code> Wi-Fi (password <code>xrp-wpilib</code>), then run <code>python -m robotpy sim --xrp</code>. The robot program on the laptop is the <strong>NT4 server on port 5810</strong>, so the Pi connects to the laptop's IP.</p>
+<p><code>robot.py</code> (fusion core):</p>
+<pre><code class="language-python">import math, os, wpilib, xrp, ntcore
+from wpimath.kinematics import DifferentialDriveKinematics
+from wpimath.estimator import DifferentialDrivePoseEstimator
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+
+os.environ.setdefault(&quot;HALSIMXRP_HOST&quot;, &quot;192.168.42.1&quot;); os.environ.setdefault(&quot;HALSIMXRP_PORT&quot;, &quot;3540&quot;)
+TRACK_WIDTH_M = 0.155                     # placeholder: MEASURE wheel-center to wheel-center
+DPP_M = math.pi * 0.060 / 585.0           # 60 mm wheel, 585 counts/rev -&gt; 0.000322 m/count
+TAG_FIELD = {1: Translation2d(2.0, 0.0)}  # bench layout: tag ID -&gt; field XY (m)
+ROBOT_TO_CAM = Translation2d(0.05, 0.0)   # camera offset on robot (camera-on-robot mode, M4b)
+CAM_YAW = Rotation2d(0)                   # camera yaw relative to robot forward
+
+class MyRobot(wpilib.TimedRobot):
+    def robotInit(self):
+        self.lm, self.rm = xrp.XRPMotor(0), xrp.XRPMotor(1); self.rm.setInverted(True)
+        self.le, self.re = wpilib.Encoder(4, 5), wpilib.Encoder(6, 7)
+        for e in (self.le, self.re): e.setDistancePerPulse(DPP_M); e.reset()
+        self.gyro = xrp.XRPGyro(); self.gyro.reset()
+        self.est = DifferentialDrivePoseEstimator(
+            DifferentialDriveKinematics(TRACK_WIDTH_M), self.gyro.getRotation2d(),
+            0.0, 0.0, Pose2d(), (0.05, 0.05, 0.05), (0.5, 0.5, 0.9))
+        nt = ntcore.NetworkTableInstance.getDefault()
+        self.sub = nt.getDoubleArrayTopic(&quot;/vision/tag_data&quot;).subscribe(
+            [], ntcore.PubSubOptions(sendAll=True, keepDuplicates=True, pollStorage=10))
+        self.field = wpilib.Field2d(); wpilib.SmartDashboard.putData(&quot;Field&quot;, self.field)
+        self.accepted = self.rejected = 0
+
+    def robotPeriodic(self):
+        self.est.update(self.gyro.getRotation2d(), self.le.getDistance(), self.re.getDistance())
+        nt_to_fpga = wpilib.Timer.getFPGATimestamp() - ntcore._now() / 1e6   # time-base offset (verify ~constant)
+        for v in self.sub.readQueue():
+            self.fuse(v.value, v.time / 1e6 + nt_to_fpga)
+        self.field.setRobotPose(self.est.getEstimatedPosition())
+
+    def fuse(self, data, ts):
+        now = wpilib.Timer.getFPGATimestamp()
+        if now - ts &gt; 0.3 or ts &gt; now:                     # stale or clock error
+            self.rejected += 1; return
+        cur = self.est.getEstimatedPosition(); theta = cur.rotation()   # heading from gyro-fused estimate
+        pts, dists = [], []
+        for i in range(0, len(data) - 9, 10):
+            tid, x, y, z, amb, margin = int(data[i]), data[i+1], data[i+2], data[i+3], data[i+8], data[i+9]
+            dist = math.hypot(x, y)
+            if tid not in TAG_FIELD or amb &gt; 0.2 or margin &lt; 30 or dist &gt; 2.5 or abs(z) &gt; 0.3:
+                continue
+            cam_heading = theta + CAM_YAW
+            cam_xy = TAG_FIELD[tid] - Translation2d(x, y).rotateBy(cam_heading)
+            pts.append(cam_xy - ROBOT_TO_CAM.rotateBy(theta)); dists.append(dist)
+        if not pts:
+            self.rejected += 1; return
+        n = len(pts)
+        mx, my = sum(p.X() for p in pts) / n, sum(p.Y() for p in pts) / n
+        meas = Pose2d(mx, my, theta)
+        if meas.translation().distance(cur.translation()) &gt; 1.0 or abs(self.gyro.getRate()) &gt; 120:  # deg/s
+            self.rejected += 1; return
+        k = max(1.0, (sum(dists) / n) ** 2) / n             # grows with distance^2, shrinks with tag count
+        self.est.addVisionMeasurement(meas, ts, (0.5 * k, 0.5 * k, 1e6))  # heading from vision ignored (translation-only)
+        self.accepted += 1
+</code></pre>
+<p><strong>Fusion notes</strong></p>
+<ul>
+<li><strong>Translation-only first.</strong> Heading comes from XRPGyro, and vision corrects XY. This avoids AprilTag tag-frame and rotation sign-convention errors on day one. The 0.9 rad heading std applies <strong>only</strong> once a full-3D path is validated, where <code>robot = tagField.transformBy(camToTag.inverse()).transformBy(robotToCam.inverse())</code>. Check yaw signs by rotating the tag ±30° at M3.</li>
+<li><strong>Std devs:</strong> state is (0.05 m, 0.05 m, 0.05 rad). Vision starts at (0.5, 0.5, 0.9) × k, where k = max(1, d̄²)/n_tags. Tune from M3 data, aiming for vision σ ≈ 2–3× the measured scatter at that range.</li>
+<li><strong>Timestamp compensation:</strong> the Pi stamps every value with its <strong>capture</strong> time (<code>t_read − age_ms</code>) in NT time. ntcore converts it to the server time base, which is the laptop. The robot converts NT time to <code>Timer.getFPGATimestamp()</code> with a measured offset. The estimator then replays odometry from that instant. Verify with test T3.4. If it fails, fall back to <code>ts = now − latency_ms/1000 − 0.01</code>.</li>
+<li><strong>Rejection rules:</strong></li>
+<li>Tag ID not in the layout.</li>
+<li>Hamming &gt; 1 or decision margin &lt; 30.</li>
+<li>Ambiguity &gt; 0.2.</li>
+<li>Range &gt; 2.5 m (QVGA) or &gt; 1.2 m (QQVGA).</li>
+<li>|z| (height mismatch) &gt; 0.3 m.</li>
+<li>Measurement &gt; 1.0 m from the current estimate.</li>
+<li>|yaw rate| &gt; 120 °/s (motion blur at low fps).</li>
+<li>Age &gt; 300 ms, or a timestamp in the future.</li>
+<li>CRC-failed frames, which never leave the Pi.</li>
+<li>Optional: reject a single tag whose ambiguity is &gt; 0.1 at &gt; 1.5 m.</li>
+</ul>
+<p><strong>Mode for M4a (tag on robot, camera fixed):</strong> put the tag on the XRP and the camera at a known field pose <code>CAM_FIELD (x, y, yaw)</code>. Then <code>tag_xy = CAM_FIELD.xy + Translation2d(x, y).rotateBy(CAM_FIELD.yaw)</code> and <code>robot_xy = tag_xy − ROBOT_TO_TAG.rotateBy(theta)</code>. Same rules otherwise.</p>
+<p>The fusion code doesn't care which path is publishing. The rejection range limit should match the path's tested max range: B ≈ 3 m at 640×400 (to be confirmed), A/QQVGA 1.2 m, A/QVGA, C and A2 at 376×240 about 2.5 m.</p>
+<hr />
+<h2 id="path-b-milestone-1-test-first-pi-zero-2-w-ov9281-csi">Path B (Milestone 1, TEST FIRST): Pi Zero 2 W + OV9281 (CSI)</h2>
+<p><strong>Verified:</strong></p>
+<ul>
+<li>Arducam's OV9281 modules are supported on Zero/Zero 2 W under Bookworm and Trixie. The overlay is <code>dtoverlay=ov9281</code>; Arducam's docs specify <code>dtoverlay=ov9281,arducam</code> for their boards, so try the plain overlay first as Paul specified and fall back to <code>,arducam</code> if the camera isn't found.</li>
+<li>Sensor modes reported by libcamera (Pi 5 listing): R8 640×400 ≈ 310 fps, 1280×800 ≈ 144 fps; R10 640×400 ≈ 248 fps. Expect the Zero 2 W (Unicam + VC4 ISP) to cap lower. The CPU is the real limit.</li>
+<li>The Zero 2 W has a <strong>22-pin 0.5 mm mini CSI</strong> connector. Arducam lists most OV9281 boards as 22-pin or 15-pin, so the cable must be <strong>22-pin (Zero) to the camera's connector</strong> (15-pin 1.0 mm or 22-pin). Confirm the cable on hand matches both ends.</li>
+<li>robotpy-apriltag and pyntcore 2026.2.2 ship <code>manylinux_2_35_aarch64</code> wheels. 64-bit Raspberry Pi OS Bookworm (glibc 2.36, Python 3.11) or Trixie satisfies <code>manylinux_2_35</code>, so <strong>the wheel installs on a 64-bit Zero 2 W</strong>. The 32-bit (armhf) OS has <strong>no wheel</strong>, so 64-bit Lite is mandatory.</li>
+<li>512 MB RAM: use <strong>Pi OS Lite 64-bit (headless)</strong>, no desktop. One 640×400 Y8 buffer is 256 KB, so memory is fine. Add a 512 MB swap file only for the <code>pip install</code> step.</li>
+<li>Expected CPU budget (estimate, measure in B4): 4× Cortex-A53 at 1 GHz. robotpy-apriltag at 640×400 with decimate 2 and 3 threads is likely about 15–40 ms/frame, so plan on <strong>15–30 detected fps</strong>, not the sensor's 100+ fps. Wi-Fi only (2.4 GHz); NT traffic is a few KB/s.</li>
+</ul>
+<h3 id="b-first-light-steps">B first-light steps</h3>
+<p><strong>B1. Enable the camera</strong></p>
+<pre><code class="language-bash">sudo nano /boot/firmware/config.txt
+#   camera_auto_detect=0
+#   [all]
+#   dtoverlay=ov9281          # if not detected in B2, use: dtoverlay=ov9281,arducam
+sudo reboot
+</code></pre>
+<p>Pass: boots normally, and <code>dmesg | grep -i ov9281</code> shows the sensor probed with no <code>-121</code>/<code>-5</code> I2C errors.</p>
+<p><strong>B2. Confirm the sensor and modes</strong></p>
+<pre><code class="language-bash">rpicam-hello --list-cameras
+</code></pre>
+<p>Pass: <code>0 : ov9281 [1280x800 ... MONO]</code> is listed, with modes including 640x400 and 1280x800 (R8 and/or R10). If it's not listed: power off, reseat the cable with the contacts the correct way at both ends, try <code>,arducam</code>, run <code>sudo apt update &amp;&amp; sudo apt full-upgrade</code>.</p>
+<p><strong>B3. Raw stream fps at 640×400 (no detection)</strong></p>
+<pre><code class="language-bash"># 10 s capture, no preview, discard video, save per-frame timestamps
+rpicam-vid -t 10000 --nopreview --width 640 --height 400 --mode 640:400:8 \
+  --framerate 120 --codec yuv420 -o /dev/null --save-pts /tmp/pts_640.txt
+# frames and mean fps from the timestamp file (ms)
+awk 'NR&gt;2{n++; if(NR==3)a=$1; b=$1} END{printf &quot;%d frames, %.1f fps\n&quot;, n, (n-1)*1000/(b-a)}' /tmp/pts_640.txt
+# repeat at --framerate 60 and 30; then a quick console check:
+rpicam-hello -t 10000 --nopreview --mode 640:400:8 --framerate 60 --verbose 2 2&gt;&amp;1 | grep -i &quot;frame\|fps&quot; | tail
+</code></pre>
+<p>Pass: ≥ 60 fps sustained at <code>--framerate 60</code> and ≥ 90 fps at 120, with &lt; 1 % dropped frames (gaps &gt; 1.5× nominal in the pts file). <code>vcgencmd get_throttled</code> = <code>0x0</code>. If 8-bit mode breaks the pipe (a libcamera issue seen on Pi 5), drop <code>--mode ...:8</code> and use the 10-bit default.</p>
+<p><strong>B4. Picamera2 → robotpy-apriltag, measure detection fps and CPU</strong></p>
+<pre><code class="language-bash">sudo apt install -y python3-picamera2 python3-numpy --no-install-recommends
+python3 -m venv --system-site-packages ~/vis &amp;&amp; . ~/vis/bin/activate   # system picamera2 + venv wheels
+pip install robotpy-apriltag pyntcore      # aarch64 manylinux_2_35 wheels; 64-bit OS required
+python -c &quot;import robotpy_apriltag, ntcore; print('ok')&quot;
+</code></pre>
+<pre><code class="language-python"># vision_b.py: Path B capture -&gt; shared TagPipeline
+import time, ntcore
+from picamera2 import Picamera2
+from vision_common import TagPipeline
+
+W, H, FPS = 640, 400, 60
+FX, FY, CX, CY = 600.0, 600.0, 320.0, 200.0        # REPLACE with checkerboard calibration at 640x400
+cam = Picamera2()
+cfg = cam.create_video_configuration(main={&quot;size&quot;: (W, H), &quot;format&quot;: &quot;YUV420&quot;},
+                                     controls={&quot;FrameRate&quot;: FPS, &quot;AeEnable&quot;: False,
+                                               &quot;ExposureTime&quot;: 4000, &quot;AnalogueGain&quot;: 4.0},  # short exposure: no blur
+                                     buffer_count=4)
+cam.configure(cfg); cam.start()
+pipe = TagPipeline(&quot;192.168.42.2&quot;, &quot;vision-B&quot;, FX, FY, CX, CY, threads=3, decimate=2.0, source=&quot;B-ov9281&quot;)
+
+n, t0, n_tags = 0, time.monotonic(), 0
+while True:
+    req = cam.capture_request()
+    yuv = req.make_array(&quot;main&quot;); md = req.get_metadata(); req.release()
+    gray = yuv[:H, :W]                                  # Y plane only = 8-bit mono
+    age_us = (time.clock_gettime_ns(time.CLOCK_BOOTTIME) - md[&quot;SensorTimestamp&quot;]) // 1000  # verify clock base in B5
+    t_cap = ntcore._now() - age_us
+    n_tags += pipe.process(gray, t_cap, md.get(&quot;FrameSequence&quot;, n)); n += 1
+    if n % 100 == 0:
+        dt = time.monotonic() - t0; print(f&quot;{n/dt:.1f} det-fps, {n_tags} tags&quot;); n, t0, n_tags = 0, time.monotonic(), 0
+</code></pre>
+<p>Measure with <code>pidstat -u -p $(pgrep -f vision_b.py) 1 60</code> and <code>vcgencmd measure_temp</code> alongside. Sweep decimate 1.0/2.0, threads 2/3/4, and 640×400 vs 1280×800.
+Pass:</p>
+<ul>
+<li>Imports work (wheel OK on the 64-bit Zero 2 W).</li>
+<li><strong>≥ 15 detected fps</strong> at 640×400 with a tag in view, and ≥ 95 % detection at 1.0 m (L1).</li>
+<li>Process CPU ≤ 300 % (of 400 %). Leave one core for the OS and Wi-Fi.</li>
+<li>SoC temperature &lt; 80 °C after 10 minutes, <code>get_throttled</code> = <code>0x0</code>. A heatsink is likely needed.</li>
+<li>RSS &lt; 150 MB (<code>ps -o rss</code>).</li>
+</ul>
+<p><em><em>B5. Publish to /vision/</em> and confirm on the laptop</em>*</p>
+<ul>
+<li>On the laptop, connect to the XRP Wi-Fi and run <code>python -m robotpy sim --xrp</code> with the §S3 code. The Zero 2 W joins the same XRP AP (<code>nmcli dev wifi connect XRP-xxxx password xrp-wpilib</code>), and <code>SERVER</code> is set to the laptop's IP on that network.</li>
+<li>Check in OutlineViewer or AdvantageScope on the laptop.</li>
+</ul>
+<p>Pass:</p>
+<ul>
+<li><code>/vision/heartbeat</code> ticks and <code>/vision/source</code> = <code>B-ov9281</code>.</li>
+<li><code>/vision/tag_data</code> updates at ≥ 15 Hz with the tag in view, and the laptop's <code>accepted</code> counter rises.</li>
+<li>The <code>age = ntcore._now() − v.time</code> measured on the laptop ≈ <code>/vision/latency_ms</code> + &lt; 20 ms. This verifies the <code>SensorTimestamp</code> clock-base assumption in B4. If it's off by a constant, fix the clock base (try <code>CLOCK_MONOTONIC</code>).</li>
+<li>Reconnects &lt; 5 s after Wi-Fi drop.</li>
+</ul>
+<p><strong>B6. Shared protocol S1</strong> (range, accuracy, latency blink test, power), <strong>then M4-style fusion</strong> (v1 §5 M4a/M4b). The Zero 2 W + camera is light (~10 g + ~15 g + mount) and can go <strong>on the XRP at M4b</strong> with a small USB power bank. It draws roughly 1–3 W (measure), and it still can't run from the XRP AA pack.</p>
+<p><strong>B measurements:</strong> sensor fps (B3), detected fps and CPU % (B4), latency median/p95 (blink test), range/accuracy at S1 distances, power idle/detecting, temperature.
+<strong>B risks:</strong> CPU-bound on A53 (mitigation: decimate 2, ROI around the last tag, 640×400). Wi-Fi-only with a Pico W AP on 2.4 GHz. Thermal throttling without a heatsink. The <code>SensorTimestamp</code> clock base. Picamera2 + venv package mixing (use <code>--system-site-packages</code>). Cable/connector mismatch. The 8-bit mode bug.
+<strong>B parts:</strong> Pi Zero 2 W, OV9281 module + 22-pin cable, microSD with 64-bit Lite, 5 V/2.5 A supply: <strong>owned (Paul confirmed)</strong>. Confirm: heatsink, USB-C/micro-USB inline power meter, small power bank for M4b.</p>
+<hr />
+<h2 id="path-a-epm11-gw1nr-9-ov2640-75mm-dvp-blocked-waiting-on-mcp1700-ldos">Path A: EPM11 (GW1NR-9) + OV2640-75MM DVP — <span class="flag blocked">BLOCKED (waiting on MCP1700 LDOs)</span></h2>
+<p>Milestones, tests and the SPI protocol are as in v1 §5 (M0 harness/ID → M1 pixel stream → M2 detect → M3 pose on NT → M4 fusion), with the corrections below. Measurements: FPGA fps, CRC rate, link clock, latency (blink test), range, Pi CPU (the Pi only detects, so it should be low), and power (EPM11 + sensor + Pi).</p>
+<h3 id="a1-power-mcp1700-check">A.1 Power: MCP1700 check</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Rail</th>
+<th>Part</th>
+<th>Limits (datasheet)</th>
+<th>This design</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AVDD 2.8 V</td>
+<td>MCP1700-2802E/TO</td>
+<td>VIN 2.3–6.0 V; 250 mA (VOUT ≥ 2.5 V); dropout 178 mV typ / 350 mV max at 250 mA; needs VIN ≥ VOUT+3 % + dropout</td>
+<td>VIN = EPM11 3.3 V. Load is an estimated 10–30 mA, so dropout is about 20–40 mV → VIN min ≈ 2.92 V. ~0.38 V headroom.</td>
+<td><strong>OK.</strong> Fails if the 3.3 V rail sags below ~3.0 V. Don't feed it from 5 V just for margin (wasted heat, but legal up to 6 V).</td>
+</tr>
+<tr>
+<td>DVDD 1.2 V</td>
+<td>MCP1700-1202E/TO</td>
+<td><strong>200 mA max for VOUT &lt; 2.5 V</strong> (not 250). VIN min 2.3 V.</td>
+<td>Core current is estimated at ~30–90 mA (OV2640 at QVGA; confirm on the bench). Dissipation (3.3−1.2)×0.09 ≈ 0.19 W; TO-92 θJA ≈ 130 °C/W gives ≈ +25 °C rise.</td>
+<td><strong>OK.</strong> Measure the DVDD current at M0.</td>
+</tr>
+<tr>
+<td>DOVDD 3.3 V</td>
+<td>none (EPM11 3.3 V rail)</td>
+<td>OV2640 I/O allows 1.7–3.3 V</td>
+<td>Yes, the wire map ties FFC 11 to the EPM11 +3.3 rail, which matches the LVCMOS33 banks, so no level shifter.</td>
+<td><strong>OK</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>TO-92 pinout:</strong> pin 1 = GND, <strong>pin 2 = VIN, pin 3 = VOUT</strong>. This is not the 78xx order. Check it before soldering.</li>
+<li>Caps: 1 µF ceramic on VIN and VOUT of each LDO, plus 0.1 µF at the FFC pads.</li>
+<li><strong>Sequencing:</strong> the OV2640 prefers DOVDD → AVDD → DVDD, or simultaneous. Both LDOs hang off the same 3.3 V rail (rise time ~500 µs), so the rails come up together and slightly after DOVDD. That's acceptable. However, the strapped PWDN=low and RESETB=high mean the sensor isn't held in reset during ramp-up. Mitigations: (1) put an RC on RESETB (10 kΩ pull-up + 1 µF to GND ≈ 10 ms delay), and (2) always issue an SCCB soft reset (<code>0xFF=0x01; 0x12=0x80</code>, wait 10 ms) before configuring.</li>
+</ul>
+<h3 id="a2-pin-budget-wire-map-vs-plan-conflicts-flagged">A.2 Pin budget: wire map vs plan (conflicts flagged)</h3>
+<p>EPM11 constraint file (<code>location.cst</code>): header J6 <code>pad_io[1..16]</code> = Gowin pins <strong>20, 77, 69, 19, 76, 75, 74, 72, 73, 71, 70, 63, 59, 60, 61, 62</strong> (all LVCMOS33). The 27 MHz clock is on pin 52.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Conflict</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-1</td>
+<td>The wire map wires <strong>MOSI</strong> on FPGA 14 and has <strong>no FPGA pin for CS_n</strong>. The v1 plan's link is SCLK + MISO + CS_n, with no MOSI.</td>
+<td><strong>Drop MOSI.</strong> FPGA 13 = SCLK (Pi pin 23), <strong>FPGA 14 = CS_n (Pi pin 24, CE0)</strong>, FPGA 15 = MISO (Pi pin 21), FPGA 16 = UART TX debug (Pi pin 10). That's 4/4 spare pins, with no shortfall.</td>
+</tr>
+<tr>
+<td>A-2</td>
+<td>OV2640 PCLK is on header 7 (Gowin pin 74). It isn't known to be a clock-capable pin.</td>
+<td>Move PCLK to <strong>header 11 (Gowin pin 70)</strong>, which Paul's 10-25 map treats as GCLK (verify in the Gowin GW1NR-9 QN88 pinout). This also aligns with A2 (see A2.2).</td>
+</tr>
+<tr>
+<td>A-3</td>
+<td>The wire map's header-pin → Gowin-pin mapping is "read from a photo".</td>
+<td>Use the <code>pad_io[n]</code> = header-n mapping from the constraints file above. Confirm one pin by blinking it before the camera is attached.</td>
+</tr>
+<tr>
+<td>A-4</td>
+<td>RESETB/PWDN straps with no power-up control</td>
+<td>RC delay + SCCB soft reset (A.1)</td>
+</tr>
+<tr>
+<td>A-5</td>
+<td>The RP2350 header shows 14 GPIO (the photo), vs 8 in the datasheet</td>
+<td>This doesn't matter for A (no RP2350 use). For A2, confirm GPIO0–4 are broken out.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>A risks</strong> (in addition to v1 §6): the LDO lead time (blocker); the bare 75 mm flex being fragile; the rolling shutter at 5–15 fps; QVGA needing PSRAM.
+<strong>A parts:</strong> EPM11, OV2640-75MM, FPC-24P breakout, Pi 5/4: owned. <strong>MCP1700-2802E/TO and MCP1700-1202E/TO: ordered, not here (blocker).</strong> 4× 1 µF + 2× 0.1 µF ceramics, 2× 10 kΩ, 1× 1 µF (RC), and 33 Ω series resistors: probably owned, confirm.</p>
+<hr />
+<h2 id="path-c-tang-primer-25k-gw5a-lv25mg121-mt9v034-dvp-short-term">Path C: Tang Primer 25K (GW5A-LV25MG121) + MT9V034 DVP (short-term)</h2>
+<p><strong>Sensor:</strong> Paul now names it the <strong>MT9V034</strong> (752×480 global-shutter mono, 10-bit parallel). Still open: the exact module/board, its supply rails, and whether it has onboard LDOs and a header pinout.</p>
+<p><strong>Board facts (Sipeed wiki / spec v1.0, LiteX platform):</strong></p>
+<ul>
+<li>GW5A-LV25: 23k LUT4, <strong>BSRAM 1,008 Kbit (≈126 KB)</strong>, 28 DSP, 6 PLLs, 75 user IO, and a hard MIPI D-PHY (not exposed on the Dock).</li>
+<li>50 MHz oscillator. All Dock IO is LVCMOS33.</li>
+<li><strong>Dock:</strong> 3× PMOD (J4/J5/J6, 8 IO each = 24), one 2×20 header (J3, which is where the SDRAM module plugs in), 2 buttons.</li>
+<li>USB-C debugger (JTAG + UART). The USB-A port is <strong>USB 1.1 host only</strong>, so it can't be a USB device to the Pi.</li>
+<li><strong>Memory:</strong> no onboard PSRAM. BSRAM 126 KB holds one 376×240 frame (90 KB) single-buffered, or 2× 160×120. Full 752×480 (361 KB) needs the <strong>optional 40-pin SDRAM module on J3</strong> (confirm owned).</li>
+</ul>
+<p><strong>Link options to the Pi:</strong></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Pins/ports</th>
+<th>Rate</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPI slave (same protocol as A)</td>
+<td>3–4 IO on a PMOD</td>
+<td>8–16 MHz → 1–2 MB/s</td>
+<td><strong>Recommended.</strong> Reuses the A code.</td>
+</tr>
+<tr>
+<td>Debugger USB-UART bridge</td>
+<td>the existing USB-C</td>
+<td>unknown baud (BL616 bridge, measure)</td>
+<td>debug/fallback only</td>
+</tr>
+<tr>
+<td>USB-A</td>
+<td>—</td>
+<td>host only</td>
+<td>not usable</td>
+</tr>
+<tr>
+<td>MIPI CSI to the Pi</td>
+<td>hard D-PHY</td>
+<td>high</td>
+<td>not on the Dock pins, so out of scope</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pin plan (suggested):</strong></p>
+<ul>
+<li>PMOD J4 = D0–D7 (MT9V034 DOUT[9:2], 8-bit).</li>
+<li>PMOD J5 = PIXCLK, LINE_VALID (HREF), FRAME_VALID (VSYNC), SYSCLK out (XCLK from the PLL, 26.6 MHz), SDA, SCL, RESET_BAR, STANDBY.</li>
+<li>PMOD J6 = SPI SCLK/CS_n/MISO + UART TX.</li>
+<li><strong>Check:</strong> PIXCLK should land on a GCLK-capable ball (J5 pins K11/A11; confirm in the GW5A pinout).</li>
+</ul>
+<p><strong>C milestones:</strong></p>
+<ol>
+<li>C0: power and I2C ID. MT9V034 chip-version reg 0x00 = <strong>0x1324</strong>, at the address set by the module straps (0x48/0x4C/0x58/<strong>0x5C</strong>). SYSCLK must be running first.</li>
+<li>C1: FPGA test pattern over SPI (0 CRC errors / 10k frames), then the sensor's built-in test pattern (reg 0x7F), then a live image.</li>
+<li>C2: tag detected.</li>
+<li>C3: pose on NT.</li>
+<li>C4: fusion.</li>
+</ol>
+<p>Pass criteria are as in v1 M0–M4, plus a global-shutter check: no skew on a fast hand-swept tag.</p>
+<p><strong>C measurements:</strong> sensor fps, link-limited fps, CRC rate, latency (blink test), range at 376×240 and (with SDRAM) 752×480, Pi CPU, power (Tang + Dock + sensor + Pi).
+<strong>C risks:</strong> the sensor module's rails and pinout are unknown; PIXCLK (~26.6 MHz) far exceeds the SPI link, so frame dropping/binning is mandatory; the Gowin EDA version for GW5A (needs the Education or Standard edition); the open-source flow support for GW5A is partial; the Dock's SDRAM module may not be owned.
+<strong>C parts:</strong> Tang Primer 25K + Dock (confirm owned), MT9V034 module (arriving), PMOD-to-jumper wires, the 40-pin SDRAM module (confirm, optional), Pi 5/4 (owned).</p>
+<hr />
+<h2 id="path-a2-phase-2-mt9v034-global-shutter-on-the-epm11">Path A2 (Phase 2): MT9V034 global shutter on the EPM11</h2>
+<p><strong>When:</strong> after C proves the MT9V034 and after A is finished (or abandoned), because <strong>A and A2 use the same FPGA pins and can't be connected at the same time.</strong></p>
+<h3 id="a21-pauls-oct-25-map-vs-the-epm11-constraint-file">A2.1 Paul's Oct 25 map vs the EPM11 constraint file</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Paul's pin</th>
+<th>In <code>pad_io</code>?</th>
+<th>Header #</th>
+<th>OV2640 (A) uses that header for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XCLK</td>
+<td>77</td>
+<td>yes, io[2]</td>
+<td>2</td>
+<td>HREF</td>
+</tr>
+<tr>
+<td>PIXCLK</td>
+<td>70 (GCLK)</td>
+<td>yes, io[11]</td>
+<td>11</td>
+<td>D1 (Y3)</td>
+</tr>
+<tr>
+<td>VSYNC</td>
+<td>19</td>
+<td>yes, io[4]</td>
+<td>4</td>
+<td>XCLK</td>
+</tr>
+<tr>
+<td>HREF</td>
+<td><strong>18</strong></td>
+<td><strong>NO</strong>, not on J6 per <code>location.cst</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D0–D7</td>
+<td>71, 72, 73, 74, 75, 76</td>
+<td>yes, io[10, 8, 9, 7, 6, 5]</td>
+<td>10, 8, 9, 7, 6, 5</td>
+<td>D3, D4/D0, D3, PCLK, D5, D6</td>
+</tr>
+<tr>
+<td>D (2 more)</td>
+<td><strong>17</strong> and 20</td>
+<td><strong>17: NO</strong>; 20 = io[1]</td>
+<td>—, 1</td>
+<td>VSYNC</td>
+</tr>
+<tr>
+<td>I2C SDA/SCL, RESET, PWDN, FSIN</td>
+<td>RP2350 GPIO0–4</td>
+<td>RP2350 side, not FPGA</td>
+<td>—</td>
+<td>(A uses Pi I2C)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Conflicts:</strong></p>
+<ol>
+<li><strong>Pins 17 and 18 are not in the EPM11 constraint file's J6 list.</strong> They aren't broken out, or are used for something else. That map can't be built as written. <strong>Fix:</strong> HREF → pin <strong>69</strong> (io[3], header 3), and the 8th data bit → pin <strong>63</strong> (io[12], header 12).</li>
+<li>With that fix, A2 uses io[1–12] = <strong>12 FPGA pins</strong>, leaving <strong>io[13–16] = pins 59, 60, 61, 62 free</strong>. That's exactly the 4 needed for SPI SCLK / CS_n / MISO + UART TX. <strong>Yes, the FPGA has pins left for the Pi link</strong>, the same 4 as Path A.</li>
+<li><strong>A vs A2 collision:</strong> the same headers 1–12 carry different signals for each sensor (for example, header 2 is HREF on A and XCLK on A2; header 4 is XCLK on A and VSYNC on A2). Both sensors drive outputs into the FPGA, so <strong>wiring both at once would short sensor outputs together. Never connect both.</strong></li>
+<li>PIXCLK on pin 70: confirm it's a GCLK-capable pin in the GW1NR-9 QN88 pinout (Gowin UG). If it's not, timing on a 26.6 MHz pixel clock is risky.</li>
+<li>The RP2350 GPIO0–4 lines must be confirmed as broken out on the RP2350 header (the photo shows 14 GPIO). The MT9V034 I2C then goes through RP2350 MicroPython, not the Pi.</li>
+</ol>
+<h3 id="a22-swap-procedure-shared-header-approach-recommended">A2.2 Swap procedure / shared-header approach (recommended)</h3>
+<ul>
+<li><strong>Use one "camera header" pinout for both sensors.</strong> Both are 8-bit DVP with PCLK/VSYNC/HREF/XCLK, so assign the same function to the same J6 header for both. Use the corrected A2 map as the standard: io1 = D7, io2 = XCLK, io3 = HREF, io4 = VSYNC, io5–io10 = D, io11 = PIXCLK, io12 = D. Then <strong>rewrite the Path A wire map to match it.</strong> It's only a draft, and nothing is soldered to the FPGA yet.</li>
+<li><strong>Build each sensor on its own small adapter</strong> (perfboard) that ends in the same 1×14 female header: 12 signals + 3.3 V + GND. The OV2640 adapter carries its FFC breakout + MCP1700s. The MT9V034 adapter carries its module.</li>
+<li>The SPI/UART link wires on io13–16 stay plugged in permanently.</li>
+<li><strong>Swap:</strong>
+  1. Power off the EPM11 and Pi.
+  2. Unplug the adapter and plug in the other one (keyed: block one header position).
+  3. Flash the matching bitstream (<code>ov2640_dvp.fs</code> / <code>mt9v034_dvp.fs</code>; same SPI framer, different capture front end and XCLK PLL).
+  4. Select the control path: Pi I2C for OV2640, RP2350 GPIO0–4 for MT9V034.
+  5. Power on and run the ID read before streaming.</li>
+<li>Each bitstream reads a <strong>sensor-ID strap</strong> (for example, one adapter ties a spare line, or check the I2C ID first) and refuses to drive XCLK if the wrong adapter is fitted.</li>
+</ul>
+<h3 id="a23-milestones">A2.3 Milestones</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Milestone</th>
+<th>Pass criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A2-0</td>
+<td>XCLK running (PLL 24–26.6 MHz from 27 MHz; measure on the scope or with an FPGA counter), then <strong>I2C ID read from the RP2350: reg 0x00 = 0x1324 at 7-bit address 0x5C</strong></td>
+<td>10/10 reads; frequency within ±1 % of target</td>
+</tr>
+<tr>
+<td>A2-1</td>
+<td>Pixel stream: FPGA test pattern → MT9V034 test pattern → live 376×240 (binned 2×) over SPI</td>
+<td>0 payload mismatches; CRC &lt; 0.1 %; ≥ 10 fps at 8 MHz SPI; no skew on a swept tag (global shutter)</td>
+</tr>
+<tr>
+<td>A2-2</td>
+<td>Tag detected (S1 protocol)</td>
+<td>Same as v1 M2; detection ≥ 95 % at ≤ 1.5 m</td>
+</tr>
+<tr>
+<td>A2-3</td>
+<td>Pose on NT, then fusion</td>
+<td>Same as v1 M3/M4</td>
+</tr>
+<tr>
+<td>A2-4 (stretch)</td>
+<td>752×480 via the PSRAM frame buffer</td>
+<td>≥ 3 fps at 16 MHz SPI; range &gt; A2-2</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>A2 measurements:</strong> XCLK frequency, PIXCLK rate, frames dropped by the FPGA, link-limited fps per resolution, CRC rate, latency (blink test), range, Pi CPU, power (EPM11 + sensor).</p>
+<h3 id="a24-risks">A2.4 Risks</h3>
+<ul>
+<li><strong>XCLK:</strong> the MT9V034 needs about 13–27 MHz (26.67 MHz nominal for 60 fps). The 27 MHz oscillator needs a GW1NR-9 rPLL to land in 24–26.6 MHz, for example 27 × 29/30 = 26.1 MHz (check that the IP generator can hit it). Using 27 MHz directly sits at the top limit.</li>
+<li><strong>PIXCLK vs link:</strong> PIXCLK ≈ SYSCLK ≈ 26 MHz × 8 bit = up to ~26 MB/s while lines are active. 752×480 at 60 fps = 21.7 MB/s average, vs ~1–2 MB/s SPI. The FPGA must <strong>bin (sensor 2×/4× binning), window, or drop frames</strong>, and must capture at full PIXCLK into a buffer.</li>
+<li><strong>Memory:</strong> 752×480 = 361 KB doesn't fit the ~58 KB BSRAM, so it <strong>needs the PSRAM controller</strong> (Gowin IP). 376×240 = 90 KB still exceeds BSRAM, so use 4× binning (188×120 = 22.6 KB) for the first light without PSRAM, or ROI windowing. Same constraint as Path A QVGA.</li>
+<li>The 10-bit to 8-bit (DOUT[9:2]) choice limits dynamic range.</li>
+<li>I2C through the RP2350 adds a firmware piece.</li>
+<li>The pin conflicts in A2.1.</li>
+</ul>
+<p><strong>A2 parts:</strong> EPM11 (owned), MT9V034 module (shared with C, arriving), perfboard + 1×14 headers for two adapters (probably owned), keying plug. No new purchases expected.</p>
+<hr />
+<h2 id="s4-weighted-scoring-fill-in-after-s1-runs-score-15-per-row">S4. Weighted scoring (fill in after S1 runs; score 1–5 per row)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Weight</th>
+<th>How scored</th>
+<th>B</th>
+<th>A</th>
+<th>C</th>
+<th>A2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pose accuracy (range error &amp; jitter at 1–2 m)</td>
+<td>20</td>
+<td>5 = ≤ 1 cm @1 m &amp; ≤ 3 cm @2 m</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Max reliable range (≥ 95 % detect)</td>
+<td>15</td>
+<td>5 = ≥ 3 m</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>End-to-end latency (blink test median/p95)</td>
+<td>15</td>
+<td>5 = ≤ 40/60 ms; 1 = &gt; 150 ms</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Detected fps, sustained</td>
+<td>10</td>
+<td>5 = ≥ 30 fps</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Motion robustness (global shutter, blur)</td>
+<td>10</td>
+<td>5 = global shutter + ≤ 4 ms exposure</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Pi CPU headroom</td>
+<td>5</td>
+<td>5 = ≤ 25 % of cores</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Power &amp; mass on XRP</td>
+<td>10</td>
+<td>5 = ≤ 2 W &amp; ≤ 50 g on robot</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Integration effort / risk to finish</td>
+<td>10</td>
+<td>5 = off-the-shelf, working now</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Learning value / Tola-split fit</td>
+<td>5</td>
+<td>5 = FPGA front-end proven</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Total (max 500)</strong></td>
+<td>100</td>
+<td>Σ weight × score</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Prior guess (to be overwritten by data): B scores high on effort, fps and motion; A scores low on motion; A2 should beat A on motion and range but cost the most effort.</p>
+<h2 id="s5-go-no-go-criteria-per-path">S5. Go / no-go criteria (per path)</h2>
+<p><strong>GO to robot fusion (M4) only if all of these hold at 1.0 m, L1:</strong></p>
+<ul>
+<li>≥ 95 % detection, 0 false IDs in 1000 no-tag frames.</li>
+<li>Range error ≤ 3 cm, 1σ ≤ 1 cm.</li>
+<li>Blink-test latency median ≤ 100 ms and p95 ≤ 150 ms.</li>
+<li>≥ 10 detected fps sustained over the 30-minute soak, with no crash and <code>get_throttled</code> = <code>0x0</code>.</li>
+<li>FPGA paths: CRC &lt; 0.1 % at the chosen SPI clock.</li>
+<li>Pi CPU ≤ 80 % of all cores.</li>
+</ul>
+<p><strong>NO-GO / park the path if any of these hold:</strong></p>
+<ul>
+<li>It can't reach M2 (tag detected) after 2 focused bench sessions past first light.</li>
+<li>The best achievable fps is &lt; 5.</li>
+<li>Latency p95 &gt; 250 ms.</li>
+<li>Range &lt; 1.0 m at the best resolution.</li>
+<li>A hardware fault damages a part.</li>
+<li>For B only: thermal throttling that a heatsink doesn't fix.</li>
+</ul>
+<p><strong>Pick the winner</strong> by the S4 total. If it's within 10 %, prefer the path with lower effort/risk. B is the default robot path unless an FPGA path beats it on accuracy + motion by ≥ 10 % with latency within 20 ms.</p>
+<h2 id="s6-open-questions">S6. Open questions</h2>
+<ol>
+<li><strong>Path B:</strong> Is it the plain <code>dtoverlay=ov9281</code> or <code>ov9281,arducam</code> for Paul's module? Which Arducam SKU (lens FOV)? Does the cable on hand fit the Zero's 22-pin end and the camera's end? Is there a heatsink?</li>
+<li><strong>MT9V034:</strong> which module? What are its rails (3.3 V only, or 3.3 + 1.8 V), its pinout, and its I2C address straps (0x5C assumed)?</li>
+<li><strong>EPM11:</strong> are Gowin pins 17/18 really unavailable (<code>location.cst</code> says J6 doesn't include them)? Is pin 70 a GCLK pin? Are RP2350 GPIO0–4 broken out?</li>
+<li>Can the A wire map be re-ordered to the shared camera-header standard (A2.2) before anything is soldered to the FPGA?</li>
+<li><strong>Tang 25K:</strong> is the Dock + SDRAM module owned? Which Gowin EDA edition is installed (GW5A support)? What baud does the debugger UART reach?</li>
+<li>The MCP1700 order ETA (the Path A blocker).</li>
+<li>The real OV2640 DVDD current (measure at M0) and the 3.3 V rail voltage under load.</li>
+<li>Is the laptop's IP on the XRP AP static? Do the Pi Zero 2 W and laptop both fit within the Pico W AP's client limit?</li>
+<li>The XRP track width (still a placeholder in the S3 code).</li>
+</ol>
+    </main>
+    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a></footer>
+  </div>
+</body>
+</html>

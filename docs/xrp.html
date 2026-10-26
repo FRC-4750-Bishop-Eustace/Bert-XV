@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>XRP Build &amp; Bring-up Guide — Lab Bench Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+:root {
+      --canvas: #faf8ff;
+      --surface: #ffffff;
+      --tint: #f2f3ff;
+      --dim: #d2d9f4;
+      --border: #94a3b8;
+      --border-soft: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #1d4ed8;
+      --primary-active: #0052cc;
+      --cta: #ea580c;
+      --cta-hover: #c2410c;
+      --caution: #f59e0b;
+      --caution-dark: #d97706;
+      --pass: #10b981;
+      --pass-dark: #059669;
+      --standin: #6366f1;
+      --standin-dark: #4338ca;
+      --radius: 4px;
+      --shadow: 0 2px 0 0 #94a3b8;
+      --nav-h: 64px;
+      --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 20px)}
+body{font-family:var(--font);background-color:var(--canvas);background-image:linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px);background-size:24px 24px;color:var(--text);line-height:1.55}
+a{color:var(--primary)} a:hover{color:var(--primary-active)}
+code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px solid var(--dim);border-radius:3px;padding:0 .25em}
+.topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+.topnav-inner{max-width:1280px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+.nav-brand{font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--primary);white-space:nowrap}
+.pill{font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;border:1.5px solid var(--standin);background:#eef2ff;color:var(--standin-dark);white-space:nowrap}
+.nav-links{display:flex;list-style:none;gap:.1rem;flex:1;justify-content:center;overflow-x:auto}
+.nav-links a{display:block;padding:.4rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius);white-space:nowrap;border:1.5px solid transparent}
+.nav-links a:hover{color:var(--primary);background:var(--tint)}
+.nav-links a.active{color:var(--primary-active);background:var(--tint);border-color:var(--dim)}
+.btn-deploy{flex-shrink:0;background:var(--cta);color:#fff;border:2px solid #9a3412;border-radius:var(--radius);box-shadow:0 2px 0 0 #9a3412;padding:.45rem .85rem;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-decoration:none;white-space:nowrap}
+.btn-deploy:hover{background:var(--cta-hover);color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem 3.5rem}
+.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.15rem 1.25rem;margin-bottom:1.25rem}
+.card.tint{background:var(--tint)}
+.hero{padding:2rem 0 .5rem}
+.hero h1{font-size:clamp(1.6rem,4vw,2.15rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:.6rem 0}
+.hero-lead{color:var(--text-muted);max-width:70ch}
+.badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.05em;padding:.2rem .5rem;border-radius:var(--radius);border:1.5px solid;margin-right:.35rem}
+.badge-blue{background:#dbeafe;border-color:var(--primary);color:var(--primary-active)}
+.badge-orange{background:#ffedd5;border-color:var(--cta);color:#9a3412}
+.badge-pass{background:#d1fae5;border-color:var(--pass-dark);color:var(--pass-dark)}
+.badge-standin{background:#eef2ff;border-color:var(--standin);color:var(--standin-dark)}
+.badge-caution{background:#fef3c7;border-color:var(--caution-dark);color:#92400e}
+.toc ol{columns:2;padding-left:1.2rem;font-size:.9rem} .toc li{margin:.15rem 0}
+.toc h2,.doc h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em;margin:2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
+.toc h2{margin-top:0}
+.doc h1{font-size:1.5rem;margin:1.5rem 0 .6rem}
+.doc h3{font-size:1.05rem;margin:1.3rem 0 .5rem;color:var(--primary-active)}
+.doc p,.doc ul,.doc ol{margin:.55rem 0} .doc ul,.doc ol{padding-left:1.4rem} .doc li{margin:.2rem 0}
+.doc hr{border:0;border-top:2px dashed var(--border-soft);margin:1.5rem 0}
+.doc table{width:100%;border-collapse:collapse;margin:.9rem 0;font-size:.85rem;background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow)}
+.doc th{background:var(--tint);text-align:left;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border-bottom:2px solid var(--border)}
+.doc th,.doc td{padding:.45rem .6rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
+.doc tr:nth-child(even) td{background:#fbfbff}
+.tbl{overflow-x:auto}
+.doc pre{background:#0f172a;color:#e2e8f0;border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.9rem 1rem;overflow-x:auto;margin:.9rem 0;font-size:.82rem;line-height:1.45}
+.doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
+.callout{border-left:4px solid var(--caution-dark);background:#fffbeb;padding:.45rem .7rem;border-radius:var(--radius)}
+.doc li.callout{list-style-position:inside;margin-left:-1.4rem}
+.flag{font-family:var(--mono);font-size:.68rem;font-weight:700;background:#fef3c7;color:#92400e;border:1.5px solid var(--caution-dark);border-radius:3px;padding:0 .3rem}
+.flag.blocked{background:#ffedd5;color:#9a3412;border-color:var(--cta)}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.status-grid .card{margin:0} .status-grid h3{font-size:.95rem;margin:.4rem 0} .status-grid p{font-size:.85rem;color:var(--text-muted)}
+footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
+@media (max-width:800px){.status-grid{grid-template-columns:1fr 1fr}.toc ol{columns:1}.nav-links{display:none}}
+
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Lab bench navigation">
+    <div class="topnav-inner">
+      <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
+      <span class="pill">XRP V1 + BETA</span>
+      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html" class="active">XRP Build</a></li><li><a href="vision.html">Video Pipeline</a></li></ul>
+      <a class="btn-deploy" href="index.html">BACK TO LAB BENCH</a>
+    </div>
+  </nav>
+  <div class="wrap">
+    <header class="hero">
+      <div class="card">
+        <div><span class="badge badge-orange">DRAFT</span><span class="badge badge-blue">XRP V1 PRIMARY</span><span class="badge badge-standin">BETA SPARE</span><span class="badge badge-caution">UNTESTED ON HARDWARE</span></div>
+        <h1>XRP Build &amp; Bring-up Guide</h1>
+        <p class="hero-lead">Assembly, power, firmware, RobotPy setup, first drive, calibration, Pi Zero 2 W camera mount, networking and AprilTag pose fusion for the XRP V1 (primary vision robot) and XRP Beta (spare). Draft — not yet tested on hardware.</p>
+        <p class="hero-lead" style="margin-top:.6rem"><a href="index.html">← Back to Lab Bench</a></p>
+      </div>
+    </header>
+    
+    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#1-kit-contents-and-assembly-checklist">1. Kit contents and assembly checklist</a></li><li><a href="#2-power">2. Power</a></li><li><a href="#3-firmware-wpilib-xrp-uf2">3. Firmware (WPILib XRP UF2)</a></li><li><a href="#4-robotpy-setup-2026x-latest-on-pypi-is-2026211">4. RobotPy setup (2026.x, latest on PyPI is 2026.2.1.1)</a></li><li><a href="#5-first-drive-robotpy">5. First-drive robot.py</a></li><li><a href="#6-calibration">6. Calibration</a></li><li><a href="#7-mounting-the-pi-zero-2-w-ov9281">7. Mounting the Pi Zero 2 W + OV9281</a></li><li><a href="#8-networking">8. Networking</a></li><li><a href="#9-apriltag-pose-fusion-summary-of-workspacefpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of /workspace/fpga-apriltag-xrp-test-plan.md)</a></li><li><a href="#what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</a></li></ol></nav>
+    <main class="doc">
+<p class="callout">Draft, Oct 26 2026. Anything marked <span class="flag">UNVERIFIED</span> wasn't confirmed in current docs. Sources checked: docs.wpilib.org (XRP Hardware/Imaging, Hardware Support, Programming the XRP, pyproject.toml), SparkFun XRP Controller hardware overview, xrp.discourse.group, PyPI robotpy 2026.2.1.1, Chief Delphi RobotPy+XRP thread.</p>
+<h2 id="1-kit-contents-and-assembly-checklist">1. Kit contents and assembly checklist</h2>
+<p><strong>Paul has two boards.</strong> The <strong>XRP V1</strong> (SparkFun XRP Controller: RP2350 + Radio Module 2, USB-C, DRV8411A drivers) is the <strong>primary vision-test robot</strong>. The <strong>XRP Beta</strong> (Pico W/RP2040, Micro-USB, DRV8835 drivers) is the spare/second robot. Both run the same WPILib XRP firmware release, but each needs its own UF2 (§3). The robot code (§5) is the same on both.</p>
+<h3 id="v1-vs-beta-differences">V1 vs Beta differences</h3>
+<p>Sources: SparkFun XRP Controller hardware overview (both boards), the release notes for xrp-wpilib-firmware v2.1.0.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>XRP V1 (primary)</th>
+<th>XRP Beta (spare)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MCU / radio</td>
+<td>RP2350 + Raspberry Pi RM2 (CYW43439, <span class="flag">UNVERIFIED</span> chip)</td>
+<td>Pico W (RP2040 + CYW43439)</td>
+</tr>
+<tr>
+<td>Motor driver</td>
+<td>2x TI DRV8411A</td>
+<td>2x TI DRV8835 (PH/EN mode)</td>
+</tr>
+<tr>
+<td>USB</td>
+<td>USB-C on the controller</td>
+<td>Micro-USB on the Pico W</td>
+</tr>
+<tr>
+<td>Boot button</td>
+<td>BOOT</td>
+<td>BOOTSEL (on the Pico W)</td>
+</tr>
+<tr>
+<td>Boot-mode drive name</td>
+<td><code>RP2350</code> (<span class="flag">UNVERIFIED</span>, standard RP2350 bootrom name, not in SparkFun/WPILib docs)</td>
+<td><code>RPI-RP2</code> (WPILib docs)</td>
+</tr>
+<tr>
+<td>Firmware UF2 (v2.1.0)</td>
+<td><code>xrp-wpilib-firmware-2.1.0-aa439f0.uf2</code></td>
+<td><code>xrp-wpilib-firmware-beta-2.1.0-aa439f0.uf2</code></td>
+</tr>
+<tr>
+<td>Left motor GPIO</td>
+<td>Phase 34 / Enable 35, Enc A/B 30/31</td>
+<td>Phase 6 / Enable 7, Enc A/B 4/5</td>
+</tr>
+<tr>
+<td>Right motor GPIO</td>
+<td>Phase 32 / Enable 33, Enc A/B 24/25</td>
+<td>Phase 14 / Enable 15, Enc A/B 12/13</td>
+</tr>
+<tr>
+<td>Motor 3 / 4 GPIO</td>
+<td>M3: 20/21, enc 22/23; M4: 10/11, enc 2/3</td>
+<td>M3: 2/3, enc 0/1; M4: 10/11, enc 8/9</td>
+</tr>
+<tr>
+<td>WPILib motors</td>
+<td>XRPMotor 0 = L, 1 = R, 2 = M3, 3 = M4</td>
+<td>same</td>
+</tr>
+<tr>
+<td>WPILib encoders</td>
+<td>Encoder(4,5) L, (6,7) R, (8,9) M3, (10,11) M4. These are firmware channels, not GPIOs</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Servos</td>
+<td>4 headers. XRPServo 4/5 = Servo 1/2, 6/7 = Servo 3/4 (needs WPILib newer than 2025.3.2; <span class="flag">UNVERIFIED</span> in RobotPy 2026)</td>
+<td>2 headers, XRPServo 4/5</td>
+</tr>
+<tr>
+<td>Line sensor</td>
+<td>GPIO44 L / 45 R, Analog 0/1</td>
+<td>GPIO26 L / 27 R, Analog 0/1</td>
+</tr>
+<tr>
+<td>Rangefinder</td>
+<td>DIST port, GPIO0 trig / 1 echo, Analog 2</td>
+<td>RANGE port, GPIO20 trig / 21 echo, Analog 2</td>
+</tr>
+<tr>
+<td>Qwiic</td>
+<td>2 ports, 3.3 V: Qwiic 0 = GPIO4/5, Qwiic 1 = GPIO38/39</td>
+<td>1 Qwiic (GPIO18/19, shared with the IMU) + "Extra" (GPIO22/28)</td>
+</tr>
+<tr>
+<td>IMU</td>
+<td>LSM6DSO (I2C 0x6B)</td>
+<td>LSM6DSO (0x6B)</td>
+</tr>
+<tr>
+<td>Counts/wheel rev</td>
+<td>585 (<span class="flag">UNVERIFIED</span> for V1; same kit motor assumed)</td>
+<td>585 (WPILib XRPReference)</td>
+</tr>
+<tr>
+<td>Barrel jack</td>
+<td>4.8 V min recommended, 11 V max, fused (BYP jumper open)</td>
+<td>5 V min, 11 V max</td>
+</tr>
+<tr>
+<td>5 V supply</td>
+<td>Single 5 V buck, about 3 A total (SparkFun forum); shared by the servos</td>
+<td>Not documented (<span class="flag">UNVERIFIED</span>)</td>
+</tr>
+<tr>
+<td>Switch</td>
+<td>Cuts battery input; doesn't cut the RP2350 when USB is plugged in</td>
+<td>Same (Pico W)</td>
+</tr>
+<tr>
+<td>VIN sensing</td>
+<td>GPIO46 (VIN MEAS jumper) + a LOW VOLT LED (buck POWER_GOOD)</td>
+<td>GPIO28 (VIN_MEAS, shared with Extra); no low-volt LED</td>
+</tr>
+<tr>
+<td>LEDs / buttons</td>
+<td>MOT, SYS, LOW VOLT, STAT, RGB (GPIO37); USER = GPIO36</td>
+<td>MOT, SYS, Pico LED; USER = GPIO22</td>
+</tr>
+<tr>
+<td>Wi-Fi AP</td>
+<td><code>XRP-&lt;id&gt;</code> / <code>xrp-wpilib</code>, 192.168.42.1; AP channel is configurable in v2.1.0</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td>2x 2x20 headers (Pico 2 W–like inner rows)</td>
+<td>none</td>
+</tr>
+</tbody>
+</table></div>
+<p>Encoder/motor channel numbers in WPILib terms are identical on both boards, so one <code>robot.py</code> drives either one. Run the 10-turn count check (§6) on <strong>each</strong> robot and keep a separate constants file per robot.</p>
+<p>Checklist (follow the XRP User Guide assembly, up to and including mounting the arm to the servo):</p>
+<ul>
+<li>☐ Chassis plates / snap-fit parts</li>
+<li>☐ 2 hobby gear motors with built-in encoders (6-pin cables): Motor L and Motor R connectors</li>
+<li>☐ 2 wheels (60 mm dia, with O-ring tires) and the caster/skid</li>
+<li>☐ 4xAA battery holder with a barrel plug into the controller's barrel jack</li>
+<li>☐ XRP controller board</li>
+<li>☐ Reflectance (line) sensor, on the <strong>Line</strong> 4-pin connector</li>
+<li>☐ Ultrasonic rangefinder, on <strong>DIST/RANGE</strong> ("ping"-style sensors only work on that port)</li>
+<li>☐ Servo + arm, on <strong>Servo 2</strong> (per SparkFun)</li>
+<li>☐ Cable routing: keep motor cables clear of the wheels and the caster; leave the top deck clear for the Pi/camera; reach to the USB port for flashing</li>
+<li>☐ A USB <strong>data</strong> cable (USB-C on V1, Micro-USB on Beta)</li>
+</ul>
+<h2 id="2-power">2. Power</h2>
+<ul>
+<li>Barrel jack input: 4.8 V minimum recommended, 11 V maximum. The 4xAA pack is at most about 6 V.</li>
+<li><strong>NiMH rechargeables are recommended</strong> by WPILib. 4x NiMH gives about 4.8–5.6 V and sags less under motor load. Alkaline starts at about 6 V but sags hard at high current.</li>
+<li>The power switch cuts battery input. It does <strong>not</strong> cut power to the processor when USB is plugged in (both boards).</li>
+<li><strong>V1:</strong> fused barrel jack; a single 5 V buck regulator, about 3 A total; a <strong>LOW VOLT</strong> LED wired to the buck's POWER_GOOD, which lights when the input sags below the regulator threshold (SparkFun: "not technically a low battery indicator" but it tracks low AAs). VIN is measured on GPIO46. <strong>Beta:</strong> 5 V minimum input, no LOW VOLT LED, VIN on GPIO28.</li>
+<li class="callout">Low battery: expect weaker or uneven drive, then a Wi-Fi drop or reboot under motor load. There's no documented auto-shutdown or low-battery alarm in the WPILib firmware (<span class="flag">UNVERIFIED</span>). Log the battery voltage; the WPILib XRP firmware reports it to the sim GUI/RobotController (<span class="flag">UNVERIFIED</span>: v2.1.0 release notes don't list battery voltage among the WPILib-exposed channels; <code>RobotController.getBatteryVoltage()</code> may report a sim default). Swap batteries below about 4.6 V under load (<span class="flag">UNVERIFIED</span>, a rule of thumb).</li>
+</ul>
+<h2 id="3-firmware-wpilib-xrp-uf2">3. Firmware (WPILib XRP UF2)</h2>
+<p>Source: GitHub <code>wpilibsuite/xrp-wpilib-firmware</code> → Releases → latest <strong>v2.1.0</strong> (published Oct 17 2025) → Assets. v2.1.0 is the first release that supports the V1 (RP2350) board. Re-check for a newer release before flashing.</p>
+<h3 id="v1-primary">V1 (primary)</h3>
+<ol>
+<li>Download <code>xrp-wpilib-firmware-2.1.0-aa439f0.uf2</code> (the file <strong>without</strong> <code>-beta</code>).</li>
+<li>Plug USB-C (data cable) into the controller.</li>
+<li>Hold <strong>BOOT</strong>, press and release <strong>RESET</strong>, then release BOOT. Or hold BOOT while plugging in USB.</li>
+<li class="callout">A mass-storage drive appears. It should be named <strong><code>RP2350</code></strong> (<span class="flag">UNVERIFIED</span>; SparkFun only says "mass storage device").</li>
+<li>Drag the UF2 onto it. The board reboots and the drive disappears.</li>
+</ol>
+<h3 id="beta-spare">Beta (spare)</h3>
+<ol>
+<li>Download <code>xrp-wpilib-firmware-beta-2.1.0-aa439f0.uf2</code>.</li>
+<li>Plug Micro-USB into the Pico W. Hold <strong>BOOTSEL</strong>, tap <strong>RESET</strong>, release BOOTSEL.</li>
+<li>Drive <strong><code>RPI-RP2</code></strong> appears. Drag the UF2 on. It reboots.</li>
+</ol>
+<p>A wrong-board UF2 just won't install (WPILib docs).</p>
+<h3 id="first-boot-both">First boot (both)</h3>
+<ul>
+<li>Batteries in, switch on (SYS/MOT LEDs light).</li>
+<li>Join Wi-Fi <strong><code>XRP-&lt;id&gt;</code></strong>, WPA2 <strong><code>xrp-wpilib</code></strong>. The SSID is also in <code>xrp-status.txt</code> on the <code>PICODISK</code> USB drive. With two XRPs on, check this so you're joining the right one, and label each robot with its SSID.</li>
+<li>XRP IP <strong>192.168.42.1</strong>. Web UI <code>http://192.168.42.1:5000</code> (Wi-Fi mode/AP channel). Robot-code port <strong>3540</strong>.</li>
+<li>Both robots default to the same 192.168.42.1 on their own APs. Run one at a time per laptop, or put both in station mode on a lab router with distinct IPs.</li>
+</ul>
+<h2 id="4-robotpy-setup-2026x-latest-on-pypi-is-2026211">4. RobotPy setup (2026.x, latest on PyPI is 2026.2.1.1)</h2>
+<p><code>pyproject.toml</code>. In 2026 the key is <code>components</code> (it replaces <code>robotpy_extras</code>):</p>
+<pre><code class="language-toml">[tool.robotpy]
+robotpy_version = &quot;2026.2.1.1&quot;
+components = [&quot;xrp&quot;, &quot;apriltag&quot;]
+requires = []
+</code></pre>
+<pre><code>python -m robotpy sync          # installs robotpy + robotpy-xrp + robotpy-apriltag
+python -m robotpy sim --xrp     # runs robot.py on the laptop, talking to the XRP
+</code></pre>
+<p>The robot code runs <strong>on the laptop</strong> through the simulation framework, and the sim GUI shows up even when the XRP isn't connected. Set these before running (or in <code>robot.py</code> via <code>os.environ</code> before <code>import xrp</code>):</p>
+<pre><code>HALSIMXRP_HOST=192.168.42.1
+HALSIMXRP_PORT=3540
+</code></pre>
+<p>Check: the sim GUI shows the gyro/accelerometer values changing when you move the robot.</p>
+<h2 id="5-first-drive-robotpy">5. First-drive <code>robot.py</code></h2>
+<p>Channel mapping follows the WPILib XRPReference example (left motor 0, encoder 4/5; right motor 1, encoder 6/7). The right motor is inverted.</p>
+<pre><code class="language-python">import os, math
+os.environ.setdefault(&quot;HALSIMXRP_HOST&quot;, &quot;192.168.42.1&quot;)
+os.environ.setdefault(&quot;HALSIMXRP_PORT&quot;, &quot;3540&quot;)
+
+import wpilib, xrp
+from wpilib.drive import DifferentialDrive
+
+WHEEL_DIAM_M = 0.060
+COUNTS_PER_REV = 585.0          # 12 CPR motor-shaft encoder * 48.75:1 gearbox (XRPReference)
+DIST_PER_COUNT = math.pi * WHEEL_DIAM_M / COUNTS_PER_REV
+
+class MyRobot(wpilib.TimedRobot):
+    def robotInit(self):
+        self.left = xrp.XRPMotor(0)
+        self.right = xrp.XRPMotor(1)
+        self.right.setInverted(True)
+        self.drive = DifferentialDrive(self.left, self.right)
+
+        self.lenc = wpilib.Encoder(4, 5)
+        self.renc = wpilib.Encoder(6, 7)
+        for e in (self.lenc, self.renc):
+            e.setDistancePerPulse(DIST_PER_COUNT)
+        self.gyro = xrp.XRPGyro()
+        self.pad = wpilib.XboxController(0)   # any gamepad in the sim GUI &quot;Joysticks&quot; slot 0
+        self.timer = wpilib.Timer()
+
+    def _reset(self):
+        self.lenc.reset(); self.renc.reset(); self.gyro.reset()
+
+    def robotPeriodic(self):
+        wpilib.SmartDashboard.putNumber(&quot;L m&quot;, self.lenc.getDistance())
+        wpilib.SmartDashboard.putNumber(&quot;R m&quot;, self.renc.getDistance())
+        wpilib.SmartDashboard.putNumber(&quot;yaw deg&quot;, self.gyro.getAngle())
+
+    def teleopInit(self): self._reset()
+    def teleopPeriodic(self):
+        self.drive.arcadeDrive(-self.pad.getLeftY(), -self.pad.getRightX())
+
+    # 1 m straight test with heading hold
+    def autonomousInit(self):
+        self._reset(); self.timer.restart()
+    def autonomousPeriodic(self):
+        d = (self.lenc.getDistance() + self.renc.getDistance()) / 2
+        if d &lt; 1.0 and self.timer.get() &lt; 8.0:
+            turn = -0.02 * self.gyro.getAngle()     # sign: check on the bench
+            self.drive.arcadeDrive(0.5, turn)
+        else:
+            self.drive.stopMotor()
+</code></pre>
+<p><strong>UNVERIFIED:</strong> exact RobotPy method names for XRPGyro (<code>getAngle()</code> vs <code>getAngleZ()</code>; both exist in Java) and the arcade sign conventions. Check in sim first. Pass test: tape-measured distance is 1.00 m ±3 cm, heading within ±3°.</p>
+<h2 id="6-calibration">6. Calibration</h2>
+<ul>
+<li><strong>Wheel diameter:</strong> nominal 60 mm. Push the robot 2 m along tape and compare the encoder distance. <code>true_diam = 0.060 * (2.0 / measured)</code>.</li>
+<li class="callout"><strong>Counts/rev:</strong> 585 per wheel revolution (the WPILib XRPReference value, measure on both robots: 12 counts per motor-shaft rev × 48.75:1 gearbox = 585; <span class="flag">UNVERIFIED</span> against a motor datasheet). Check by marking a wheel and turning it 10 revs by hand, which should read about 5850 counts per side.</li>
+<li class="callout"><strong>Track width (10-turn spin test):</strong> spin in place at low speed (for example <code>arcadeDrive(0, 0.5)</code>) until the gyro reads 3600°, then stop. <code>track_width = (|L_dist| + |R_dist|) / (2 * 10 * 2π) * 2</code>, which simplifies to <code>(|L|+|R|) / (20π)</code>. Repeat in both directions and average. Nominal is about 155 mm (<span class="flag">UNVERIFIED</span>). Check the gyro total against a tape mark on the floor; if the gyro and the floor disagree, fix the gyro scale first.</li>
+<li class="callout"><strong>Gyro drift:</strong> robot still for 60 s after <code>reset()</code>, then log the yaw. Expect &lt; 1°/min (<span class="flag">UNVERIFIED</span>). If it's higher, let the board warm up and keep it still at power-on (the firmware calibrates at boot, <span class="flag">UNVERIFIED</span>).</li>
+</ul>
+<h2 id="7-mounting-the-pi-zero-2-w-ov9281">7. Mounting the Pi Zero 2 W + OV9281</h2>
+<p><strong>Power: use a separate USB power bank (recommended).</strong></p>
+<ul>
+<li>The XRP V1 (vision robot) has a single 5 V buck regulator rated at about <strong>3 A total</strong> (SparkFun forum answer), shared by all 4 servo headers. The Qwiic ports are <strong>3.3 V only</strong>, not 5 V.</li>
+<li class="callout">The 4xAA pack also feeds the motors. Motor stall/accel current plus a 0.6–1 A Pi load on alkaline or partly drained NiMH makes 5 V brownouts and Pi resets likely. Neither SparkFun nor WPILib documents servo-header current per pin, and wiring a Pi from a servo header (5 V/GND only) is undocumented (<span class="flag">UNVERIFIED</span>, not recommended).</li>
+<li class="callout">Use a small 5 V ≥ 2 A USB power bank (Pi Zero 2 W + OV9281 is about 0.4–0.8 A, <span class="flag">UNVERIFIED</span>) into the Pi's PWR micro-USB. Check that the bank doesn't auto-shut-off at low load.</li>
+</ul>
+<p><strong>Mechanical</strong></p>
+<ul>
+<li class="callout">Use the XRP chassis grid holes / top deck (snap-in or M3 standoffs, hole size <span class="flag">UNVERIFIED</span>). Mount the Pi flat on standoffs above the controller; strap the power bank low and centered over the axle, slightly forward of the caster line.</li>
+<li>Keep the CG low and between the wheels and the caster. The battery bank is the heaviest part, so put it low.</li>
+<li>Camera: rigid bracket, forward-facing, about 10–15 cm lens height (<strong>suggestion</strong>) so it sees tags mounted at that height. Keep the pitch near 0° so the robot-to-camera transform stays simple. Measure <code>robotToCam</code> (x, y, z from the wheel-axle center at floor level; yaw/pitch) with calipers and record it.</li>
+<li>The CSI ribbon (Zero uses the 22-pin narrow end) should be strain-relieved and kept clear of the wheels. Put a heatsink on the Pi.</li>
+<li>For the first test a bench-mounted camera with the tag on the robot is still the M4a option (see the test plan).</li>
+</ul>
+<h2 id="8-networking">8. Networking</h2>
+<ul>
+<li>Default: <strong>both the laptop and the Pi join the XRP AP</strong> (<code>XRP-&lt;id&gt;</code>, 192.168.42.x). The laptop runs <code>robotpy sim --xrp</code>, and the robot program there is the <strong>NT4 server</strong>. The Pi is an NT4 client pointed at the laptop's IP.</li>
+<li class="callout">The Pico W / RM2 soft-AP supports only a few clients (CYW43 soft-AP is commonly cited as about 4, <span class="flag">UNVERIFIED</span>), and throughput is modest. Send only the small pose packet (<code>/vision/tag_data</code>), never video. Keep the client count at 2.</li>
+<li>Alternative: in the XRP web UI set the XRP to join a home/lab router (station mode), and put everything on that LAN. That needs <code>HALSIMXRP_HOST</code> updated to the XRP's new IP.</li>
+<li class="callout">Addresses: the XRP AP doesn't appear to offer DHCP reservations (<span class="flag">UNVERIFIED</span>), so use <strong>static IPs</strong>: laptop <code>192.168.42.10</code>, Pi <code>192.168.42.20</code> (outside the DHCP pool, <span class="flag">UNVERIFIED</span> pool range; check the leases first). Or use mDNS: Pi <code>hostname.local</code> and the laptop's <code>.local</code> name. Mixed Windows mDNS can be flaky, so prefer a static IP for the NT server address on the Pi.</li>
+<li>Pi NT client: <code>ntcore.NetworkTableInstance.getDefault().setServer("192.168.42.10"); startClient4("pi-vision")</code>.</li>
+</ul>
+<h2 id="9-apriltag-pose-fusion-summary-of-workspacefpga-apriltag-xrp-test-planmd">9. AprilTag pose fusion (summary of <code>/workspace/fpga-apriltag-xrp-test-plan.md</code>)</h2>
+<ul>
+<li><strong>Topic:</strong> <code>/vision/tag_data</code> (double[]), 10 doubles per tag: <code>[id, x, y, z, qw, qx, qy, qz, ambiguity, margin]</code>, published atomically per frame. <code>/vision/timestamp</code> (int, capture time in NT µs). <code>/vision/tags</code> (Pose3d[] struct) is for AdvantageScope only.</li>
+<li><strong>Estimator:</strong> <code>DifferentialDrivePoseEstimator(kinematics(track_width), gyro Rotation2d, L, R, initialPose)</code>. <code>update()</code> every loop with gyro + encoders.</li>
+<li><strong>Translation-only first:</strong> take XY from vision and the heading from XRPGyro. <code>addVisionMeasurement(pose, ts, (0.5*k, 0.5*k, 1e6))</code> with <code>k</code> scaling with distance/tag count. Add the vision heading (std about 0.9 rad) only after the full-3D path is validated.</li>
+<li><strong>Timestamps:</strong> convert NT capture µs into the FPGA-timestamp seconds base (<code>ts = capture_us/1e6</code>, using the NT server-time-synced value). Reject a future timestamp or an age &gt; 300 ms.</li>
+<li><strong>Reject if:</strong> the jump from the current estimate is &gt; 1.0 m; |yaw rate| &gt; 120°/s; the pose is outside the field; single-tag ambiguity &gt; 0.1 at &gt; 1.5 m. Count accepted/rejected on SmartDashboard.</li>
+</ul>
+<h2 id="what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</h2>
+<ol>
+<li>Confirmed: V1 = vision robot, Beta = spare. Label each with its <code>XRP-&lt;id&gt;</code> SSID.</li>
+<li>USB-C and Micro-USB data cables; 8x NiMH AA if running both; 4x NiMH AA + charger.</li>
+<li>A 5 V ≥ 2 A USB power bank for the Pi (none is in the kit), micro-USB cable, standoffs/bracket for the Pi and camera.</li>
+<li>A gamepad for the laptop.</li>
+<li>Measured values: real wheel diameter, track width (spin test), <code>robotToCam</code> transform, camera height.</li>
+<li>Networking choice: XRP AP (default) vs a lab router; laptop/Pi static IPs.</li>
+<li>Tag size and placement for the test course (from the comparison plan).</li>
+</ol>
+    </main>
+    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a></footer>
+  </div>
+</body>
+</html>
