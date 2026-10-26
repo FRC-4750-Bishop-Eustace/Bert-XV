@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Season Planning Tracks — Lab Bench Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+:root {
+      --canvas: #faf8ff;
+      --surface: #ffffff;
+      --tint: #f2f3ff;
+      --dim: #d2d9f4;
+      --border: #94a3b8;
+      --border-soft: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #1d4ed8;
+      --primary-active: #0052cc;
+      --cta: #ea580c;
+      --cta-hover: #c2410c;
+      --caution: #f59e0b;
+      --caution-dark: #d97706;
+      --pass: #10b981;
+      --pass-dark: #059669;
+      --standin: #6366f1;
+      --standin-dark: #4338ca;
+      --radius: 4px;
+      --shadow: 0 2px 0 0 #94a3b8;
+      --nav-h: 64px;
+      --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 20px)}
+body{font-family:var(--font);background-color:var(--canvas);background-image:linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px);background-size:24px 24px;color:var(--text);line-height:1.55}
+a{color:var(--primary)} a:hover{color:var(--primary-active)}
+code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px solid var(--dim);border-radius:3px;padding:0 .25em}
+.topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+.topnav-inner{max-width:1280px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+.nav-brand{font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--primary);white-space:nowrap}
+.pill{font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;border:1.5px solid var(--standin);background:#eef2ff;color:var(--standin-dark);white-space:nowrap}
+.nav-links{display:flex;list-style:none;gap:.1rem;flex:1;justify-content:center;overflow-x:auto}
+.nav-links a{display:block;padding:.4rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius);white-space:nowrap;border:1.5px solid transparent}
+.nav-links a:hover{color:var(--primary);background:var(--tint)}
+.nav-links a.active{color:var(--primary-active);background:var(--tint);border-color:var(--dim)}
+.btn-deploy{flex-shrink:0;background:var(--cta);color:#fff;border:2px solid #9a3412;border-radius:var(--radius);box-shadow:0 2px 0 0 #9a3412;padding:.45rem .85rem;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-decoration:none;white-space:nowrap}
+.btn-deploy:hover{background:var(--cta-hover);color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem 3.5rem}
+.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.15rem 1.25rem;margin-bottom:1.25rem}
+.card.tint{background:var(--tint)}
+.hero{padding:2rem 0 .5rem}
+.hero h1{font-size:clamp(1.6rem,4vw,2.15rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:.6rem 0}
+.hero-lead{color:var(--text-muted);max-width:70ch}
+.badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.05em;padding:.2rem .5rem;border-radius:var(--radius);border:1.5px solid;margin-right:.35rem}
+.badge-blue{background:#dbeafe;border-color:var(--primary);color:var(--primary-active)}
+.badge-orange{background:#ffedd5;border-color:var(--cta);color:#9a3412}
+.badge-pass{background:#d1fae5;border-color:var(--pass-dark);color:var(--pass-dark)}
+.badge-standin{background:#eef2ff;border-color:var(--standin);color:var(--standin-dark)}
+.badge-caution{background:#fef3c7;border-color:var(--caution-dark);color:#92400e}
+.toc ol{columns:2;padding-left:1.2rem;font-size:.9rem} .toc li{margin:.15rem 0}
+.toc h2,.doc h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em;margin:2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
+.toc h2{margin-top:0}
+.doc h1{font-size:1.5rem;margin:1.5rem 0 .6rem}
+.doc h3{font-size:1.05rem;margin:1.3rem 0 .5rem;color:var(--primary-active)}
+.doc p,.doc ul,.doc ol{margin:.55rem 0} .doc ul,.doc ol{padding-left:1.4rem} .doc li{margin:.2rem 0}
+.doc hr{border:0;border-top:2px dashed var(--border-soft);margin:1.5rem 0}
+.doc table{width:100%;border-collapse:collapse;margin:.9rem 0;font-size:.85rem;background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow)}
+.doc th{background:var(--tint);text-align:left;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border-bottom:2px solid var(--border)}
+.doc th,.doc td{padding:.45rem .6rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
+.doc tr:nth-child(even) td{background:#fbfbff}
+.tbl{overflow-x:auto}
+.doc pre{background:#0f172a;color:#e2e8f0;border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.9rem 1rem;overflow-x:auto;margin:.9rem 0;font-size:.82rem;line-height:1.45}
+.doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
+.callout{border-left:4px solid var(--caution-dark);background:#fffbeb;padding:.45rem .7rem;border-radius:var(--radius)}
+.doc li.callout{list-style-position:inside;margin-left:-1.4rem}
+.flag{font-family:var(--mono);font-size:.68rem;font-weight:700;background:#fef3c7;color:#92400e;border:1.5px solid var(--caution-dark);border-radius:3px;padding:0 .3rem}
+.flag.blocked{background:#ffedd5;color:#9a3412;border-color:var(--cta)}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.status-grid .card{margin:0} .status-grid h3{font-size:.95rem;margin:.4rem 0} .status-grid p{font-size:.85rem;color:var(--text-muted)}
+footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
+@media (max-width:800px){.status-grid{grid-template-columns:1fr 1fr}.toc ol{columns:1}.nav-links{display:none}}
+
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Lab bench navigation">
+    <div class="topnav-inner">
+      <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
+      <span class="pill">OCT 26 → JAN 9</span>
+      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html">XRP Build</a></li><li><a href="vision.html">Video Pipeline</a></li><li><a href="roadmap.html">Roadmap</a></li><li><a href="planning.html" class="active">Planning</a></li></ul>
+      <a class="btn-deploy" href="index.html">BACK TO LAB BENCH</a>
+    </div>
+  </nav>
+  <div class="wrap">
+    <header class="hero">
+      <div class="card">
+        <div><span class="badge badge-orange">DRAFT</span><span class="badge badge-blue">FRC 2027 PREP</span><span class="badge badge-caution">ASSUMPTIONS FLAGGED</span></div>
+        <h1>Season Planning Tracks</h1>
+        <p class="hero-lead">Three paces for the XRP vision roadmap from now to Kickoff (Sat Jan 9 2027): week-by-week meeting vs take-home work, gates, the fallback rule, a decision guide, hardware shortages and open questions.</p>
+        <p class="hero-lead" style="margin-top:.6rem"><a href="index.html">← Back to Lab Bench</a></p>
+      </div>
+    </header>
+    <section class="status-grid" style="grid-template-columns:repeat(3,1fr)" aria-label="Tracks"><div class="card"><span class="badge badge-orange">AGGRESSIVE</span><h3>Track A: All 4 phases by Kickoff</h3><p>Fastest pace; uses holiday weeks and heavy take-home work.</p></div><div class="card"><span class="badge badge-pass">RECOMMENDED</span><h3>Track B: Balanced</h3><p>Phases 1–3 by Kickoff; Phase 4 in build season. Gates G1 Nov 30, G2 Dec 7, G3 Jan 4.</p></div><div class="card"><span class="badge badge-standin">RELAXED</span><h3>Track C: Phase 1 + part of Phase 2</h3><p>Lowest load; leaves automation for build season.</p></div></section><div style="height:1.25rem"></div>
+    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#shared-assumptions">Shared assumptions</a></li><li><a href="#hardware-inventory-and-shortages">Hardware inventory and shortages</a></li><li><a href="#take-home-tasks-that-dont-need-the-robot-all-tracks">Take-home tasks that don't need the robot (all tracks)</a></li><li><a href="#track-a-aggressive-all-4-phases-by-kickoff">Track A: Aggressive (all 4 phases by Kickoff)</a></li><li><a href="#track-b-balanced-phases-13-by-kickoff-phase-4-in-build-season-recommended-default">Track B: Balanced (Phases 1–3 by Kickoff; Phase 4 in build season) (recommended default)</a></li><li><a href="#track-c-relaxed-phase-1-part-of-phase-2-by-kickoff">Track C: Relaxed (Phase 1 + part of Phase 2 by Kickoff)</a></li><li><a href="#decision-guide">Decision guide</a></li><li><a href="#fallback-rule">Fallback rule</a></li><li><a href="#track-agnostic-risks">Track-agnostic risks</a></li><li><a href="#what-paul-needs-to-confirm">What Paul needs to confirm</a></li></ol></nav>
+    <main class="doc">
+<p class="callout">Draft, Oct 26 2026. Based on <code>xrp-vision-automation-roadmap.md</code> (Phases 1–4 and their success criteria). <span class="flag">ASSUMPTION</span> marks guesses to confirm.</p>
+<h2 id="shared-assumptions">Shared assumptions</h2>
+<ul>
+<li class="callout"><strong>One team meeting per week, about 2.5–3 h</strong> (<span class="flag">ASSUMPTION</span>: length; <strong>meeting day unknown</strong>, so the tables use "the week of" only). If the meeting day is Saturday, the Jan 9 meeting <em>is</em> Kickoff and doesn't count.</li>
+<li class="callout"><strong>Weeks:</strong> Oct 26, Nov 2, 9, 16, <strong>23 (Thanksgiving)</strong>, 30, Dec 7, 14, <strong>21 (winter break)</strong>, <strong>28 (winter break)</strong>, Jan 4. That's <strong>11 weeks: 8 regular meetings + 3 holiday weeks</strong> (meeting there = stretch/optional, <span class="flag">ASSUMPTION</span>: none happen).</li>
+<li class="callout">Kids work in <strong>3 groups</strong> (<span class="flag">ASSUMPTION</span>): <strong>Drive</strong> (robot code/control), <strong>Vision</strong> (Pi/camera/AprilTag), <strong>Integration</strong> (NT, fusion, sim, docs).</li>
+<li class="callout">Hours below are <strong>per kid</strong> (<span class="flag">ASSUMPTION</span>; realistic for high-schoolers in season prep).</li>
+</ul>
+<h2 id="hardware-inventory-and-shortages">Hardware inventory and shortages</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Have</th>
+<th>Who takes it home</th>
+<th>Shortage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XRP V1 (RP2350)</td>
+<td>1</td>
+<td>Drive group lead (rotates weekly)</td>
+<td>Only one primary robot. Vision group can't test fusion at home on the same robot</td>
+</tr>
+<tr>
+<td>XRP Beta (Pico W)</td>
+<td>1</td>
+<td>Integration or Vision group (spare robot, same code)</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Pi Zero 2 W</td>
+<td><strong>1</strong></td>
+<td>Vision group lead</td>
+<td><strong>Phase 2 needs a 2nd Pi</strong> (or a Pi 5 dual-CSI). <strong>Blocks the 2-camera work</strong></td>
+</tr>
+<tr>
+<td>OV9281</td>
+<td>2</td>
+<td>1 with the Pi; 2nd stays at the lab until there's a 2nd Pi</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>USB power bank for the Pi</td>
+<td>0 (<span class="flag">ASSUMPTION</span>)</td>
+<td>n/a</td>
+<td><strong>Needed</strong> for on-robot vision</td>
+</tr>
+<tr>
+<td>4x NiMH AA x2 sets + charger</td>
+<td>? (<span class="flag">ASSUMPTION</span>: may be missing)</td>
+<td>One set per robot</td>
+<td>Likely</td>
+</tr>
+<tr>
+<td>Gamepads</td>
+<td>?</td>
+<td>One per robot</td>
+<td>Check</td>
+</tr>
+<tr>
+<td>Laptops with RobotPy 2026</td>
+<td>Kids' own (<span class="flag">ASSUMPTION</span>)</td>
+<td>Everyone</td>
+<td>School-managed laptops may block installs</td>
+</tr>
+<tr>
+<td>Printed tag36h11 tags + checkerboard</td>
+<td>0 (<span class="flag">ASSUMPTION</span>)</td>
+<td>Print copies for each group</td>
+<td>Cheap; print at home</td>
+</tr>
+<tr>
+<td>Pi 5 + Feather CAN + BNO085 (Phase 4)</td>
+<td>Stand-in parts per the brain-swap note (<span class="flag">ASSUMPTION</span>: on hand)</td>
+<td>Mentor only</td>
+<td>Phase 4 only</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hardware rule: anything taken home is checked out and back (a simple log). The robot must be back <strong>before</strong> the meeting.</p>
+<h2 id="take-home-tasks-that-dont-need-the-robot-all-tracks">Take-home tasks that don't need the robot (all tracks)</h2>
+<ul>
+<li><strong>Sim:</strong> <code>python -m robotpy sim</code> (no robot, pure sim with the GUI: drive with a gamepad, test commands, Field2d). Plus the <code>sim --xrp</code> dry run (runs and connects when a robot is nearby).</li>
+<li><strong>Calibration math:</strong> wheel-diameter correction, counts→meters, the track-width-from-spin-test formula, σ(d) fitting from logged CSVs (spreadsheet or Python).</li>
+<li><strong>Vision offline:</strong> run <code>robotpy_apriltag</code> on photos taken at the meeting or with a phone of printed tags (pose from known size); calibrate from checkerboard images in OpenCV.</li>
+<li><strong>Code review:</strong> GitHub PRs between groups; one reviewer per PR.</li>
+<li><strong>Reading:</strong> WPILib docs on pose estimators, LTVUnicycleController, commands2, AprilTag; PhotonVision docs; the XRP user guide.</li>
+<li><strong>Docs:</strong> each group writes a one-page "how it works" for its piece.</li>
+</ul>
+<hr />
+<h2 id="track-a-aggressive-all-4-phases-by-kickoff">Track A: Aggressive (all 4 phases by Kickoff)</h2>
+<p>Needs <strong>2 extra meetings</strong> (holiday weeks, stretch) or heavy take-home work, plus a 2nd Pi by Nov 23.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Week of</th>
+<th>Meeting #</th>
+<th>In meeting</th>
+<th>At home</th>
+<th>Hrs meet / home</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oct 26</td>
+<td>1</td>
+<td>Build V1, flash both robots, first drive, sim set up on all laptops</td>
+<td>Install RobotPy; sim drive; read the XRP guide</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td>Nov 2</td>
+<td>2</td>
+<td>Calibration runs; Pi + OV9281 first light; checkerboard shots</td>
+<td>Calibration math; camera intrinsics in OpenCV</td>
+<td>3 / 4</td>
+</tr>
+<tr>
+<td>Nov 9</td>
+<td>3</td>
+<td>Detection on the Pi, NT publish, range test</td>
+<td>Pi taken home: detection tuning; sim fusion code</td>
+<td>3 / 5</td>
+</tr>
+<tr>
+<td>Nov 16</td>
+<td>4</td>
+<td><strong>Gate 1</strong>: Phase 1 fusion on the XRP (5 cm / 5°)</td>
+<td>commands2 refactor in sim</td>
+<td>3 / 5</td>
+</tr>
+<tr>
+<td><strong>Nov 23 (Thanksgiving)</strong></td>
+<td>(stretch)</td>
+<td>Optional session: extrinsics</td>
+<td>Lab layout JSON; multi-tag PnP on photos</td>
+<td>0–2 / 4</td>
+</tr>
+<tr>
+<td>Nov 30</td>
+<td>5</td>
+<td>2-camera test (needs a 2nd Pi), per-camera σ</td>
+<td>Rejection rules + code review</td>
+<td>3 / 5</td>
+</tr>
+<tr>
+<td>Dec 7</td>
+<td>6</td>
+<td><strong>Gate 2</strong>: Phase 2 criteria; align-to-tag</td>
+<td>Drive-to-pose + LTV trajectory in sim</td>
+<td>3 / 5</td>
+</tr>
+<tr>
+<td>Dec 14</td>
+<td>7</td>
+<td><strong>Gate 3</strong>: Phase 3 autos on the XRP</td>
+<td>2027 API port in sim (snake_case, Selectable)</td>
+<td>3 / 5</td>
+</tr>
+<tr>
+<td><strong>Dec 21 (break)</strong></td>
+<td>(stretch)</td>
+<td>Optional: Pi 5 stand-in imaging (mentor-led)</td>
+<td>2027 port finish; reading SystemCore docs</td>
+<td>0–3 / 3</td>
+</tr>
+<tr>
+<td><strong>Dec 28 (break)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Mentor: stand-in DS/deploy/NT/CAN</td>
+<td>0 / 2</td>
+</tr>
+<tr>
+<td>Jan 4</td>
+<td>8</td>
+<td><strong>Gate 4</strong>: Phase 4 checklist steps 1–5 on the stand-in; freeze the starter repo</td>
+<td>Docs</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>8 (+2 stretch)</td>
+<td></td>
+<td></td>
+<td>about 24–29 / about 44</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Gates:</strong> G1 Nov 16 (Phase 1), G2 Dec 7 (Phase 2), G3 Dec 14 (Phase 3), G4 Jan 4 (Phase 4 stand-in).
+<strong>Risks:</strong> kids' take-home hours (about 4–5/wk) aren't realistic for everyone; the 2nd Pi doesn't arrive; holiday sessions don't happen; the 2027 alpha API changes again; swerve hardware isn't ready (Phase 4 steps 4–7 are likely out anyway).
+<strong>Cut if slipping (in order):</strong> Phase 4 swerve steps → PathPlanner → multi-tag on-coprocessor (use single-tag only) → 2nd camera.</p>
+<h2 id="track-b-balanced-phases-13-by-kickoff-phase-4-in-build-season-recommended-default">Track B: Balanced (Phases 1–3 by Kickoff; Phase 4 in build season) (<strong>recommended default</strong>)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Week of</th>
+<th>Meeting #</th>
+<th>In meeting</th>
+<th>At home</th>
+<th>Hrs meet / home</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oct 26</td>
+<td>1</td>
+<td>Build V1, flash both, first drive</td>
+<td>Install RobotPy; sim drive</td>
+<td>3 / 2</td>
+</tr>
+<tr>
+<td>Nov 2</td>
+<td>2</td>
+<td>Calibration; Pi first light</td>
+<td>Calibration math; read the AprilTag docs</td>
+<td>3 / 2</td>
+</tr>
+<tr>
+<td>Nov 9</td>
+<td>3</td>
+<td>Camera calibration + detection + NT publish</td>
+<td>Intrinsics; offline detection on photos</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td>Nov 16</td>
+<td>4</td>
+<td>Range test; fusion on the XRP</td>
+<td>Fusion code review; sim</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td><strong>Nov 23 (Thanksgiving)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Reading: pose estimators, Transform3d; lab layout JSON</td>
+<td>0 / 2</td>
+</tr>
+<tr>
+<td>Nov 30</td>
+<td>5</td>
+<td><strong>Gate 1</strong>: Phase 1 done. Extrinsics, 2nd camera if a 2nd Pi is here</td>
+<td>Per-camera σ fitting</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td>Dec 7</td>
+<td>6</td>
+<td><strong>Gate 2</strong>: Phase 2 (2-camera or multi-tag on one camera); rejection rules</td>
+<td>commands2 refactor in sim</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td>Dec 14</td>
+<td>7</td>
+<td>Align-to-tag, drive-to-pose</td>
+<td>LTV trajectory in sim; autos chooser</td>
+<td>3 / 3</td>
+</tr>
+<tr>
+<td><strong>Dec 21 (break)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Optional: sim autos; reading PhotonVision</td>
+<td>0 / 1–2</td>
+</tr>
+<tr>
+<td><strong>Dec 28 (break)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Optional reading on SystemCore/2027</td>
+<td>0 / 1</td>
+</tr>
+<tr>
+<td>Jan 4</td>
+<td>8</td>
+<td><strong>Gate 3</strong>: Phase 3 autos on the XRP (one align + one trajectory auto); freeze the starter repo</td>
+<td>Docs</td>
+<td>3 / 2</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td>24 / about 25</td>
+</tr>
+</tbody>
+</table></div>
+<p class="callout"><strong>Gates:</strong> G1 Nov 30, G2 Dec 7, G3 Jan 4. Phase 4 runs as a mentor/sub-team track in build weeks 1–3 (<span class="flag">ASSUMPTION</span>: the team allows it).
+<strong>Risks:</strong> only 8 meetings, with Phase 3 squeezed into 2 meetings; a 2nd Pi is needed by Nov 30 (otherwise do Phase 2 as multi-tag on one camera + Beta cross-check); the holiday gap loses momentum.
+<strong>Cut if slipping:</strong> PathPlanner → trajectory following (keep drive-to-pose + align) → the 2nd camera (single-camera multi-tag only).</p>
+<h2 id="track-c-relaxed-phase-1-part-of-phase-2-by-kickoff">Track C: Relaxed (Phase 1 + part of Phase 2 by Kickoff)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Week of</th>
+<th>Meeting #</th>
+<th>In meeting</th>
+<th>At home</th>
+<th>Hrs meet / home</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oct 26</td>
+<td>1</td>
+<td>Build V1, first drive</td>
+<td>Install RobotPy</td>
+<td>2.5 / 1</td>
+</tr>
+<tr>
+<td>Nov 2</td>
+<td>2</td>
+<td>Flash Beta, calibration</td>
+<td>Calibration math</td>
+<td>2.5 / 1</td>
+</tr>
+<tr>
+<td>Nov 9</td>
+<td>3</td>
+<td>Pi first light, camera calibration</td>
+<td>Reading: AprilTag basics</td>
+<td>2.5 / 1</td>
+</tr>
+<tr>
+<td>Nov 16</td>
+<td>4</td>
+<td>Detection + NT publish</td>
+<td>Offline detection on photos</td>
+<td>2.5 / 1.5</td>
+</tr>
+<tr>
+<td><strong>Nov 23 (Thanksgiving)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Optional reading</td>
+<td>0 / 0–1</td>
+</tr>
+<tr>
+<td>Nov 30</td>
+<td>5</td>
+<td>Range test; fusion first try</td>
+<td>Sim fusion review</td>
+<td>2.5 / 1.5</td>
+</tr>
+<tr>
+<td>Dec 7</td>
+<td>6</td>
+<td><strong>Gate 1</strong>: Phase 1 fusion criteria</td>
+<td>Lab layout JSON</td>
+<td>2.5 / 1.5</td>
+</tr>
+<tr>
+<td>Dec 14</td>
+<td>7</td>
+<td>Extrinsics + multi-tag on one camera</td>
+<td>σ fitting</td>
+<td>2.5 / 1.5</td>
+</tr>
+<tr>
+<td><strong>Dec 21 / Dec 28 (break)</strong></td>
+<td>n/a</td>
+<td>n/a</td>
+<td>Optional</td>
+<td>0 / 0–1</td>
+</tr>
+<tr>
+<td>Jan 4</td>
+<td>8</td>
+<td><strong>Gate 2</strong>: partial Phase 2 (multi-tag single camera, rejection rules); write up</td>
+<td>Docs</td>
+<td>2.5 / 1</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td>20 / about 10–12</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Deferred:</strong> 2-camera fusion, all of Phase 3, Phase 4. In build season, use <strong>PhotonVision</strong> directly on the competition robot and treat the XRP as a training/testing platform.
+<strong>Risks:</strong> low; the main risk is losing interest without a "wow" demo. Add one simple align-to-tag demo if there's time.
+<strong>Cut if slipping:</strong> multi-tag → fusion stays single-tag; at the floor minimum, Phase 1 detection + NT on the XRP.</p>
+<hr />
+<h2 id="decision-guide">Decision guide</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>→ Aggressive</th>
+<th>→ Balanced</th>
+<th>→ Relaxed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kids reliably do ≥ 4 h/week at home?</td>
+<td>Yes</td>
+<td>2–3 h</td>
+<td>≤ 1–2 h</td>
+</tr>
+<tr>
+<td>Holiday-week sessions possible?</td>
+<td>Yes, ≥ 1</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>2nd Pi (or Pi 5) available by Nov 23?</td>
+<td>Yes</td>
+<td>By Nov 30</td>
+<td>Not needed</td>
+</tr>
+<tr>
+<td>Programming experience</td>
+<td>≥ 2 kids comfortable in Python + git</td>
+<td>Some</td>
+<td>Mostly new</td>
+</tr>
+<tr>
+<td>Mentor time for the Phase 4 stand-in in Dec</td>
+<td>Yes</td>
+<td>No (build season)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Goal for Kickoff</td>
+<td>A ported SystemCore-ready codebase</td>
+<td>Proven vision + autos on the XRP</td>
+<td>Vision basics understood; PV in season</td>
+</tr>
+<tr>
+<td>Pick the <strong>leftmost column where the answers are mostly "yes"</strong>. Default: <strong>Balanced</strong>.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="fallback-rule">Fallback rule</h2>
+<ul>
+<li>Each track's gates are listed in its table. <strong>If 2 gates are missed (cumulative, not necessarily consecutive), drop to the next track</strong> (Aggressive → Balanced → Relaxed). At the drop, re-plan the remaining weeks using that track's table from the current week on.</li>
+<li class="callout">A gate is <strong>missed</strong> if its success criteria (roadmap numbers) aren't met by the end of the gate's meeting. One catch-up week is allowed, but if it's still unmet it counts as missed (<span class="flag">ASSUMPTION</span>: grace period).</li>
+<li>Moving <em>up</em> a track is allowed only if all gates so far were met a week early.</li>
+</ul>
+<h2 id="track-agnostic-risks">Track-agnostic risks</h2>
+<ul>
+<li>The meeting day is unknown. Tables use weeks, so confirm the day and adjust (Saturday meetings lose Jan 9 to Kickoff).</li>
+<li>Single V1 and single Pi: hardware can only be at one home at a time. Rotate a check-out schedule.</li>
+<li class="callout">School laptop install restrictions; Wi-Fi AP client limits (about 4, <span class="flag">UNVERIFIED</span>).</li>
+<li>Battery supply (NiMH sets) and power-bank availability.</li>
+<li>Season-registration admin (Nov 17) and the Virtual Kit (Nov 12) are mentor tasks, not kid tasks.</li>
+</ul>
+<h2 id="what-paul-needs-to-confirm">What Paul needs to confirm</h2>
+<ol>
+<li>The meeting day and length; whether holiday-week sessions are possible.</li>
+<li>Group count and kid count.</li>
+<li>A 2nd Pi Zero 2 W or a Pi 5 for Phase 2 (a Parts Scout draft; no purchase made).</li>
+<li>A power bank, NiMH sets and gamepads.</li>
+<li>Which track to start on (recommended: Balanced).</li>
+</ol>
+    </main>
+    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> or <span class="flag">ASSUMPTION</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a> · <a href="roadmap.html">Roadmap</a> · <a href="planning.html">Planning</a></footer>
+  </div>
+</body>
+</html>
