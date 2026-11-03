@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>XRP → FRC Vision &amp; Automation Roadmap — Lab Bench Edition</title>
+  <title>Weekly Plan → Kickoff — Lab Bench</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -35,412 +35,180 @@
       --mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
     }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 20px)}
-body{font-family:var(--font);background-color:var(--canvas);background-image:linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px);background-size:24px 24px;color:var(--text);line-height:1.55}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px)}
+body{font-family:var(--font);background:var(--canvas);color:var(--text);line-height:1.55}
 a{color:var(--primary)} a:hover{color:var(--primary-active)}
 code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px solid var(--dim);border-radius:3px;padding:0 .25em}
-.topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
-.topnav-inner{max-width:1280px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+.topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:#fff;border-bottom:2px solid var(--border)}
+.topnav-inner{max-width:960px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
 .nav-brand{font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--primary);white-space:nowrap}
 .pill{font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;border:1.5px solid var(--standin);background:#eef2ff;color:var(--standin-dark);white-space:nowrap}
-.nav-links{display:flex;list-style:none;gap:.1rem;flex:1;justify-content:center;overflow-x:auto}
-.nav-links a{display:block;padding:.4rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius);white-space:nowrap;border:1.5px solid transparent}
-.nav-links a:hover{color:var(--primary);background:var(--tint)}
-.nav-links a.active{color:var(--primary-active);background:var(--tint);border-color:var(--dim)}
-.btn-deploy{flex-shrink:0;background:var(--cta);color:#fff;border:2px solid #9a3412;border-radius:var(--radius);box-shadow:0 2px 0 0 #9a3412;padding:.45rem .85rem;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-decoration:none;white-space:nowrap}
-.btn-deploy:hover{background:var(--cta-hover);color:#fff}
-.wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem 3.5rem}
-.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.15rem 1.25rem;margin-bottom:1.25rem}
-.card.tint{background:var(--tint)}
-.hero{padding:2rem 0 .5rem}
-.hero h1{font-size:clamp(1.6rem,4vw,2.15rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:.6rem 0}
-.hero-lead{color:var(--text-muted);max-width:70ch}
-.badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.05em;padding:.2rem .5rem;border-radius:var(--radius);border:1.5px solid;margin-right:.35rem}
+.nav-links{display:flex;list-style:none;gap:.15rem;flex:1;justify-content:flex-end;overflow-x:auto}
+.nav-links a{display:block;padding:.35rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius)}
+.nav-links a:hover,.nav-links a.active{color:var(--primary-active);background:var(--tint)}
+.wrap{max-width:860px;margin:0 auto;padding:1.25rem 1.25rem 3rem}
+.hero{margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid var(--border-soft)}
+.hero h1{font-size:clamp(1.45rem,3.5vw,1.9rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin:.4rem 0}
+.hero-lead{color:var(--text-muted);max-width:65ch}
+.badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.04em;padding:.15rem .45rem;border-radius:var(--radius);border:1.5px solid;margin-right:.3rem}
 .badge-blue{background:#dbeafe;border-color:var(--primary);color:var(--primary-active)}
 .badge-orange{background:#ffedd5;border-color:var(--cta);color:#9a3412}
-.badge-pass{background:#d1fae5;border-color:var(--pass-dark);color:var(--pass-dark)}
-.badge-standin{background:#eef2ff;border-color:var(--standin);color:var(--standin-dark)}
-.badge-caution{background:#fef3c7;border-color:var(--caution-dark);color:#92400e}
-.toc ol{columns:2;padding-left:1.2rem;font-size:.9rem} .toc li{margin:.15rem 0}
-.toc h2,.doc h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em;margin:2rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
-.toc h2{margin-top:0}
-.doc h1{font-size:1.5rem;margin:1.5rem 0 .6rem}
-.doc h3{font-size:1.05rem;margin:1.3rem 0 .5rem;color:var(--primary-active)}
-.doc p,.doc ul,.doc ol{margin:.55rem 0} .doc ul,.doc ol{padding-left:1.4rem} .doc li{margin:.2rem 0}
-.doc hr{border:0;border-top:2px dashed var(--border-soft);margin:1.5rem 0}
-.doc table{width:100%;border-collapse:collapse;margin:.9rem 0;font-size:.85rem;background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow)}
-.doc th{background:var(--tint);text-align:left;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border-bottom:2px solid var(--border)}
-.doc th,.doc td{padding:.45rem .6rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
-.doc tr:nth-child(even) td{background:#fbfbff}
-.tbl{overflow-x:auto}
-.doc pre{background:#0f172a;color:#e2e8f0;border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.9rem 1rem;overflow-x:auto;margin:.9rem 0;font-size:.82rem;line-height:1.45}
+.doc h2{font-size:1.2rem;font-weight:700;margin:1.75rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--border-soft)}
+.doc h3{font-size:1rem;margin:1.1rem 0 .4rem;color:var(--primary-active)}
+.doc p,.doc ul,.doc ol{margin:.5rem 0}
+.doc ul,.doc ol{padding-left:1.3rem}
+.doc li{margin:.2rem 0}
+.doc hr{border:0;border-top:1px solid var(--border-soft);margin:1.25rem 0}
+.doc table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.85rem;background:var(--surface);border:1px solid var(--border)}
+.doc th{background:var(--tint);text-align:left;font-family:var(--mono);font-size:.7rem;letter-spacing:.03em;border-bottom:1px solid var(--border)}
+.doc th,.doc td{padding:.4rem .55rem;border-bottom:1px solid var(--border-soft);vertical-align:top}
+.doc pre{background:#0f172a;color:#e2e8f0;border-radius:var(--radius);padding:.85rem 1rem;overflow-x:auto;margin:.75rem 0;font-size:.8rem;line-height:1.45}
 .doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
-.callout{border-left:4px solid var(--caution-dark);background:#fffbeb;padding:.45rem .7rem;border-radius:var(--radius)}
-.doc li.callout{list-style-position:inside;margin-left:-1.4rem}
-.flag{font-family:var(--mono);font-size:.68rem;font-weight:700;background:#fef3c7;color:#92400e;border:1.5px solid var(--caution-dark);border-radius:3px;padding:0 .3rem}
-.flag.blocked{background:#ffedd5;color:#9a3412;border-color:var(--cta)}
-.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
-.status-grid .card{margin:0} .status-grid h3{font-size:.95rem;margin:.4rem 0} .status-grid p{font-size:.85rem;color:var(--text-muted)}
-footer{font-size:.8rem;color:var(--text-dim);margin-top:2rem}
-@media (max-width:800px){.status-grid{grid-template-columns:1fr 1fr}.toc ol{columns:1}.nav-links{display:none}}
+.tbl{overflow-x:auto}
+footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-soft)}
+@media (max-width:700px){.nav-brand{display:none}}
 
   </style>
 </head>
 <body>
   <nav class="topnav" aria-label="Lab bench navigation">
     <div class="topnav-inner">
-      <span class="nav-brand">FRC 2027 PRESEASON EXPLORATION — LAB BENCH EDITION</span>
-      <span class="pill">OCT 26 → KICKOFF</span>
-      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html">XRP Build</a></li><li><a href="vision.html">Video Pipeline</a></li><li><a href="roadmap.html" class="active">Roadmap</a></li><li><a href="planning.html">Planning</a></li></ul>
-      <a class="btn-deploy" href="index.html">BACK TO LAB BENCH</a>
+      <span class="nav-brand">FRC 4750 · LAB BENCH</span>
+      <span class="pill">1 MEETING / WEEK</span>
+      <ul class="nav-links"><li><a href="index.html">← Lab Bench</a></li><li><a href="xrp.html">XRP</a></li><li><a href="vision.html">Vision</a></li><li><a href="roadmap.html" class="active">Plan</a></li></ul>
     </div>
   </nav>
   <div class="wrap">
     <header class="hero">
-      <div class="card">
-        <div><span class="badge badge-orange">DRAFT</span><span class="badge badge-blue">FRC 2027 PREP</span><span class="badge badge-caution">UNTESTED ON HARDWARE</span></div>
-        <h1>XRP → FRC Vision &amp; Automation Roadmap</h1>
-        <p class="hero-lead">A four-phase learning path from one camera on the XRP to pose-driven automation, then a stretch port to SystemCore on a larger robot, with a week-by-week timeline to Kickoff on Sat Jan 9 2027.</p>
-        <p class="hero-lead" style="margin-top:.6rem"><a href="index.html">← Back to Lab Bench</a></p>
-      </div>
+      <div><span class="badge badge-orange">DRAFT</span><span class="badge badge-blue">FRC 2027</span></div>
+      <h1>Weekly Plan → Kickoff</h1>
+      <p class="hero-lead">Phases and a week-by-week outline for Mecanum XRP + PhotonVision through Kickoff (Sat Jan 9 2027). Planning tracks folded in here.</p>
     </header>
-    <section class="status-grid" aria-label="Phases"><div class="card"><span class="badge badge-pass">START NOW</span><h3>Phase 1: Single camera → pose → fusion</h3><p>Pi Zero 2 W + OV9281 → NT → pose estimate fused on the XRP.</p></div><div class="card"><span class="badge badge-blue">NEXT</span><h3>Phase 2: Multi-camera + multi-tag</h3><p>2× OV9281, extrinsics, multi-tag PnP, FPGA paths plug in.</p></div><div class="card"><span class="badge badge-blue">AUTOMATION</span><h3>Phase 3: Poses → commands2</h3><p>Align-to-tag, drive-to-pose, trajectory autos.</p></div><div class="card"><span class="badge badge-caution">STRETCH</span><h3>Phase 4: XRP → SystemCore</h3><p>Port to a larger robot via the Pi 5 stand-in, then SystemCore.</p></div></section><div style="height:1.25rem"></div>
-    <nav class="card tint toc" aria-label="Table of contents"><h2>Contents</h2><ol><li><a href="#verified-context-oct-26-2026">Verified context (Oct 26 2026)</a></li><li><a href="#shared-contract-all-phases-vision-schema">Shared contract (all phases): /vision/* schema</a></li><li><a href="#phase-1-single-camera-pi-zero-2-w-ov9281-nt-pose-fusion">Phase 1: Single camera (Pi Zero 2 W + OV9281) → NT → pose → fusion</a></li><li><a href="#phase-2-multiple-cameras-2x-ov9281-multi-tag-fpga-plug-in">Phase 2: Multiple cameras (2x OV9281) + multi-tag + FPGA plug-in</a></li><li><a href="#phase-3-using-the-poses-for-automation-commands2">Phase 3: Using the poses for automation (commands2)</a></li><li><a href="#phase-4-stretch-xrp-systemcore-on-a-larger-robot">Phase 4 (stretch): XRP → SystemCore on a larger robot</a></li><li><a href="#week-by-week-timeline-oct-26-2026-kickoff-sat-jan-9-2027">Week-by-week timeline (Oct 26 2026 → Kickoff Sat Jan 9 2027)</a></li><li><a href="#unverified-items">UNVERIFIED items</a></li><li><a href="#what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</a></li></ol></nav>
     <main class="doc">
-<p class="callout">Draft, Oct 26 2026. Robots: <strong>XRP V1 (RP2350) = primary</strong>, <strong>XRP Beta (Pico W) = spare/second robot</strong>.
-Builds on: <code>xrp-build-bringup.md</code> (hardware, firmware, RobotPy setup, calibration), <code>vision-stream-comparison-plan.md</code> (camera paths A/B/C, scoring), <code>fpga-apriltag-xrp-test-plan.md</code> (the <code>/vision/*</code> schema and the fusion code).
-<span class="flag">UNVERIFIED</span> = not confirmed against current RobotPy/WPILib docs.</p>
-<h2 id="verified-context-oct-26-2026">Verified context (Oct 26 2026)</h2>
-<ul>
-<li><strong>2027 FRC Kickoff: Saturday Jan 9 2027</strong>, 12:00–1:30 PM ET (game: BIOCORE). Source: FIRST calendar / firstinspires.org. Pre-Kickoff Virtual Kit opens Nov 12 2026; registration closes Nov 17 2026.</li>
-<li>XRP work uses <strong>RobotPy 2026.2.1.1</strong> (<code>components = ["xrp", "apriltag", "commands2"]</code>).</li>
-<li><strong>RamseteController has been deprecated (for removal) since 2025.</strong> It's still present in 2026.2.x. WPILib says to use <strong>LTVUnicycleController</strong>.</li>
-<li class="callout"><strong>robotpy-pathplannerlib 2026.1.2</strong> is on PyPI. It supports differential drive through <code>PPLTVController</code> + <code>AutoBuilder.configure(...)</code>. Running it against the XRP sim-client is <span class="flag">UNVERIFIED</span> (nothing in the lib is roboRIO-specific; needs a test).</li>
-<li><strong>2027 / SystemCore (alpha):</strong> RobotPy 2027.0.0a7 exists.</li>
-<li>Python APIs were renamed to <strong>snake_case</strong> (alpha 6).</li>
-<li>SmartDashboard/SendableChooser were replaced by Telemetry/Tunables; <strong>SendableChooser → <code>Selectable</code></strong> (alpha 7).</li>
-<li>AprilTag and CameraServer moved to vendordeps; <code>AprilTagFields</code> is now part of a <code>Fields</code> class.</li>
-<li>NT3 was removed.</li>
-<li>photonlibpy <strong>2027.0.0a2</strong> requires WPILib ≥ 2027.0.0a6.</li>
-</ul>
-<p>So 2026 XRP code needs a rename pass to move to 2027. Plan for it (Phase 4).</p>
-<h2 id="shared-contract-all-phases-vision-schema">Shared contract (all phases): <code>/vision/*</code> schema</h2>
-<p>Unchanged from the test plan. Every camera source (Pi+OV9281, EPM11, Tang 25K, later PhotonVision via an adapter) publishes:</p>
-<ul>
-<li><code>/vision/&lt;cam&gt;/tag_data</code> (double[]): 10 doubles per tag <code>[id, x, y, z, qw, qx, qy, qz, ambiguity, margin]</code>, camera-frame tag pose, atomic per frame.</li>
-<li><code>/vision/&lt;cam&gt;/timestamp</code> (int): <strong>capture</strong> time in NT µs.</li>
-<li><code>/vision/&lt;cam&gt;/tags</code> (Pose3d[] struct, viewing only); <code>/vision/&lt;cam&gt;/fps</code>, <code>/vision/&lt;cam&gt;/latency_ms</code> (diagnostics).</li>
-<li>Phase 1 uses the single-camera form <code>/vision/tag_data</code>. Phase 2 adds the <code>&lt;cam&gt;</code> prefix (<code>front</code>, <code>left</code>, <code>fpga_epm11</code>, <code>fpga_tang</code>). This is the only schema change; it's additive.</li>
-</ul>
-<p>The robot-side fusion is <code>fuse()</code> from <code>fpga-apriltag-xrp-test-plan.md</code> §3 (translation-only, k = max(1, d̄²)/n, the rejection rules, the NT→FPGA time offset). Phases 1–2 generalize it per camera.</p>
-<hr />
-<h2 id="phase-1-single-camera-pi-zero-2-w-ov9281-nt-pose-fusion">Phase 1: Single camera (Pi Zero 2 W + OV9281) → NT → pose → fusion</h2>
-<p><strong>Learning goals:</strong> camera bring-up and intrinsics; AprilTag detection and pose math; NT4 pub/sub with timestamps; odometry; Kalman-style fusion.</p>
-<p><strong>XRP exercises</strong></p>
-<ol>
-<li>First light (comparison plan, path B M1): <code>camera_auto_detect=0</code>, <code>dtoverlay=ov9281</code>, <code>rpicam-hello --list-cameras</code>, then an fps check at 640x400.</li>
-<li>Calibrate: 20+ checkerboard/ChArUco frames → <code>fx, fy, cx, cy</code>, distortion (OpenCV <code>calibrateCamera</code>). Store a JSON per camera serial.</li>
-<li>Detection on the Pi: <code>robotpy_apriltag.AprilTagDetector</code> (<code>addFamily("tag36h11")</code>, <code>quadDecimate</code>, <code>quadSigma</code>), <code>AprilTagPoseEstimator(Config(tagSize, fx, fy, cx, cy))</code>, <code>estimateOrthogonalIteration</code> for the ambiguity. Publish <code>/vision/tag_data</code>.</li>
-<li>Static range test: tag at 0.5/1.0/1.5/2.0/2.5 m, 200 frames each. Log the error and scatter.</li>
-<li>XRP fusion: <code>DifferentialDrivePoseEstimator</code> + <code>fuse()</code>. Show it in <code>Field2d</code>/AdvantageScope. Run course M4b (1 m out, 90° turn, return).</li>
-<li>Beta robot: run the same code on the Beta as a cross-check of the calibration constants.</li>
-</ol>
-<p><strong>APIs:</strong> <code>robotpy_apriltag.AprilTagDetector</code>, <code>AprilTagPoseEstimator</code>, <code>AprilTagFieldLayout</code>; <code>ntcore.NetworkTableInstance</code>, <code>DoubleArrayTopic</code>, <code>PubSubOptions</code>; <code>wpimath.estimator.DifferentialDrivePoseEstimator</code>; <code>wpimath.kinematics.DifferentialDriveKinematics</code>; <code>wpimath.geometry.Pose2d/Pose3d/Transform3d/Translation2d</code>; <code>xrp.XRPMotor</code>, <code>xrp.XRPGyro</code>, <code>wpilib.Encoder</code>, <code>wpilib.Field2d</code>.</p>
-<p><strong>Success criteria</strong></p>
-<ul>
-<li class="callout">≥ 30 fps capture at 640x400 (<span class="flag">UNVERIFIED</span> OV9281 mode/fps on the Zero 2 W).</li>
-<li>≥ 15 fps detection with decimate 2.</li>
-<li>Capture→NT latency ≤ 60 ms (p95).</li>
-<li>Static range error ≤ 3 cm @ 1 m, ≤ 8 cm @ 2.5 m.</li>
-<li>Fused end pose within 5 cm / 5° after the M4b course.</li>
-<li>No jumps &gt; 10 cm.</li>
-<li>≥ 90 % of in-view frames accepted.</li>
-</ul>
-<p><strong>Pitfalls</strong></p>
-<ul>
-<li>Wrong tag size (black-border edge, not the paper size).</li>
-<li>Intrinsics from a different resolution than the one you run.</li>
-<li>The camera frame (z forward) vs the WPILib frame (x forward) isn't converted.</li>
-<li>Stamping publish time instead of capture time.</li>
-<li>Gyro sign vs <code>getRotation2d()</code>.</li>
-<li>Wi-Fi AP congestion. Never stream video over the XRP AP.</li>
-<li>The Pi browning out on a shared battery: use a separate bank.</li>
-</ul>
-<p><strong>Transfer to competition:</strong> the same math is inside <strong>PhotonVision</strong> (<code>photonlibpy.PhotonCamera</code>, <code>PhotonPoseEstimator</code>). Use this phase to understand what PV does so you can debug it. A custom pipeline is only worth keeping if it beats PV on latency/cost (decide with the comparison-plan scores). The estimator pattern is identical on SystemCore/roboRIO. On swerve, swap to <code>SwerveDrivePoseEstimator</code>; <code>addVisionMeasurement(pose, ts, stddevs)</code> has the same signature.</p>
-<hr />
-<h2 id="phase-2-multiple-cameras-2x-ov9281-multi-tag-fpga-plug-in">Phase 2: Multiple cameras (2x OV9281) + multi-tag + FPGA plug-in</h2>
-<p><strong>Learning goals:</strong> extrinsics (<code>Transform3d</code>); per-camera noise models; time sync across devices; multi-tag PnP; outlier rejection; a source-agnostic pipeline.</p>
-<p class="callout"><strong>Hardware options:</strong> (a) two Pi Zero 2 Ws, one per camera (simplest, two NT clients, but uses 2 of the AP's few client slots, <span class="flag">UNVERIFIED</span> limit about 4), or (b) a Pi 5 with dual CSI (later, matches competition). Start with (a) using the laptop + 2 Pis = 3 clients. If the AP struggles, put the XRP in station mode on a lab router.</p>
-<p><strong>XRP exercises</strong></p>
-<ol>
-<li>Measure <code>ROBOT_TO_CAM[cam] = Transform3d(Translation3d(x,y,z), Rotation3d(roll,pitch,yaw))</code> with calipers. Verify by putting one tag in both cameras' view: the two robot poses should agree to ≤ 3 cm.</li>
-<li>Per-camera std devs: repeat the Phase 1 range test per camera. Fit <code>σ(d) = σ0 · d²</code>. Store <code>{cam: σ0}</code>.</li>
-<li>Timestamps: each Pi runs chrony against the laptop, or relies on NT4 time sync. Log <code>latency_ms</code> per camera. Fuse each camera's measurement <strong>separately</strong> with its own timestamp (don't merge frames from different cameras).</li>
-<li class="callout">Lab field layout: write <code>lab_layout.json</code> (tag ids, Pose3d, field length/width). Load it with <code>AprilTagFieldLayout("lab_layout.json")</code>. Keep <code>AprilTagFieldLayout.loadField(AprilTagField.k2026...)</code> (<span class="flag">UNVERIFIED</span> enum name) for official-field practice.</li>
-<li>Multi-tag solve on the Pi: collect all tag corners in a frame and their 3D field corners from the layout, then <code>cv2.solvePnP</code> (SQPNP/IPPE) gives the camera field pose, and composing with <code>ROBOT_TO_CAM.inverse()</code> gives the robot pose. Publish a new topic <code>/vision/&lt;cam&gt;/multitag_pose</code> (double[7]: x,y,z,qw,qx,qy,qz) + <code>n_tags</code> + <code>reproj_err</code> (<strong>new, additive</strong>).</li>
-<li>Rejection rules (extend the test plan's rules):
-   - All the single-tag rules (ID, margin &lt; 30, ambiguity &gt; 0.2, range, |z| &gt; 0.3, 1 m jump, 120°/s, age 300 ms).
-   - Multi-tag: reproj_err &gt; 2 px, out-of-field, |roll|/|pitch| &gt; 10°.
-   - Two cameras disagree &gt; 15 cm, so drop both for that cycle.</li>
-<li>Full-3D heading: after the multi-tag yaw sign check (rotate tag ±30°), let vision heading in with σθ = 0.3–0.9 rad × k.</li>
-<li><strong>FPGA plug-in:</strong> EPM11 (OV2640, later MT9V034) and Tang 25K (MT9V034) feed a host Pi that runs the <em>same</em> detector and publishes <code>/vision/fpga_epm11/*</code> or <code>/vision/fpga_tang/*</code>. The robot code needs only a new <code>ROBOT_TO_CAM</code> entry and σ0. Benchmark against the OV9281 using the comparison-plan scoring table.</li>
-</ol>
-<p><strong>APIs:</strong> <code>Transform3d</code>, <code>Rotation3d</code>, <code>Pose3d.transformBy</code>, <code>AprilTagFieldLayout</code> (<code>getTagPose(id)</code>), <code>ntcore</code> multiple subscribers, <code>wpimath.estimator.DifferentialDrivePoseEstimator.addVisionMeasurement(pose, ts, (sx, sy, sθ))</code>, <code>setVisionMeasurementStdDevs</code>; OpenCV <code>solvePnP</code> on the Pi.</p>
-<p><strong>Success criteria</strong></p>
-<ul>
-<li>The two cameras agree to ≤ 3 cm / 2° on a shared tag.</li>
-<li>Multi-tag (≥ 2 tags) error ≤ 2 cm @ 1.5 m.</li>
-<li>Fused pose on a 3 m lab loop ≤ 4 cm / 3°.</li>
-<li>Per-camera p95 latency ≤ 80 ms.</li>
-<li>An FPGA source can be dropped in with <strong>zero</strong> robot-code changes except constants.</li>
-</ul>
-<p><strong>Pitfalls</strong></p>
-<ul>
-<li>Extrinsic sign/axis errors (camera yaw 180°).</li>
-<li>Mixing camera clocks.</li>
-<li>Double-counting the same tag from two cameras as independent.</li>
-<li>Layout units/origin mismatch (blue-origin convention).</li>
-<li>Too many NT clients on the XRP AP.</li>
-<li>Mixing the multi-tag and single-tag σ.</li>
-</ul>
-<p><strong>Transfer:</strong> PhotonVision does multi-tag on the coprocessor (<code>MULTI_TAG_PNP_ON_COPROCESSOR</code>) and exposes <code>PhotonPoseEstimator</code> per camera with a <code>robotToCamera</code> Transform3d. That's exactly this phase. On swerve, the pattern is the same per camera with <code>SwerveDrivePoseEstimator</code>. 2027 caveat: AprilTag and the field layouts move to a vendordep / <code>Fields</code> class.</p>
-<hr />
-<h2 id="phase-3-using-the-poses-for-automation-commands2">Phase 3: Using the poses for automation (commands2)</h2>
-<p><strong>Learning goals:</strong> feedback control on pose; motion profiles; trajectory generation and tracking; command-based structure; auto selection.</p>
-<p><strong>Structure (commands2)</strong></p>
-<ul>
-<li><code>subsystems/drivetrain.py</code>: <code>Drivetrain(commands2.Subsystem)</code> owns the motors, encoders, gyro, estimator and <code>fuse()</code>. It exposes <code>get_pose()</code>, <code>reset_pose()</code>, <code>drive_arcade()</code>, <code>drive_chassis_speeds()</code> (via <code>DifferentialDriveKinematics.toWheelSpeeds</code> + per-wheel <code>PIDController</code> + <code>SimpleMotorFeedforwardMeters</code>).</li>
-<li><code>subsystems/vision.py</code>: the NT subscribers per camera; it feeds the drivetrain.</li>
-<li><code>commands/</code>: <code>AlignToTag</code>, <code>DriveToPose</code>, <code>FollowTrajectory</code>.</li>
-<li><code>robotcontainer.py</code>: bindings + <code>wpilib.SendableChooser</code> autos, published via <code>SmartDashboard.putData</code>.</li>
-<li><code>robot.py</code>: <code>commands2.TimedCommandRobot</code>.</li>
-</ul>
-<p><strong>XRP exercises</strong></p>
-<ol>
-<li><strong>Wheel velocity loop:</strong> characterize kS/kV (ramp test, log volts vs speed) → <code>SimpleMotorFeedforwardMeters</code> + <code>PIDController</code> per wheel. Target speed error ≤ 5 %.</li>
-<li><strong>Align-to-tag (rotation):</strong> <code>ProfiledPIDController(kP, 0, kD, TrapezoidProfile.Constraints(maxω, maxα))</code> on the tag's yaw (or a heading to the tag from the fused pose); <code>enableContinuousInput(-π, π)</code>; finish on <code>atGoal()</code>.</li>
-<li><strong>Drive-to-pose:</strong> two controllers, distance <code>ProfiledPIDController</code> + heading <code>PIDController</code>, or the unicycle approach (turn, drive, turn). Stop within the tolerance (<code>setTolerance</code>).</li>
-<li><strong>Trajectory:</strong> <code>TrajectoryGenerator.generateTrajectory(start, [waypoints], end, TrajectoryConfig(maxV, maxA).setKinematics(kin).addConstraint(DifferentialDriveVoltageConstraint(...)))</code>. Track with <strong><code>LTVUnicycleController(0.02)</code></strong> (preferred), <code>calculate(pose, trajectory.sample(t))</code> → <code>ChassisSpeeds</code>. Run <code>RamseteController</code> once for comparison only; it's deprecated.</li>
-<li class="callout"><strong>PathPlanner (optional):</strong> <code>robotpy-pathplannerlib</code>, <code>AutoBuilder.configure(get_pose, reset_pose, get_speeds, lambda s, ff: drive(s), PPLTVController(0.02), RobotConfig.fromGUISettings(), should_flip, self)</code>. Make lab-sized paths in the PathPlanner GUI. XRP support is <span class="flag">UNVERIFIED</span>; test in sim first.</li>
-<li><strong>Autos:</strong> <code>SendableChooser</code> with "Drive 1 m", "Align to tag 3", "Square loop (trajectory)", "Score-style: drive-to-pose in front of tag 5". Each is a <code>commands2.SequentialCommandGroup</code>.</li>
-<li><strong>Vision-in-the-loop test:</strong> start the robot 20 cm / 10° off its believed pose. The auto must still end ≤ 5 cm from the target thanks to fusion.</li>
-</ol>
-<p><strong>APIs:</strong> <code>commands2.Subsystem/Command/TimedCommandRobot/SequentialCommandGroup/RunCommand/button.CommandXboxController</code>; <code>wpimath.controller.PIDController</code>, <code>ProfiledPIDController</code>, <code>SimpleMotorFeedforwardMeters</code>, <code>LTVUnicycleController</code>, <code>RamseteController</code> (deprecated); <code>wpimath.trajectory.TrajectoryGenerator</code>, <code>TrajectoryConfig</code>, <code>TrapezoidProfile</code>; <code>wpilib.SendableChooser</code>, <code>SmartDashboard</code>; <code>pathplannerlib.auto.AutoBuilder</code>, <code>pathplannerlib.controller.PPLTVController</code>.</p>
-<p><strong>Success criteria</strong></p>
-<ul>
-<li>Align-to-tag: ≤ 2° final yaw, &lt; 1.5 s for a 90° error.</li>
-<li>Drive-to-pose: ≤ 3 cm / 3°.</li>
-<li>Trajectory: 2 m S-curve end error ≤ 5 cm, max cross-track ≤ 4 cm.</li>
-<li>Repeatability: 10 runs, σ ≤ 2 cm.</li>
-<li>The chooser works from Glass/sim GUI.</li>
-</ul>
-<p><strong>Pitfalls</strong></p>
-<ul>
-<li>No feedforward (PID alone can't track velocity at low XRP speeds; deadband/stiction).</li>
-<li>Units (m vs in).</li>
-<li>Forgetting <code>addRequirements</code>.</li>
-<li>Heading continuity.</li>
-<li class="callout">Too aggressive constraints for TT-class gear motors (keep ≤ 0.5 m/s, <span class="flag">UNVERIFIED</span> XRP max speed about 0.6 m/s).</li>
-<li><code>reset_pose</code> must reset the estimator, not just the encoders.</li>
-<li>Trajectory time base vs auto start.</li>
-</ul>
-<p><strong>Transfer:</strong> the command structure ports directly. On swerve, replace LTV/Ramsete with <code>HolonomicDriveController</code> (x/y <code>PIDController</code> + theta <code>ProfiledPIDController</code>) or PathPlanner <code>PPHolonomicDriveController</code>. Drive-to-pose gets simpler (holonomic translation and rotation are independent). 2027: <code>SendableChooser</code> → <code>Selectable</code>, snake_case names.</p>
-<hr />
-<h2 id="phase-4-stretch-xrp-systemcore-on-a-larger-robot">Phase 4 (stretch): XRP → SystemCore on a larger robot</h2>
-<h3 id="a-what-ports-and-what-changes">(a) What ports and what changes</h3>
+<p>Draft, rewritten Nov 3 2026. One meeting per week. Combines the old roadmap and planning tracks into one page. Kickoff target: <strong>Sat Jan 9 2027</strong>.</p>
+<h2>Stack (locked for preseason)</h2>
 <div class="tbl"><table>
 <thead>
 <tr>
-<th>Ports unchanged</th>
-<th>Changes</th>
+<th>Layer</th>
+<th>Choice</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>commands2 subsystem/command structure, RobotContainer, auto list</td>
-<td>Hardware layer: <code>XRPMotor</code> → CAN motor controllers (vendor libs; must be SystemCore 2027 vendordeps; <strong>Phoenix 5 not available</strong>)</td>
+<td>Robot</td>
+<td>Mecanum XRP (48 mm wheels) — <a href="xrp.html">xrp.html</a></td>
 </tr>
 <tr>
-<td><code>/vision/*</code> NT schema and the per-camera fusion <code>fuse()</code></td>
-<td><code>XRPGyro</code> → SystemCore onboard IMU (or the BNO085 on the stand-in)</td>
+<td>Vision</td>
+<td>PhotonVision on Pi Zero 2 W + OV9281 — <a href="vision.html">vision.html</a></td>
 </tr>
 <tr>
-<td>The estimator pattern (<code>update()</code> + <code>addVisionMeasurement(pose, ts, σ)</code>)</td>
-<td><code>DifferentialDrivePoseEstimator</code> → <code>SwerveDrivePoseEstimator(SwerveDriveKinematics, rot, module_positions, pose)</code></td>
+<td>Field</td>
+<td>Custom AprilTag layout (WPIcal / practice JSON)</td>
 </tr>
 <tr>
-<td>Field layout files, rejection rules, std-dev model (re-tune σ0)</td>
-<td>LTV/Ramsete → <code>HolonomicDriveController</code> / <code>PPHolonomicDriveController</code></td>
-</tr>
-<tr>
-<td>PathPlanner workflow</td>
-<td>2027 API renames (snake_case, <code>Selectable</code>, Telemetry/Tunables, AprilTag vendordep)</td>
+<td>Code host</td>
+<td>Laptop RobotPy <code>sim --xrp</code> + <code>photonlibpy</code> + <code>MecanumDrivePoseEstimator</code></td>
 </tr>
 </tbody>
 </table></div>
-<h3 id="b-pi-5-alpha-stand-in-vs-real-systemcore">(b) Pi 5 Alpha stand-in vs real SystemCore</h3>
-<p>Based on Paul's brain-swap note (Drive, read Oct 26; consistent with the summary below).</p>
-<div class="tbl"><table>
-<thead>
-<tr>
-<th></th>
-<th>Pi 5 stand-in (2027 SystemCore Alpha image)</th>
-<th>Real SystemCore</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>IMU</td>
-<td>BNO085 on I2C, 0x4A (0x4B with DI high)</td>
-<td>Onboard IMU</td>
-</tr>
-<tr>
-<td>CAN</td>
-<td>Adafruit Feather RP2040 CAN (MCP25625), classic CAN ≤ 1 Mbps over USB serial. Bus A = swerve, Bus B = mechanisms, optional Bus C. 120 Ω at each end. Buses mapped by <code>/dev/serial/by-id</code></td>
-<td>5 native buses <code>can_s0–4</code>, classic; CAN-FD via CANivore (<span class="flag">UNVERIFIED</span> detail)</td>
-</tr>
-<tr>
-<td>IO</td>
-<td>n/a</td>
-<td>6 SmartIO @ 3.3 V</td>
-</tr>
-<tr>
-<td>Proves</td>
-<td>DS connection, deploy (<code>python -m robotpy deploy</code>, <code>systemcore</code> user), NT, classic CAN control</td>
-<td>Everything, plus carrier heartbeat, field radio, CAN-FD, brownout</td>
-</tr>
-<tr>
-<td>Can't prove</td>
-<td>native can_s0–4, SmartIO, carrier heartbeat, field radio, CAN-FD, brownout parity</td>
-<td>n/a</td>
-</tr>
-<tr>
-<td>Brownout</td>
-<td>n/a (bench 5 V)</td>
-<td>About 6.75 V brownout / 7.5 V recovery (<span class="flag">UNVERIFIED</span>, not in the brain-swap note or the docs I checked)</td>
-</tr>
-</tbody>
-</table></div>
-<h3 id="c-moving-cameras-to-the-larger-robot">(c) Moving cameras to the larger robot</h3>
-<ul>
-<li><strong>Coprocessor:</strong> Pi 5 or Orange Pi 5 running <strong>PhotonVision</strong> (default for the season: proven, multi-tag on-coprocessor, <code>photonlibpy</code> 2027 alpha exists) <strong>vs</strong> the custom pipeline (keep it only if it scores better on latency/cost in the comparison table, or for the FPGA front-ends). A hybrid is possible: a small adapter on the robot converts PV results into <code>/vision/&lt;cam&gt;/*</code> so <code>fuse()</code> is unchanged. Or use <code>PhotonPoseEstimator</code> directly and keep <code>/vision/*</code> for the FPGA sources.</li>
-<li><strong>Mounting:</strong> rigid, vibration-damped brackets. Cameras high and angled 10–20° up toward the tags (<strong>suggestion</strong>). Cover ≥ 2 directions (front + rear/side). Keep cameras off flexible superstructure.</li>
-<li><strong>Transforms:</strong> measure <code>robotToCamera</code> from the robot center at floor level (CAD + caliper check). Re-verify with the two-camera agreement test from Phase 2.</li>
-<li class="callout"><strong>Power:</strong> feed the coprocessor from a regulated 5 V buck off the PDH (fused, e.g. 10 A slot) rated ≥ 5 A for a Pi 5, with brownout ride-through (<span class="flag">UNVERIFIED</span> rule/part; check the 2027 game manual for coprocessor power rules). Don't use a USB bank at competition (<span class="flag">UNVERIFIED</span>, game-rule dependent).</li>
-<li class="callout"><strong>Network:</strong> coprocessor ↔ SystemCore ↔ radio through an Ethernet switch (or SystemCore Ethernet ports, <span class="flag">UNVERIFIED</span> port count). Static IP <code>10.TE.AM.11</code>, <code>.12</code>. Respect the field bandwidth cap: only pose data, low-res debug streams.</li>
-</ul>
-<h3 id="d-staged-checklist">(d) Staged checklist</h3>
+<h2>Phases</h2>
 <ol>
-<li>[ ] Port the XRP command code to 2027 APIs in sim (snake_case, <code>Selectable</code>, AprilTag vendordep).</li>
-<li>[ ] Pi 5 stand-in: image, DS connects, deploy works, NT visible.</li>
-<li>[ ] BNO085 heading in the robot code; Feather CAN Bus A/B enumerate by-id, termination checked (60 Ω across the bus with power off).</li>
-<li>[ ] Swerve bot: one module, then all four on Bus A; <code>SwerveDrivePoseEstimator</code> odometry test (3 m square ≤ 5 cm).</li>
-<li>[ ] PhotonVision on a Pi 5/Orange Pi; 2 OV9281s; fusion via <code>PhotonPoseEstimator</code> or the adapter → same success criteria as Phase 2.</li>
-<li>[ ] Holonomic drive-to-pose and one PathPlanner auto.</li>
-<li>[ ] Real SystemCore swap: can_s0–4, IMU, SmartIO, brownout behavior, radio; re-run steps 4–6.</li>
+<li><strong>Drive</strong> — Mecanum XRP drives from the laptop; encoders + gyro into <code>MecanumDrivePoseEstimator</code>.</li>
+<li><strong>See</strong> — PhotonVision detects tags; pose numbers reach the laptop over NetworkTables.</li>
+<li><strong>Fuse</strong> — Vision measurements update the pose estimator; Field2d looks right.</li>
+<li><strong>Act</strong> — Simple align-to-tag / drive-to-pose on the Mecanum XRP.</li>
+<li><strong>Field</strong> — Practice-field layout built and imported (WPIcal → PhotonVision + robot code).</li>
 </ol>
-<hr />
-<h2 id="week-by-week-timeline-oct-26-2026-kickoff-sat-jan-9-2027">Week-by-week timeline (Oct 26 2026 → Kickoff Sat Jan 9 2027)</h2>
+<h2>Weekly outline (one meeting / week)</h2>
+<p>Adjust meeting day when Paul locks it. Hours are meeting time only; light take-home is optional.</p>
 <div class="tbl"><table>
 <thead>
 <tr>
 <th>Week of</th>
 <th>Focus</th>
-<th>Exit check</th>
+<th>Done when</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Oct 26</strong></td>
-<td>XRP V1 build, firmware v2.1.0, RobotPy sync, first drive; Beta flashed as spare</td>
-<td>1 m straight ±3 cm</td>
+<td>Nov 3</td>
+<td>Flash XRP; Mecanum teleop from <code>sim --xrp</code></td>
+<td>Robot strafes and rotates on command</td>
 </tr>
 <tr>
-<td><strong>Nov 2</strong></td>
-<td>Calibration (wheel, 585 cpr, track width, gyro); Pi Zero 2 W + OV9281 first light; camera calibration</td>
-<td>Phase 1 fps/latency numbers</td>
+<td>Nov 10</td>
+<td>Encoder / gyro odometry; measure track &amp; wheelbase</td>
+<td>Pose drifts slowly over a short path</td>
 </tr>
 <tr>
-<td><strong>Nov 9</strong></td>
-<td>Detection + <code>/vision/tag_data</code> + static range test; <strong>Nov 12 Virtual Kit</strong>: install tools</td>
-<td>Range error targets</td>
+<td>Nov 17</td>
+<td>PhotonVision on Pi; first tag detection</td>
+<td>Tag ID + pose in PhotonVision UI</td>
 </tr>
 <tr>
-<td><strong>Nov 16</strong></td>
-<td>Fusion on the XRP (M4b course). Phase 1 done. (Nov 17 registration deadline, team admin)</td>
-<td>5 cm / 5°</td>
+<td>Nov 24</td>
+<td>Thanksgiving — optional take-home: print tags, read WPIcal docs</td>
+<td>—</td>
 </tr>
 <tr>
-<td><strong>Nov 23</strong></td>
-<td>Second OV9281 (second Pi), extrinsics, per-camera σ (Thanksgiving week: light)</td>
-<td>Cameras agree ≤ 3 cm</td>
+<td>Dec 1</td>
+<td>NT → laptop; <code>photonlibpy</code> readback</td>
+<td>Pose printed / Field2d updates</td>
 </tr>
 <tr>
-<td><strong>Nov 30</strong></td>
-<td>Lab layout JSON, multi-tag PnP, rejection rules; FPGA path data if hardware is ready</td>
-<td>Phase 2 criteria</td>
+<td>Dec 8</td>
+<td><code>addVisionMeasurement</code> on Mecanum estimator</td>
+<td>Robot pose snaps when tag visible</td>
 </tr>
 <tr>
-<td><strong>Dec 7</strong></td>
-<td>commands2 refactor, wheel velocity loop, align-to-tag</td>
-<td>≤ 2°, &lt; 1.5 s</td>
+<td>Dec 15</td>
+<td>Align-to-tag command</td>
+<td>Robot faces a tag from ~1 m</td>
 </tr>
 <tr>
-<td><strong>Dec 14</strong></td>
-<td>Drive-to-pose, LTV trajectory following, SendableChooser autos; PathPlanner try-out</td>
-<td>Phase 3 criteria</td>
+<td>Dec 22</td>
+<td>Break — optional: draft practice-field JSON</td>
+<td>—</td>
 </tr>
 <tr>
-<td><strong>Dec 21</strong></td>
-<td>Holiday buffer / catch-up; Phase 4 step 1 (2027 API port in sim)</td>
-<td>Code runs on 2027 alpha in sim</td>
+<td>Dec 29</td>
+<td>Break — optional</td>
+<td>—</td>
 </tr>
 <tr>
-<td><strong>Dec 28</strong></td>
-<td>Phase 4 steps 2–3 on the Pi 5 stand-in (DS, deploy, NT, BNO085, CAN by-id)</td>
-<td>Stand-in proves DS/deploy/NT/CAN</td>
-</tr>
-<tr>
-<td><strong>Jan 4</strong></td>
-<td>Phase 4 steps 4–5 if the swerve hardware allows; freeze a "vision starter" repo + docs for the season</td>
-<td>Kickoff-ready template</td>
-</tr>
-<tr>
-<td><strong>Sat Jan 9</strong></td>
-<td><strong>Kickoff</strong></td>
-<td>n/a</td>
-</tr>
-<tr>
-<td>Phase 4 steps 6–7 continue into the build season once real SystemCore hardware and the game are known.</td>
-<td></td>
-<td></td>
+<td>Jan 5</td>
+<td>Practice-field import (WPIcal); freeze starter repo</td>
+<td>Layout in PV + robot code; short demo</td>
 </tr>
 </tbody>
 </table></div>
-<h2 id="unverified-items">UNVERIFIED items</h2>
+<h2>Take-home that doesn’t need the robot</h2>
 <ul>
-<li>XRP sim-client compatibility with robotpy-pathplannerlib.</li>
-<li>OV9281 640x400 fps on the Zero 2 W, and the XRP AP client limit (about 4).</li>
-<li>XRP max speed (about 0.6 m/s).</li>
-<li><code>AprilTagField</code> 2026 enum name.</li>
-<li>The 2027 API specifics beyond the changelog (<code>Selectable</code> usage, the <code>Fields</code> class).</li>
-<li>SystemCore CAN-FD via CANivore details and the Ethernet port count.</li>
-<li>The brownout 6.75 V / 7.5 V numbers.</li>
-<li>Coprocessor power and USB-bank rules for 2027 (wait for the game manual).</li>
-<li>Camera mounting angles (suggestion only).</li>
-<li>All numeric success targets are proposed goals, not measured.</li>
+<li>Pure sim (<code>python -m robotpy sim</code>) for commands and Field2d.</li>
+<li>PhotonVision docs; WPIcal docs.</li>
+<li>Print tag36h11 / 6.5 in tags; draft layout JSON from tape-measure poses.</li>
 </ul>
-<h2 id="what-paul-needs-to-provide-confirm">What Paul needs to provide / confirm</h2>
-<ol>
-<li>A second Pi Zero 2 W (or the Pi 5 dual-CSI plan) for Phase 2.</li>
-<li>Printed tag36h11 tags + the measured size; the lab tag positions for <code>lab_layout.json</code>.</li>
-<li>A checkerboard/ChArUco target.</li>
-<li>Whether to use PhotonVision as the season default (recommended) vs the custom pipeline.</li>
-<li>The swerve bot's motor controllers, PDH/PDP, and IMU for Phase 4 (still open from the brain-swap note).</li>
-<li>Whether the timeline fits his availability (holiday weeks are buffers).</li>
-</ol>
+<h2>Hardware to confirm</h2>
+<ul>
+<li>USB power bank for the Pi.</li>
+<li>Printed tags + a way to mount them.</li>
+<li>Which AprilTag app (WPIcal vs PractiCal) — see flag on <a href="vision.html">vision.html</a>.</li>
+</ul>
+<h2>Out of scope for now</h2>
+<ul>
+<li>FPGA camera paths (short future note only on other pages).</li>
+<li>SystemCore / competition-robot port (after Kickoff).</li>
+</ul>
     </main>
-    <footer>Draft generated from the Controls planning notes. Items flagged <span class="flag">UNVERIFIED</span> or <span class="flag">ASSUMPTION</span> have not been confirmed against current docs or hardware. · <a href="index.html">Back to Lab Bench</a> · <a href="xrp.html">XRP Build</a> · <a href="vision.html">Video Pipeline</a> · <a href="roadmap.html">Roadmap</a> · <a href="planning.html">Planning</a></footer>
+    <footer>
+      Mecanum XRP · PhotonVision · practice AprilTag field · one meeting / week.
+      · <a href="index.html">Lab Bench</a>
+      · <a href="xrp.html">XRP</a>
+      · <a href="vision.html">Vision</a>
+      · <a href="roadmap.html">Plan</a>
+    </footer>
   </div>
 </body>
 </html>
