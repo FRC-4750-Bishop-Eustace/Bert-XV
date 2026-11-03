@@ -65,6 +65,8 @@ code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px s
 .doc pre{background:#0f172a;color:#e2e8f0;border-radius:var(--radius);padding:.85rem 1rem;overflow-x:auto;margin:.75rem 0;font-size:.8rem;line-height:1.45}
 .doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
 .tbl{overflow-x:auto}
+.doc figure,.doc p:has(> img){margin:1rem 0}
+.doc img{display:block;max-width:100%;height:auto;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
 footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-soft)}
 @media (max-width:700px){.nav-brand{display:none}}
 
@@ -86,9 +88,9 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
     </header>
     <main class="doc">
 <p>Draft, rewritten Nov 3 2026. Stock XRP kit plus <strong>48 mm mecanum</strong> wheels (DFRobot, locked earlier) and Motors 3/4 for a four-wheel drive. Team meets once a week.</p>
-<h2>Goal</h2>
+<h2 id="goal">Goal</h2>
 <p>Assemble one Mecanum XRP that the laptop can drive with RobotPy (<code>sim --xrp</code>), ready for PhotonVision pose fusion on the vision page.</p>
-<h2>Hardware</h2>
+<h2 id="hardware">Hardware</h2>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -123,7 +125,7 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
 </tr>
 </tbody>
 </table></div>
-<h2>Firmware</h2>
+<h2 id="firmware">Firmware</h2>
 <p>Release used: <strong>xrp-wpilib-firmware v2.1.0</strong> (<a href="https://github.com/wpilibsuite/xrp-wpilib-firmware/releases">wpilibsuite/xrp-wpilib-firmware</a>).</p>
 <ol>
 <li>Download the UF2 for your board (V1 file has <strong>no</strong> <code>-beta</code> in the name; Beta file includes <code>-beta</code>).</li>
@@ -131,7 +133,7 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
 <li>Drag the UF2 onto the drive; the board reboots.</li>
 <li>Batteries in, switch on. Join Wi-Fi <code>XRP-&lt;id&gt;</code> / password <code>xrp-wpilib</code>. Robot IP <strong>192.168.42.1</strong>, code port <strong>3540</strong>, web UI <code>http://192.168.42.1:5000</code>.</li>
 </ol>
-<h2>RobotPy (laptop)</h2>
+<h2 id="robotpy-laptop">RobotPy (laptop)</h2>
 <p><code>pyproject.toml</code>:</p>
 <pre><code class="language-toml">[tool.robotpy]
 robotpy_version = &quot;2026.2.1.1&quot;
@@ -142,7 +144,7 @@ requires = [&quot;photonlibpy&quot;]
 HALSIMXRP_HOST=192.168.42.1 HALSIMXRP_PORT=3540 python -m robotpy sim --xrp
 </code></pre>
 <p>Robot code runs <strong>on the laptop</strong>. The XRP only receives motor commands over the XRP link.</p>
-<h2>Mecanum drive sketch</h2>
+<h2 id="mecanum-drive-sketch">Mecanum drive sketch</h2>
 <p>WPILib motor channels: 0 = front-left, 1 = front-right, 2 = rear-left, 3 = rear-right (confirm against your cable labels). Invert right-side motors before building <code>MecanumDrive</code>. Wheel diameter constant: <strong>0.048 m</strong>.</p>
 <pre><code class="language-python">import os
 os.environ.setdefault(&quot;HALSIMXRP_HOST&quot;, &quot;192.168.42.1&quot;)
@@ -201,7 +203,7 @@ class MyRobot(wpilib.TimedRobot):
         self.pose.update(self.gyro.getRotation2d(), self._wheels())
 </code></pre>
 <p>Vision measurements are added later with <code>self.pose.addVisionMeasurement(...)</code> — see <a href="vision.html">vision.html</a>.</p>
-<h2>First-drive checklist</h2>
+<h2 id="first-drive-checklist">First-drive checklist</h2>
 <ol>
 <li>Flash firmware; join the XRP AP; run <code>sim --xrp</code>.</li>
 <li>Confirm IMU values move in the sim GUI when you tilt the robot.</li>
@@ -209,7 +211,11 @@ class MyRobot(wpilib.TimedRobot):
 <li>Measure track width and wheelbase; replace the placeholder <code>Translation2d</code> values.</li>
 <li>Do <strong>not</strong> stream video over the XRP AP — pose numbers only (vision page).</li>
 </ol>
-<h2>Future note</h2>
+<h2 id="after-xrp-what-carries-to-frc">After XRP: what carries to FRC</h2>
+<p>PhotonVision, the photonlib pose-estimator pattern, field-layout JSON, and commands2 autos stay. The controller, drivetrain estimator, coprocessor, and where code runs swap for season.</p>
+<p>See the side-by-side on the <a href="roadmap.html#xrp-frc-translation">weekly plan</a>.</p>
+<p><img alt="Teaser: XRP practice skills that carry to FRC" src="diagrams/diagram-xrp-to-frc.png" /></p>
+<h2 id="future-note">Future note</h2>
 <p>FPGA camera paths (EPM11 / Tang) are parked. Bring them back only after the PhotonVision baseline works.</p>
     </main>
     <footer>

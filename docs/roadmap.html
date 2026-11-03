@@ -65,6 +65,8 @@ code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px s
 .doc pre{background:#0f172a;color:#e2e8f0;border-radius:var(--radius);padding:.85rem 1rem;overflow-x:auto;margin:.75rem 0;font-size:.8rem;line-height:1.45}
 .doc pre code{background:none;border:0;padding:0;color:inherit;font-size:1em}
 .tbl{overflow-x:auto}
+.doc figure,.doc p:has(> img){margin:1rem 0}
+.doc img{display:block;max-width:100%;height:auto;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
 footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-soft)}
 @media (max-width:700px){.nav-brand{display:none}}
 
@@ -86,7 +88,7 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
     </header>
     <main class="doc">
 <p>Draft, rewritten Nov 3 2026. One meeting per week. Combines the old roadmap and planning tracks into one page. Kickoff target: <strong>Sat Jan 9 2027</strong>.</p>
-<h2>Stack (locked for preseason)</h2>
+<h2 id="stack-locked-for-preseason">Stack (locked for preseason)</h2>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -113,7 +115,8 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
 </tr>
 </tbody>
 </table></div>
-<h2>Phases</h2>
+<h2 id="phases">Phases</h2>
+<p><img alt="XRP progression: Drive → See → Fuse → Act → Field, one meeting per week" src="diagrams/diagram-xrp-progression.png" /></p>
 <ol>
 <li><strong>Drive</strong> — Mecanum XRP drives from the laptop; encoders + gyro into <code>MecanumDrivePoseEstimator</code>.</li>
 <li><strong>See</strong> — PhotonVision detects tags; pose numbers reach the laptop over NetworkTables.</li>
@@ -121,7 +124,7 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
 <li><strong>Act</strong> — Simple align-to-tag / drive-to-pose on the Mecanum XRP.</li>
 <li><strong>Field</strong> — Practice-field layout built and imported (WPIcal → PhotonVision + robot code).</li>
 </ol>
-<h2>Weekly outline (one meeting / week)</h2>
+<h2 id="weekly-outline-one-meeting-week">Weekly outline (one meeting / week)</h2>
 <p>Adjust meeting day when Paul locks it. Hours are meeting time only; light take-home is optional.</p>
 <div class="tbl"><table>
 <thead>
@@ -184,19 +187,22 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
 </tr>
 </tbody>
 </table></div>
-<h2>Take-home that doesn’t need the robot</h2>
+<h2 id="take-home-that-doesn-t-need-the-robot">Take-home that doesn’t need the robot</h2>
 <ul>
 <li>Pure sim (<code>python -m robotpy sim</code>) for commands and Field2d.</li>
 <li>PhotonVision docs; WPIcal docs.</li>
 <li>Print tag36h11 / 6.5 in tags; draft layout JSON from tape-measure poses.</li>
 </ul>
-<h2>Hardware to confirm</h2>
+<h2 id="hardware-to-confirm">Hardware to confirm</h2>
 <ul>
 <li>USB power bank for the Pi.</li>
 <li>Printed tags + a way to mount them.</li>
 <li>Which AprilTag app (WPIcal vs PractiCal) — see flag on <a href="vision.html">vision.html</a>.</li>
 </ul>
-<h2>Out of scope for now</h2>
+<h2 id="xrp-frc-translation">XRP → FRC translation</h2>
+<p>What you learn on the Mecanum XRP carries into season code. The diagram shows what stays and what swaps.</p>
+<p><img alt="XRP to FRC: same PhotonVision / photonlib / field JSON / commands2 vs swaps for SystemCore, swerve estimator, larger Pi, onboard code" src="diagrams/diagram-xrp-to-frc.png" /></p>
+<h2 id="out-of-scope-for-now">Out of scope for now</h2>
 <ul>
 <li>FPGA camera paths (short future note only on other pages).</li>
 <li>SystemCore / competition-robot port (after Kickoff).</li>
