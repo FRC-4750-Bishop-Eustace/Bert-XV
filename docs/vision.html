@@ -67,6 +67,8 @@ code{font-family:var(--mono);font-size:.86em;background:var(--tint);border:1px s
 .tbl{overflow-x:auto}
 .doc figure,.doc p:has(> img){margin:1rem 0}
 .doc img{display:block;max-width:100%;height:auto;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.doc figure.diagram{margin:1rem 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.doc figure.diagram img{max-width:none;width:auto;min-width:100%;height:auto;border:0;border-radius:0;box-shadow:none}
 footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border-soft)}
 @media (max-width:700px){.nav-brand{display:none}}
 
@@ -89,7 +91,7 @@ footer{font-size:.78rem;color:var(--text-dim);margin-top:2rem;padding-top:1rem;b
     <main class="doc">
 <p>Draft, rewritten Nov 3 2026. One path: <strong>Pi Zero 2 W + OV9281 → PhotonVision → NetworkTables → laptop (RobotPy <code>sim --xrp</code>) → Mecanum XRP</strong>.</p>
 <h2 id="architecture">Architecture</h2>
-<p><img alt="Vision pipeline: OV9281 → PhotonVision → NetworkTables → laptop → Mecanum XRP, with WPIcal field JSON feeding PhotonVision and the estimator" src="diagrams/diagram-vision-pipeline.png" /></p>
+<figure class="diagram"><img alt="Vision pipeline: OV9281 → PhotonVision → NetworkTables → laptop → Mecanum XRP, with WPIcal field JSON feeding PhotonVision and the estimator" src="diagrams/diagram-vision-pipeline.png" width="1488" height="445" /></figure>
 <ul>
 <li><strong>Capture &amp; detect</strong> on the Pi (PhotonVision).</li>
 <li><strong>Fuse &amp; drive</strong> on the laptop (<code>MecanumDrivePoseEstimator</code> + <code>photonlibpy</code>).</li>
