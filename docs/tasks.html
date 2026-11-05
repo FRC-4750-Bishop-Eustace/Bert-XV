@@ -87,14 +87,14 @@
       <p>Jira stand-in for mentors and students — ten design items plus active work tasks with <strong>ownership</strong>, <strong>target dates</strong>, and <strong>state</strong>. Lives in the Bert-XV Lab Bench repo (not a separate repo). Synced <strong>2026-11-05</strong> America/New_York.</p>
       <div class="meta">
         <span class="chip done">7 Done</span>
-        <span class="chip wip">3 In progress · 1 Leaning</span>
-        <span class="chip open">1 Open</span>
+        <span class="chip wip">6 In progress · 1 Leaning</span>
+        <span class="chip open">2 Open</span>
         <span class="chip">Spell: RoboRio</span>
       </div>
       <p style="margin-top:.8rem;font-size:.88rem">Living Drive tracker: <a href="https://docs.google.com/document/d/1ntAOLK5YV0K7xKiu21IuKEbWqLfJ6Se_yZa9hRAlLVg/edit">Preseason Task Tracker</a></p>
     </header>
 
-    <p class="note">Ownership and target dates use TBD or “—” when a calendar owner/date isn’t locked yet. Q10 plus the two new work tasks (T11–T12) are the active near-term priorities.</p>
+    <p class="note">Ownership and target dates use TBD or “—” when a calendar owner/date isn’t locked yet. Active near-term work: Q10, T11–T12 (mecanum/path), and T13–T16 (FPGA).</p>
 
     <div class="panel" role="region" aria-label="Task table">
       <table>
@@ -180,6 +180,31 @@
           <td>This week (ties to Q10)</td>
           <td><span class="badge wip">In progress</span></td>
         </tr>
+
+          <tr data-state="wip">
+          <td><span class="qid">T13</span><strong>FPGA circuit — EPM11 + DVP camera</strong><div class="detail">Build the circuit for the EPM11 and the OV9281 or MT9V034 DVP module wired to the EPM11.</div></td>
+          <td>Paul + Isabel</td>
+          <td>TBD</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
+          <tr data-state="wip">
+          <td><span class="qid">T14</span><strong>FPGA Verilog development</strong><div class="detail">Verilog development for the FPGAs — applies to both the EPM11 and the Tang 25K.</div></td>
+          <td>Paul (+ FPGA contributors)</td>
+          <td>TBD</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
+          <tr data-state="wip">
+          <td><span class="qid">T15</span><strong>FPGA pixel / video stream test</strong><div class="detail">Test the actual pixel stream coming through the FPGA path for AprilTag decisions.</div></td>
+          <td>Paul (+ FPGA contributors)</td>
+          <td>After T13–T14</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
+          <tr data-state="open">
+          <td><span class="qid">T16</span><strong>Post-FPGA software stack</strong><div class="detail">Understand the software stack after the FPGA. FPGA pixel/video feed is not believed compatible with PhotonVision today — tag detection/analysis may need a lighter PhotonVision-like path. Open item.</div></td>
+          <td>Paul + software</td>
+          <td>TBD</td>
+          <td><span class="badge open">Open</span></td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -188,7 +213,7 @@
     <div class="lane">
       <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Hardware leftovers</h3><p>Mecanum base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Still open: PID calibration. Connected vision flow is tracked as <strong>T12</strong>.</p></article>
       <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FIELD</div><h3>Practice field process</h3><p>App deployed and first science-center field built. Repeatable create-new-field process is tracked as <strong>T11</strong>.</p></article>
-      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FPGA</div><h3>Parallel vision exploration</h3><p>EPM11 + Tang 25K with OV9281 / MT9V034 DVP pairings. EPM11 OV2640 blocked on MCP1700 LDOs.</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FPGA</div><h3>Parallel vision exploration</h3><p>Tracked as T13–T16: circuit (Paul+Isabel), Verilog (EPM11+Tang 25K), pixel-stream test, and open post-FPGA software stack. EPM11 OV2640 still blocked on MCP1700 LDOs.</p></article>
     </div>
 
     <footer class="foot">
