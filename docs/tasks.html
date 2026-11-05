@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Preseason Task Board — Lab Bench</title>
+  <title>Preseason Planning — Task Board · Lab Bench</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -11,8 +11,7 @@
     :root {
       --canvas:#faf8ff; --surface:#fff; --tint:#f2f3ff; --dim:#d2d9f4; --border:#94a3b8;
       --border-soft:#cbd5e1; --text:#0f172a; --text-muted:#475569; --text-dim:#64748b;
-      --primary:#1d4ed8; --primary-active:#0052cc; --cta:#ea580c; --pass:#10b981; --pass-dark:#059669;
-      --caution:#f59e0b; --caution-dark:#d97706; --open:#ef4444; --standin:#6366f1;
+      --primary:#1d4ed8; --primary-active:#0052cc; --pass:#059669; --caution:#d97706; --open:#b91c1c; --standin:#4338ca;
       --radius:4px; --shadow:0 2px 0 0 #94a3b8; --nav-h:56px;
       --font:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       --mono:"JetBrains Mono","Fira Code","SF Mono",Consolas,monospace;
@@ -20,50 +19,49 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--font);background-color:var(--canvas);background-image:linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px);background-size:24px 24px;color:var(--text);line-height:1.55;min-height:100vh}
     a{color:var(--primary)} a:hover{color:var(--primary-active)}
-    code,.mono{font-family:var(--mono);font-size:.88em}
+    code{font-family:var(--mono);font-size:.88em}
     .topnav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
-    .topnav-inner{max-width:1200px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+    .topnav-inner{max-width:1180px;margin:0 auto;height:100%;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
     .nav-brand{font-weight:700;font-size:.72rem;letter-spacing:.04em;color:var(--primary);white-space:nowrap}
-    .pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.06em;padding:.2rem .5rem;border-radius:999px;border:1.5px solid var(--standin);background:#eef2ff;color:#4338ca}
+    .pill{display:inline-flex;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.06em;padding:.2rem .5rem;border-radius:999px;border:1.5px solid #6366f1;background:#eef2ff;color:var(--standin)}
     .nav-links{display:flex;list-style:none;gap:.15rem;flex:1;justify-content:flex-end;overflow-x:auto}
     .nav-links a{display:block;padding:.35rem .55rem;font-size:.78rem;font-weight:550;color:var(--text-muted);text-decoration:none;border-radius:var(--radius)}
     .nav-links a:hover,.nav-links a.active{color:var(--primary-active);background:var(--tint)}
-    .wrap{max-width:1200px;margin:0 auto;padding:1.25rem 1.25rem 3.5rem}
-    .hero{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem 1.35rem;margin-bottom:1.25rem}
-    .hero h1{font-size:1.55rem;letter-spacing:-.02em;margin:.15rem 0 .4rem}
-    .hero p{color:var(--text-muted);max-width:58rem}
-    .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.85rem}
-    .chip{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.04em;padding:.25rem .55rem;border-radius:999px;border:1.5px solid var(--border-soft);background:var(--tint);color:var(--text-muted)}
-    .chip.done{background:#ecfdf5;border-color:#6ee7b7;color:var(--pass-dark)}
-    .chip.wip{background:#fffbeb;border-color:#fcd34d;color:var(--caution-dark)}
-    .chip.open{background:#fef2f2;border-color:#fca5a5;color:#b91c1c}
-    .board{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.25rem 0 1.75rem}
-    .col{background:rgba(255,255,255,.7);border:1.5px solid var(--border-soft);border-radius:var(--radius);padding:.75rem;min-height:12rem}
-    .col-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.65rem;padding:0 .15rem .55rem;border-bottom:2px dashed var(--border-soft)}
-    .col-h h2{font-size:.95rem}
-    .count{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--text-dim)}
-    .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.85rem .9rem;margin-bottom:.65rem}
-    .card:last-child{margin-bottom:0}
-    .card.feature{border-color:var(--primary);box-shadow:0 2px 0 0 var(--primary)}
-    .id{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.06em;color:var(--primary)}
-    .card h3{font-size:.95rem;margin:.2rem 0 .35rem}
-    .card p{font-size:.86rem;color:var(--text-muted)}
-    .status{display:inline-block;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.05em;padding:.15rem .4rem;border-radius:999px;margin-top:.45rem}
-    .s-done{background:#ecfdf5;color:var(--pass-dark)}
-    .s-wip{background:#fffbeb;color:var(--caution-dark)}
-    .s-open{background:#fef2f2;color:#b91c1c}
-    .s-lean{background:#eef2ff;color:#4338ca}
-    .steps{margin:.55rem 0 0;padding-left:1.1rem;font-size:.82rem;color:var(--text-muted)}
-    .steps li{margin:.2rem 0}
-    .steps .ok{color:var(--pass-dark);font-weight:600}
-    .section{margin:1.75rem 0}
-    .sec-label{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.85rem;padding-bottom:.45rem;border-bottom:2px dashed var(--border-soft)}
-    .sec-num{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--primary);letter-spacing:.08em}
-    .sec-label h2{font-size:1.2rem}
+    .wrap{max-width:1180px;margin:0 auto;padding:1.25rem 1.25rem 3.5rem}
+    .hero{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.2rem 1.35rem;margin-bottom:1.1rem}
+    .hero .eyebrow{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.08em;color:var(--primary)}
+    .hero h1{font-size:1.5rem;letter-spacing:-.02em;margin:.2rem 0 .4rem}
+    .hero p{color:var(--text-muted);max-width:56rem}
+    .meta{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.75rem}
+    .chip{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.04em;padding:.22rem .5rem;border-radius:999px;border:1.5px solid var(--border-soft);background:var(--tint);color:var(--text-muted)}
+    .chip.done{background:#ecfdf5;border-color:#6ee7b7;color:var(--pass)}
+    .chip.wip{background:#fffbeb;border-color:#fcd34d;color:var(--caution)}
+    .chip.open{background:#fef2f2;border-color:#fca5a5;color:var(--open)}
+    .panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto;margin-bottom:1.25rem}
+    table{width:100%;border-collapse:collapse;min-width:720px}
+    th,td{text-align:left;padding:.85rem .9rem;vertical-align:top;border-bottom:1px solid var(--border-soft)}
+    th{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);background:var(--tint);position:sticky;top:0}
+    tr:last-child td{border-bottom:0}
+    tr[data-state="wip"]{background:#fffbeb66}
+    tr[data-state="open"]{background:#fef2f266}
+    tr[data-state="lean"]{background:#eef2ff66}
+    .qid{display:inline-block;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.06em;color:var(--primary);margin-right:.4rem}
+    .detail{margin-top:.3rem;font-size:.84rem;color:var(--text-muted)}
+    .badge{display:inline-block;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.05em;padding:.18rem .45rem;border-radius:999px;white-space:nowrap}
+    .badge.done{background:#ecfdf5;color:var(--pass)}
+    .badge.wip{background:#fffbeb;color:var(--caution)}
+    .badge.open{background:#fef2f2;color:var(--open)}
+    .badge.lean{background:#eef2ff;color:var(--standin)}
+    .note{font-size:.82rem;color:var(--text-dim);margin:.35rem 0 1rem}
+    .sec{margin:1.5rem 0 .75rem;display:flex;align-items:baseline;gap:.7rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
+    .sec span{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--primary);letter-spacing:.08em}
+    .sec h2{font-size:1.1rem}
     .lane{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
-    .lane .card{margin:0}
+    .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.85rem .9rem}
+    .card h3{font-size:.95rem;margin:.15rem 0 .3rem}
+    .card p{font-size:.84rem;color:var(--text-muted)}
     .foot{margin-top:2rem;padding-top:1rem;border-top:2px solid var(--border-soft);font-size:.85rem;color:var(--text-dim)}
-    @media (max-width:900px){.board,.lane{grid-template-columns:1fr}}
+    @media (max-width:900px){.lane{grid-template-columns:1fr}}
     @media (max-width:700px){.nav-brand{display:none}}
   </style>
 </head>
@@ -71,7 +69,7 @@
   <nav class="topnav" aria-label="Primary">
     <div class="topnav-inner">
       <span class="nav-brand">FRC 4750 · LAB BENCH</span>
-      <span class="pill">TASK BOARD</span>
+      <span class="pill">PLANNING</span>
       <ul class="nav-links">
         <li><a href="index.html">← Lab Bench</a></li>
         <li><a href="xrp.html">XRP</a></li>
@@ -84,130 +82,105 @@
 
   <main class="wrap">
     <header class="hero">
-      <div class="id">PRESEASON · JIRA STAND-IN</div>
+      <div class="eyebrow">BERT-XV · PRESEASON PLANNING PAGE</div>
       <h1>Preseason Task Board</h1>
-      <p>Mentor/student board for the ten design and priority items. No Jira on this project — this GitHub Pages board is the stand-in. Synced from the living Drive tracker on <strong>2026-11-05</strong> (America/New_York).</p>
+      <p>Jira stand-in for mentors and students — ten design / priority items with <strong>ownership</strong>, <strong>target dates</strong>, and <strong>state</strong>. Lives in the Bert-XV Lab Bench repo (not a separate repo). Synced <strong>2026-11-05</strong> America/New_York.</p>
       <div class="meta">
         <span class="chip done">7 Done</span>
-        <span class="chip wip">2 In progress / leaning</span>
+        <span class="chip wip">1 In progress · 1 Leaning</span>
         <span class="chip open">1 Open</span>
         <span class="chip">Spell: RoboRio</span>
       </div>
-      <p style="margin-top:.85rem;font-size:.88rem">Living Drive tracker: <a href="https://docs.google.com/document/d/1ntAOLK5YV0K7xKiu21IuKEbWqLfJ6Se_yZa9hRAlLVg/edit">Preseason Task Tracker</a></p>
+      <p style="margin-top:.8rem;font-size:.88rem">Living Drive tracker: <a href="https://docs.google.com/document/d/1ntAOLK5YV0K7xKiu21IuKEbWqLfJ6Se_yZa9hRAlLVg/edit">Preseason Task Tracker</a></p>
     </header>
 
-    <div class="board" aria-label="Kanban board">
-      <section class="col" aria-labelledby="col-done">
-        <div class="col-h"><h2 id="col-done">Done / locked</h2><span class="count">7</span></div>
+    <p class="note">Owners and target dates for locked design choices are marked — when Paul hasn’t set a calendar date yet. Q10 is the active weekly priority.</p>
 
-        <article class="card">
-          <div class="id">Q1</div>
-          <h3>Motor controllers</h3>
-          <p>Spark Flex and Spark Max are the two mains (what the team has). Older controllers skipped for now.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card">
-          <div class="id">Q2</div>
-          <h3>Swerve — bring-to-bench</h3>
-          <p>No dedicated bench swerve. Mechanical builds modules and brings them to the bench as a test stand.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card">
-          <div class="id">Q4</div>
-          <h3>Bench code language</h3>
-          <p>Python, consistent with the robotpy XRP sim work.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card">
-          <div class="id">Q6</div>
-          <h3>Elevator — bring-to-bench</h3>
-          <p>Not a dedicated bench component. Elevators come to the bench for testing and PID tuning tooling.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card feature">
-          <div class="id">Q7 · FEATURED</div>
-          <h3>Intake — swappable stand-in</h3>
-          <p>Another swappable hardware piece on the same bring-to-bench model. Test and tune on the bench before major-bot integration.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card feature">
-          <div class="id">Q8 · FEATURED</div>
-          <h3>Sensors board</h3>
-          <p>Teaching board so the team sees how sensors come together; it goes into the test bench. Includes <strong>hard switches, IR switches, LiDAR, IMUs</strong>. Ultrasonics out (antiquated). Computer vision stays on the XRP — not at the test station.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-
-        <article class="card">
-          <div class="id">Q9</div>
-          <h3>Bench brain</h3>
-          <p><strong>RoboRio</strong> for the initial phase (simplicity). SystemCore liked but deferred to later.</p>
-          <span class="status s-done">DONE</span>
-        </article>
-      </section>
-
-      <section class="col" aria-labelledby="col-wip">
-        <div class="col-h"><h2 id="col-wip">In progress</h2><span class="count">2</span></div>
-
-        <article class="card feature">
-          <div class="id">Q10 · THIS WEEK</div>
-          <h3>Airport + XRP telemetry</h3>
-          <p>This week's priority (not sensors-board hardware start). Work through in order:</p>
-          <ol class="steps">
-            <li class="ok">Airport Express configured as BERT test SSID — done</li>
-            <li>Point XRP + Pi Zero (PhotonVision) at that Wi-Fi — in progress / almost done</li>
-            <li>Next: NetworkTables feed Pi Zero → laptop → back to XRP</li>
-          </ol>
-          <span class="status s-wip">IN PROGRESS</span>
-        </article>
-
-        <article class="card">
-          <div class="id">Q3</div>
-          <h3>Shared compute vs per-station Pi</h3>
-          <p>Leaning: potentially two Pis (telemetry + testing interface). RoboRio-as-control-heart is provisional — Pi as control heart is fine if it can handle it (not assessed yet). Lock during build.</p>
-          <span class="status s-lean">LEANING</span>
-        </article>
-      </section>
-
-      <section class="col" aria-labelledby="col-open">
-        <div class="col-h"><h2 id="col-open">Open</h2><span class="count">1</span></div>
-
-        <article class="card">
-          <div class="id">Q5</div>
-          <h3>Elastic vs Shuffleboard</h3>
-          <p>Default student dashboard still open. Research note: Elastic desktop = Windows / Mac / Linux x86-64 only (no Pi ARM64 desktop). Elastic Web is the Pi 4/5 path. SystemCore <code>.ipk</code> exists.</p>
-          <span class="status s-open">OPEN</span>
-        </article>
-      </section>
+    <div class="panel" role="region" aria-label="Task table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Task</th>
+            <th scope="col">Ownership</th>
+            <th scope="col">Target date</th>
+            <th scope="col">State</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr data-state="done">
+          <td><span class="qid">Q1</span><strong>Motor controllers</strong><div class="detail">Spark Flex + Spark Max; older controllers skipped.</div></td>
+          <td>Team (locked)</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q2</span><strong>Swerve — bring-to-bench</strong><div class="detail">No dedicated bench swerve; modules come to the stand.</div></td>
+          <td>Mechanical → Bench</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="lean">
+          <td><span class="qid">Q3</span><strong>Shared compute vs per-station Pi</strong><div class="detail">Potentially two Pis (telemetry + testing). RoboRio control heart provisional; Pi OK if it can handle it.</div></td>
+          <td>Paul + mentors</td>
+          <td>Lock during build</td>
+          <td><span class="badge lean">Leaning</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q4</span><strong>Bench code language</strong><div class="detail">Python, consistent with robotpy XRP sim.</div></td>
+          <td>Software (locked)</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="open">
+          <td><span class="qid">Q5</span><strong>Elastic vs Shuffleboard</strong><div class="detail">Elastic Web = Pi path; desktop not ARM64. Still choosing default student dashboard.</div></td>
+          <td>Mentors / software</td>
+          <td>TBD</td>
+          <td><span class="badge open">Open</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q6</span><strong>Elevator — bring-to-bench</strong><div class="detail">Come-to-bench for test + PID tooling.</div></td>
+          <td>Mechanical → Bench</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q7</span><strong>Intake — swappable stand-in</strong><div class="detail">Swappable hardware piece; same bring-to-bench model as the rest.</div></td>
+          <td>Mechanical → Bench</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q8</span><strong>Sensors board</strong><div class="detail">Teaching board: hard switches, IR, LiDAR, IMUs. Ultrasonics out. CV stays on XRP.</div></td>
+          <td>Mentors + students</td>
+          <td>After Q10 telemetry</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="done">
+          <td><span class="qid">Q9</span><strong>Bench brain</strong><div class="detail">RoboRio for initial phase; SystemCore deferred.</div></td>
+          <td>Controls (locked)</td>
+          <td>—</td>
+          <td><span class="badge done">Done</span></td>
+        </tr>
+        <tr data-state="wip">
+          <td><span class="qid">Q10</span><strong>Airport + XRP telemetry</strong><div class="detail">(1) BERT test SSID — done · (2) Point XRP + Pi Zero PhotonVision at Wi-Fi — almost done · (3) NT Pi Zero → laptop → XRP — next.</div></td>
+          <td>Paul + students</td>
+          <td>This week (by Fri 2026-11-06)</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
+        </tbody>
+      </table>
     </div>
 
-    <section class="section" aria-labelledby="related-h">
-      <div class="sec-label"><span class="sec-num">RELATED</span><h2 id="related-h">Nearby work (not one of the ten)</h2></div>
-      <div class="lane">
-        <article class="card">
-          <div class="id">XRP</div>
-          <h3>Primary mecanum + vision</h3>
-          <p>Mecanum base pretty much complete. OV9281 + Pi Zero + PhotonVision installed with housing. Remaining: PID calibration; finish Wi-Fi join (see Q10).</p>
-        </article>
-        <article class="card">
-          <div class="id">FIELD DEF</div>
-          <h3>AprilTag practice field</h3>
-          <p>App that exports PhotonVision JSON is done. Still need deploy / use on the practice field for automation testing.</p>
-        </article>
-        <article class="card">
-          <div class="id">FPGA</div>
-          <h3>Parallel vision exploration</h3>
-          <p>EPM11 + Tang 25K with incoming OV9281 / MT9V034 DVP pairings. Goals: FPS first, then lower pipeline cost. EPM11 OV2640 still blocked on MCP1700 LDOs.</p>
-        </article>
-      </div>
-    </section>
+    <div class="sec"><span>RELATED</span><h2>Nearby work (not one of the ten)</h2></div>
+    <div class="lane">
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Primary mecanum + vision</h3><p>Base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Remaining: PID calibration; finish Wi-Fi join (Q10).</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FIELD DEF</div><h3>AprilTag practice field</h3><p>JSON export app done. Still need deploy / use on the practice field for automation testing.</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FPGA</div><h3>Parallel vision exploration</h3><p>EPM11 + Tang 25K with OV9281 / MT9V034 DVP pairings. EPM11 OV2640 blocked on MCP1700 LDOs.</p></article>
+    </div>
 
     <footer class="foot">
-      <p><strong>FRC 4750 Bishop Eustace · Bert-XV</strong> · Task board stand-in for preseason ·
+      <p><strong>FRC 4750 Bishop Eustace · Bert-XV</strong> · Planning page in
+        <a href="https://github.com/FRC-4750-Bishop-Eustace/Bert-XV">Bert-XV</a> ·
         <a href="index.html">Lab Bench</a> ·
         <a href="xrp.html">XRP</a> ·
         <a href="vision.html">Vision</a> ·
