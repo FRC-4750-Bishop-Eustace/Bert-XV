@@ -84,17 +84,17 @@
     <header class="hero">
       <div class="eyebrow">BERT-XV · PRESEASON PLANNING PAGE</div>
       <h1>Preseason Task Board</h1>
-      <p>Jira stand-in for mentors and students — ten design / priority items with <strong>ownership</strong>, <strong>target dates</strong>, and <strong>state</strong>. Lives in the Bert-XV Lab Bench repo (not a separate repo). Synced <strong>2026-11-05</strong> America/New_York.</p>
+      <p>Jira stand-in for mentors and students — ten design items plus active work tasks with <strong>ownership</strong>, <strong>target dates</strong>, and <strong>state</strong>. Lives in the Bert-XV Lab Bench repo (not a separate repo). Synced <strong>2026-11-05</strong> America/New_York.</p>
       <div class="meta">
         <span class="chip done">7 Done</span>
-        <span class="chip wip">1 In progress · 1 Leaning</span>
+        <span class="chip wip">3 In progress · 1 Leaning</span>
         <span class="chip open">1 Open</span>
         <span class="chip">Spell: RoboRio</span>
       </div>
       <p style="margin-top:.8rem;font-size:.88rem">Living Drive tracker: <a href="https://docs.google.com/document/d/1ntAOLK5YV0K7xKiu21IuKEbWqLfJ6Se_yZa9hRAlLVg/edit">Preseason Task Tracker</a></p>
     </header>
 
-    <p class="note">Ownership and target dates use TBD or “—” when a calendar owner/date isn’t locked yet. Q10 is the active weekly priority.</p>
+    <p class="note">Ownership and target dates use TBD or “—” when a calendar owner/date isn’t locked yet. Q10 plus the two new work tasks (T11–T12) are the active near-term priorities.</p>
 
     <div class="panel" role="region" aria-label="Task table">
       <table>
@@ -167,14 +167,27 @@
           <td>This week (week of 2026-11-03)</td>
           <td><span class="badge wip">In progress</span></td>
         </tr>
+
+          <tr data-state="wip">
+          <td><span class="qid">T11</span><strong>AprilTag practice field process</strong><div class="detail">Implement a repeatable process for creating new AprilTag practice fields for remote testing and shifting locations. JSON export app is done and deployed; a practice field was created at the science center meeting spot.</div></td>
+          <td>Paul + students</td>
+          <td>Near-term (remote / location shifts)</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
+          <tr data-state="wip">
+          <td><span class="qid">T12</span><strong>Mecanum vision connected flow</strong><div class="detail">Primary mecanum vision path: connect Pi Zero ↔ computer ↔ XRP on Airport Wi-Fi; NetworkTables updates feed PhotonVision; XRP code uses that for odometry. Remaining open items on that side.</div></td>
+          <td>Paul + students</td>
+          <td>This week (ties to Q10)</td>
+          <td><span class="badge wip">In progress</span></td>
+        </tr>
         </tbody>
       </table>
     </div>
 
     <div class="sec"><span>RELATED</span><h2>Nearby work (not one of the ten)</h2></div>
     <div class="lane">
-      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Primary mecanum + vision</h3><p>Base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Remaining: PID calibration; finish Wi-Fi join (Q10).</p></article>
-      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FIELD DEF</div><h3>AprilTag practice field</h3><p>JSON export app done. Still need deploy / use on the practice field for automation testing.</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Hardware leftovers</h3><p>Mecanum base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Still open: PID calibration. Connected vision flow is tracked as <strong>T12</strong>.</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FIELD</div><h3>Practice field process</h3><p>App deployed and first science-center field built. Repeatable create-new-field process is tracked as <strong>T11</strong>.</p></article>
       <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FPGA</div><h3>Parallel vision exploration</h3><p>EPM11 + Tang 25K with OV9281 / MT9V034 DVP pairings. EPM11 OV2640 blocked on MCP1700 LDOs.</p></article>
     </div>
 
