@@ -53,6 +53,8 @@
     .badge.open{background:#fef2f2;color:var(--open)}
     .badge.analysis{background:#f0f9ff;color:#0369a1}
     .badge.lean{background:#eef2ff;color:var(--standin)}
+    .badge.optional{background:#f8fafc;color:#64748b;border:1.5px dashed #94a3b8}
+    tr[data-state="optional"]{background:#f8fafc66}
     .note{font-size:.82rem;color:var(--text-dim);margin:.35rem 0 1rem}
     .sec{margin:1.5rem 0 .75rem;display:flex;align-items:baseline;gap:.7rem;padding-bottom:.4rem;border-bottom:2px dashed var(--border-soft)}
     .sec span{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--primary);letter-spacing:.08em}
@@ -96,6 +98,7 @@
         <span class="chip wip">4 In progress · 1 Leaning</span>
         <span class="chip">4 Analysis</span>
         <span class="chip open">2 Open</span>
+        <span class="chip">1 Optional</span>
         <span class="chip">Spell: RoboRio</span>
       </div>
       <p style="margin-top:.8rem;font-size:.88rem">Living Drive tracker: <a href="https://docs.google.com/document/d/1ntAOLK5YV0K7xKiu21IuKEbWqLfJ6Se_yZa9hRAlLVg/edit">Preseason Task Tracker</a></p>
@@ -224,6 +227,12 @@
           <td>Paul + Isabel</td>
           <td>Before next week’s meeting</td>
           <td><span class="badge wip">In progress</span></td>
+        </tr>
+          <tr data-state="optional">
+          <td><span class="qid">Q19</span><strong>Dedicated bench computer for RobotPy XRP sim + NT server (optional)</strong><div class="detail">Spin up a separate Raspberry Pi 4 (or reuse the bench Pi 4 from Q17) as a persistent NetworkTables server so students can test without depending on a personal laptop. Reserve an IP on BERT-Test (e.g. <code>10.0.1.5</code>), install RobotPy 2026.2.2 + photonlibpy 2026.3.4, run <code>run-xrp</code> as a boot service listening on <code>*:5810</code>, and point PhotonVision and dashboards at that IP. Do only after the Mac end-to-end path is proven live.</div></td>
+          <td>TBD</td>
+          <td>After Mac NT path is live</td>
+          <td><span class="badge optional">Optional</span></td>
         </tr>
         </tbody>
       </table>
