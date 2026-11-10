@@ -62,6 +62,11 @@
     .card h3{font-size:.95rem;margin:.15rem 0 .3rem}
     .card p{font-size:.84rem;color:var(--text-muted)}
     .foot{margin-top:2rem;padding-top:1rem;border-top:2px solid var(--border-soft);font-size:.85rem;color:var(--text-dim)}
+    .card.wide{margin-bottom:1.25rem}
+    .card h4{font-size:.88rem;margin:.85rem 0 .3rem}
+    .card ol,.card ul{margin:.3rem 0 .55rem 1.2rem}
+    .card li{margin:.28rem 0;font-size:.84rem;color:var(--text-muted)}
+    .kind{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.04em;color:var(--text-dim)}
     @media (max-width:900px){.lane{grid-template-columns:1fr}}
     @media (max-width:700px){.nav-brand{display:none}}
   </style>
@@ -224,9 +229,47 @@
       </table>
     </div>
 
+
+    <div class="sec"><span>Q10 / Q12</span><h2>NetworkTables bring-up (Q10 step 3 / Q12)</h2></div>
+    <article class="card wide">
+      <h4>Architecture</h4>
+      <p>The XRP never speaks NetworkTables. The RobotPy program on the Mac is the NT4 server; the Pi Zero (PhotonVision, <code>10.0.1.3</code>) and the dashboard are NT clients. The XRP (<code>10.0.1.4</code>) only exchanges motor/sensor packets with the Mac over UDP 3540 (relayed via <code>localhost:3541</code>). Source: <a href="https://github.com/FRC-4750-Bishop-Eustace/BERT-XV-Preseason/commit/16b9372">BERT-XV-Preseason commit 16b9372</a>.</p>
+
+      <h4>Remaining steps</h4>
+      <ol>
+        <li>On the Pi, ensure <code>run-photonvision.sh</code> no longer passes <code>--disable-networking</code>. <span class="kind">Standard config</span></li>
+        <li>PhotonVision Settings → Networking: keep NT server <strong>off</strong>; replace team 4750 with the Mac’s BERT-Test IP (team 4750 resolves to <code>10.47.50.2</code>, which is not on this LAN). <span class="kind">Standard config</span></li>
+        <li>Reserve the Mac’s IP on the AirPort. <span class="kind">Standard config</span></li>
+        <li>Allow incoming TCP 5810 (NT4) and UDP 5810 (PhotonLib time sync) on the Mac firewall. <span class="kind">Standard config</span></li>
+        <li>Launch: <code>XRP_PROFILE=profiles/&lt;station-profile&gt;.json .venv/bin/python -m robotpy run-xrp --host 127.0.0.1 --port 3541</code>; verify <code>lsof -nP -iTCP:5810</code> shows <code>*:5810</code>. <span class="kind">Standard config</span></li>
+        <li>Point Glass, Elastic, or AdvantageScope at <code>localhost</code> (not a team number); a <code>photonvision</code> table should appear. <span class="kind">Standard config</span></li>
+        <li>In robot code, create <code>PhotonCamera("&lt;exact PhotonVision UI camera name&gt;")</code> on the default NT instance (do not use <code>vision.photon.open_camera()</code> — it starts a second server) and connect <code>PhotonAdapter</code> in <code>RobotContainer</code>. The template still says <code>xrp-camera-PENDING</code>. <span class="kind">Standard photonlibpy + existing custom adapter wiring</span></li>
+        <li>Finish calibration, the mount profile, and the clock-sync check before vision poses are accepted. <span class="kind">Calibration</span></li>
+      </ol>
+
+      <h4>Gotchas</h4>
+      <ul>
+        <li><code>robot.local</code> / team-number lookup don’t apply without a roboRIO (the Pi is <code>bert-vision.local</code>).</li>
+        <li>NT4 is TCP 5810, not NT3’s 1735.</li>
+        <li>PhotonVision must stay an NT client.</li>
+        <li>PhotonVision doesn’t start on boot — start it manually.</li>
+        <li>No usable poses until calibration and 3D settings are done.</li>
+      </ul>
+      <p>Unverified on live hardware: launcher flags, the NT server toggle, the exact camera name, the Mac IP and firewall, and whether the server binds <code>*:5810</code>.</p>
+
+      <h4>Source docs</h4>
+      <ul>
+        <li><a href="https://docs.photonvision.org/en/latest/docs/simulation/hardware-in-the-loop-sim.html">PhotonVision hardware-in-the-loop simulation</a></li>
+        <li><a href="https://docs.photonvision.org/en/latest/docs/quick-start/networking.html">PhotonVision networking quick-start</a></li>
+        <li><a href="https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html">WPILib simulation introduction</a></li>
+        <li><a href="https://docs.wpilib.org/en/stable/docs/software/networktables/networktables-networking.html">WPILib NetworkTables networking</a></li>
+        <li><a href="https://docs.photonvision.org/en/latest/docs/contributing/design-descriptions/time-sync.html">PhotonVision time-sync specification (UDP 5810)</a></li>
+      </ul>
+    </article>
+
     <div class="sec"><span>RELATED</span><h2>Nearby work (not one of the ten)</h2></div>
     <div class="lane">
-      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Hardware leftovers</h3><p>Mecanum base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Still open: PID calibration. Connected vision flow is tracked as <strong>Q12</strong>.</p></article>
+      <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">XRP</div><h3>Hardware leftovers</h3><p>Mecanum base pretty much complete; OV9281 + Pi Zero + PhotonVision mounted. Still open: PID calibration. Connected vision flow is tracked as <strong>Q12</strong>.</p><p>Note: the Bert-XV <a href="xrp.html">XRP</a> and <a href="vision.html">Vision</a> pages still describe the old <code>sim --xrp</code> setup on <code>192.168.42.1</code> and are out of date. The current setup is BERT-Test Wi-Fi with <code>run-xrp</code>, per BERT-XV-Preseason. See NetworkTables bring-up above.</p></article>
       <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FIELD</div><h3>Practice field process</h3><p>App deployed and first science-center field built. Repeatable create-new-field process is tracked as <strong>Q11</strong>.</p></article>
       <article class="card"><div class="eyebrow" style="font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--primary)">FPGA</div><h3>Parallel vision exploration</h3><p>Tracked as Q13–Q16: circuit (Paul+Isabel), Verilog (EPM11+Tang 25K), pixel-stream test, and open post-FPGA software stack. EPM11 OV2640 still blocked on MCP1700 LDOs.</p></article>
     </div>
