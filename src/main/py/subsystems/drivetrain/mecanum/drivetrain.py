@@ -38,6 +38,7 @@ class MecanumDrivetrain(SubsystemBase):
     def __init__(self, parent: "Logger") -> None:
         super().__init__(parent, "drivetrain")
 
+    def Initialize(self) -> None:
         motors = CreateMotors(constants.DRIVETRAIN_CONSTANTS)
         encoders = CreateEncoders(constants.DRIVETRAIN_CONSTANTS, motors)
         self.modules: list[MecanumModule] = [

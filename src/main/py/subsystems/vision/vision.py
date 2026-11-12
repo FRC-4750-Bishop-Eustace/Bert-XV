@@ -33,6 +33,8 @@ class Vision(SubsystemBase):
     def __init__(self, parent: "Logger", drivetrain: "Drivetrain") -> None:
         super().__init__(parent, "vision")
         self.drivetrain = drivetrain
+
+    def Initialize(self) -> None:
         self.block = False
         self.stddevs = (1.0, 1.0, 1.0)
 
