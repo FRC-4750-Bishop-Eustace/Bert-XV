@@ -22,7 +22,6 @@
 
 import math
 
-from commands2 import Subsystem
 from hardware import CreateIMUFromConfig
 from utils import GetFloat, GetObject, GetPID, GetProfiledPID, Logger, constants
 from wpilib import SmartDashboard
@@ -30,14 +29,14 @@ from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Pose2d, Rotation2d, Rotation3d, Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 
-from ..drivetrain import CreateEncoders, CreateMotors, MakeChassisSpeeds
+from ...subsystem_base import SubsystemBase
+from ..helpers import CreateEncoders, CreateMotors, MakeChassisSpeeds
 from .module import SwerveModule
 
 
-class SwerveDrivetrain(Subsystem):
+class SwerveDrivetrain(SubsystemBase):
     def __init__(self, parent: "Logger") -> None:
-        super().__init__()
-        self.logger = parent.Child("drivetrain")
+        super().__init__(parent, "drivetrain")
 
         motors = CreateMotors(constants.DRIVETRAIN_CONSTANTS)
         encoders = CreateEncoders(constants.DRIVETRAIN_CONSTANTS, motors)
@@ -122,7 +121,7 @@ class SwerveDrivetrain(Subsystem):
         self.Drive(0.0, 0.0, 0.0, False)
         self.logger.Info("Drivetrain stopped")
 
-    def periodic(self) -> None:
+    def Periodic(self) -> None:
         self.estimator.update(
             (self.gyro.GetRotation() or Rotation3d()).toRotation2d(),
             (

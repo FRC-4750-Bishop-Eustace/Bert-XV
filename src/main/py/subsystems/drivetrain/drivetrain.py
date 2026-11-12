@@ -22,14 +22,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Protocol
 
-from hardware import IMU, CreateEncoderFromConfig, CreateMotorFromConfig, Encoder, Motor
-from utils import Constants, GetObjectList, GetString, Logger, constants
+from hardware import IMU
+from utils import GetString, Logger, constants
 from wpimath.controller import ProfiledPIDController
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from wpimath.kinematics import ChassisSpeeds
 
 if TYPE_CHECKING:
     from .mecanum.drivetrain import MecanumDrivetrain
@@ -39,73 +37,58 @@ if TYPE_CHECKING:
 
 
 class PoseEstimator(Protocol):
-    """The pose estimator operations shared by the drivetrain and vision code."""
+    """The pose estimator operations shared by the drivetrain and vision code"""
 
-    def getEstimatedPosition(self) -> Pose2d: ...
+    def getEstimatedPosition(self) -> Pose2d:
+        raise NotImplementedError
 
-    def addVisionMeasurement(self, visionRobotPose: Pose2d, timestamp: float) -> None: ...
+    def addVisionMeasurement(self, visionRobotPose: Pose2d, timestamp: float) -> None:
+        raise NotImplementedError
 
-    def setVisionMeasurementStdDevs(self, visionMeasurementStdDevs: tuple[float, float, float]) -> None: ...
+    def setVisionMeasurementStdDevs(self, visionMeasurementStdDevs: tuple[float, float, float]) -> None:
+        raise NotImplementedError
 
 
 class Drivetrain(Protocol):
-    """Interface every drivetrain implements so commands and subsystems stay generic."""
+    """Interface every drivetrain implements so commands and subsystems stay generic"""
 
     @property
-    def logger(self) -> Logger: ...
+    def logger(self) -> Logger:
+        raise NotImplementedError
 
     @property
-    def gyro(self) -> IMU: ...
+    def gyro(self) -> IMU:
+        raise NotImplementedError
 
     @property
-    def estimator(self) -> PoseEstimator: ...
+    def estimator(self) -> PoseEstimator:
+        raise NotImplementedError
 
     @property
-    def angularPid(self) -> ProfiledPIDController: ...
+    def angularPid(self) -> ProfiledPIDController:
+        raise NotImplementedError
 
-    def Drive(self, x: float, y: float, theta: float, field_relative: bool, period: float = 0.02) -> None: ...
+    def Drive(self, x: float, y: float, theta: float, field_relative: bool, period: float = 0.02) -> None:
+        raise NotImplementedError
 
-    def Stop(self) -> None: ...
+    def Stop(self) -> None:
+        raise NotImplementedError
 
-    def GetPose(self) -> Pose2d: ...
+    def GetPose(self) -> Pose2d:
+        raise NotImplementedError
 
-    def GetPosition(self) -> Translation2d: ...
+    def GetPosition(self) -> Translation2d:
+        raise NotImplementedError
 
-    def GetRotation(self) -> Rotation2d: ...
+    def GetRotation(self) -> Rotation2d:
+        raise NotImplementedError
 
-    def periodic(self) -> None: ...
-
-
-def MakeChassisSpeeds(
-    x: float,
-    y: float,
-    theta: float,
-    field_relative: bool,
-    yaw: Rotation2d,
-    period: float = 0.02,
-) -> ChassisSpeeds:
-    """Build the discretized chassis speeds shared by every drivetrain."""
-
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(x, y, theta, yaw) if field_relative else ChassisSpeeds(x, y, theta)
-    return ChassisSpeeds.discretize(speeds, period)
-
-
-def CreateMotors(config: Constants) -> dict[str, Motor]:
-    """Create every motor listed in a drivetrain configuration, keyed by name."""
-
-    entries = GetObjectList(config, "motors")
-    return {GetString(entry, "name"): CreateMotorFromConfig(entry) for entry in entries}
-
-
-def CreateEncoders(config: Constants, motors: Mapping[str, Motor]) -> dict[str, Encoder]:
-    """Create every encoder listed in a drivetrain configuration, keyed by name."""
-
-    entries = GetObjectList(config, "encoders")
-    return {GetString(entry, "name"): CreateEncoderFromConfig(entry, motors) for entry in entries}
+    def periodic(self) -> None:
+        raise NotImplementedError
 
 
 def CreateDrivetrain(parent: Logger) -> DrivetrainType:
-    """Create the drivetrain selected by the ``type`` entry in the drivetrain constants."""
+    """Create the drivetrain selected by the ``type`` entry in the drivetrain constants"""
 
     kind = GetString(constants.DRIVETRAIN_CONSTANTS, "type").strip().lower()
     if kind == "swerve":

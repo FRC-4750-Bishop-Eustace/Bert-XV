@@ -20,19 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from commands2 import Subsystem
 from hardware import AprilTagAlgorithmType, AprilTagData, Camera, CreateCameraFromConfig
 from utils import GetObjectList, Logger, constants
 from wpilib import Timer
 from wpimath.geometry import Pose2d
 
 from ..drivetrain.drivetrain import Drivetrain
+from ..subsystem_base import SubsystemBase
 
 
-class Vision(Subsystem):
+class Vision(SubsystemBase):
     def __init__(self, parent: "Logger", drivetrain: "Drivetrain") -> None:
-        super().__init__()
-        self.logger = parent.Child("vision")
+        super().__init__(parent, "vision")
         self.drivetrain = drivetrain
         self.block = False
         self.stddevs = (1.0, 1.0, 1.0)
@@ -83,7 +82,7 @@ class Vision(Subsystem):
 
         return data
 
-    def periodic(self) -> None:
+    def Periodic(self) -> None:
         if self.block:
             return
 

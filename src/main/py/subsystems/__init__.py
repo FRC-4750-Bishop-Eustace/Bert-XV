@@ -21,10 +21,12 @@
 # SOFTWARE.
 
 from .drivetrain.drivetrain import CreateDrivetrain, Drivetrain
+from .subsystem_base import SubsystemBase
 from .vision.vision import Vision
 
 __all__ = [
     "CreateDrivetrain",
     "Drivetrain",
+    "SubsystemBase",
     "Vision",
 ]

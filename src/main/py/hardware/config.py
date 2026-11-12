@@ -31,8 +31,6 @@ __all__ = [
 
 
 def ParseEnum[T: IntEnum](enum: type[T], value: str, field: str) -> T:
-    """Parse a JSON string such as ``"spark_max"`` into an enum member."""
-
     normalized = value.strip().upper().replace("-", "_").replace(" ", "_")
     try:
         return enum[normalized]
@@ -42,8 +40,6 @@ def ParseEnum[T: IntEnum](enum: type[T], value: str, field: str) -> T:
 
 
 def GetChannels(config: Constants, key: str = "channels") -> tuple[int, int]:
-    """Read a two-channel encoder or solenoid configuration entry."""
-
     channels = GetList(config, key)
     if len(channels) != 2:
         raise TypeError(f"Expected hardware entry '{key}' to contain exactly 2 channels, got {len(channels)}")
