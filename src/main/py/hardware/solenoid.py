@@ -22,10 +22,15 @@
 
 from pathlib import Path
 
-from .types import Solenoid, SolenoidParameters, SolenoidType
+from utils import Constants, GetInt, GetString
+
+from .config import GetChannels, ParseEnum
+from .types import PneumaticsModule, Solenoid, SolenoidParameters, SolenoidType
 
 __all__ = [
     "CreateSolenoid",
+    "CreateSolenoidFromConfig",
+    "PneumaticsModule",
     "Solenoid",
     "SolenoidParameters",
     "SolenoidType",
@@ -47,3 +52,30 @@ def CreateSolenoid(backend: SolenoidType, params: SolenoidParameters) -> "Soleno
     if backend == SolenoidType.DOUBLE:
         return DoubleSolenoid(params)
     raise ValueError(f"Unknown solenoid type: {backend}")
+
+
+def CreateSolenoidFromConfig(config: Constants) -> "Solenoid":
+    """Create a solenoid from a hardware configuration entry."""
+
+    backend = ParseEnum(SolenoidType, GetString(config, "type"), "solenoid type")
+    module_type = ParseEnum(
+        PneumaticsModule,
+        GetString(config, "pneumaticsModule", "ctre_pcm"),
+        "pneumatics module type",
+    )
+
+    module: int
+    channel: int | tuple[int, int]
+    if backend == SolenoidType.STUB:
+        module = GetInt(config, "module", 0)
+        channel = GetInt(config, "channel", 0)
+
+    elif backend == SolenoidType.DOUBLE:
+        module = GetInt(config, "module")
+        channel = GetChannels(config)
+
+    else:
+        module = GetInt(config, "module")
+        channel = GetInt(config, "channel")
+
+    return CreateSolenoid(backend, SolenoidParameters(module, module_type, channel))

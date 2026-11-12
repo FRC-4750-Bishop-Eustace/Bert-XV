@@ -15,6 +15,7 @@ license = "MIT"
 license-files = [ "./LICENSE" ]
 dependencies = [
     "robotpy>=2026.2.2", # Use "2027.0.0a7" for latest SystemCore update (unstable)
+    "robotpy-xrp>=2026.2.2",
 ]
 
 [dependency-groups]

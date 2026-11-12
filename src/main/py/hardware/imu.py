@@ -22,13 +22,16 @@
 
 from pathlib import Path
 
+from utils import Constants, GetInt, GetString
 from utils.vendor import RequireImport
 
+from .config import ParseEnum
 from .types import IMU, IMUParameters, IMUType
 
 __all__ = [
     "IMU",
     "CreateIMU",
+    "CreateIMUFromConfig",
     "IMUParameters",
     "IMUType",
 ]
@@ -56,4 +59,16 @@ def CreateIMU(backend: IMUType, params: IMUParameters) -> "IMU":
         from .imu.pigeon2 import Pigeon2IMU
 
         return Pigeon2IMU(params)
+    if backend == IMUType.XRP:
+        RequireImport("xrp")
+        from .imu.xrp import XRPIMU
+
+        return XRPIMU(params)
     raise ValueError(f"Unknown IMU type: {backend}")
+
+
+def CreateIMUFromConfig(config: Constants) -> "IMU":
+    """Create an IMU from an ``imu`` entry in a hardware configuration."""
+
+    backend = ParseEnum(IMUType, GetString(config, "type"), "IMU type")
+    return CreateIMU(backend, IMUParameters(GetInt(config, "deviceId", 0)))

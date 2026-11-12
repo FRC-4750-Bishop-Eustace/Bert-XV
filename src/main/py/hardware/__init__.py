@@ -20,11 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .camera import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType, CreateCamera
-from .encoder import CreateEncoder, Encoder, EncoderParameters, EncoderType
-from .imu import IMU, CreateIMU, IMUParameters, IMUType
-from .motor import CreateMotor, IdleMode, Motor, MotorMode, MotorParameters, MotorType
-from .solenoid import CreateSolenoid, Solenoid, SolenoidParameters, SolenoidType
+from .camera import (
+    AprilTagAlgorithmType,
+    AprilTagData,
+    Camera,
+    CameraParameters,
+    CameraType,
+    CreateCamera,
+    CreateCameraFromConfig,
+)
+from .encoder import CreateEncoder, CreateEncoderFromConfig, Encoder, EncoderParameters, EncoderType
+from .imu import IMU, CreateIMU, CreateIMUFromConfig, IMUParameters, IMUType
+from .motor import CreateMotor, CreateMotorFromConfig, IdleMode, Motor, MotorMode, MotorParameters, MotorType
+from .solenoid import (
+    CreateSolenoid,
+    CreateSolenoidFromConfig,
+    PneumaticsModule,
+    Solenoid,
+    SolenoidParameters,
+    SolenoidType,
+)
 
 __all__ = [
     "IMU",
@@ -34,10 +49,15 @@ __all__ = [
     "CameraParameters",
     "CameraType",
     "CreateCamera",
+    "CreateCameraFromConfig",
     "CreateEncoder",
+    "CreateEncoderFromConfig",
     "CreateIMU",
+    "CreateIMUFromConfig",
     "CreateMotor",
+    "CreateMotorFromConfig",
     "CreateSolenoid",
+    "CreateSolenoidFromConfig",
     "Encoder",
     "EncoderParameters",
     "EncoderType",
@@ -48,6 +68,7 @@ __all__ = [
     "MotorMode",
     "MotorParameters",
     "MotorType",
+    "PneumaticsModule",
     "Solenoid",
     "SolenoidParameters",
     "SolenoidType",

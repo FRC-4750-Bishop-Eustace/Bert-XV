@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .swerve.drive_with_joystick import DriveWithJoystick
+from .drivetrain.drive_with_joystick import DriveWithJoystick
 
 __all__ = [
     "DriveWithJoystick",

@@ -1,4 +1,5 @@
 {
+  "type": "swerve",
   "chassisHalfLength": 0.3429,
   "wheelRadius": 0.0492,
   "driveReduction": 6.74603174603,
@@ -9,22 +10,126 @@
   "maxAngularSpeed": 5,
   "microLateralSpeed": 0.2,
   "microAngularSpeed": 3.0,
-  "frontLeftLateralMotor": 1,
-  "frontLeftAngularMotor": 8,
-  "frontLeftLateralEncoder": 1,
-  "frontLeftAngularEncoder": 12,
-  "frontRightLateralMotor": 4,
-  "frontRightAngularMotor": 5,
-  "frontRightLateralEncoder": 4,
-  "frontRightAngularEncoder": 9,
-  "backLeftLateralMotor": 7,
-  "backLeftAngularMotor": 6,
-  "backLeftLateralEncoder": 7,
-  "backLeftAngularEncoder": 10,
-  "backRightLateralMotor": 2,
-  "backRightAngularMotor": 3,
-  "backRightLateralEncoder": 2,
-  "backRightAngularEncoder": 11,
+  "motors": [
+    {
+      "name": "frontLeftLateral",
+      "type": "spark_max",
+      "deviceId": 1,
+      "mode": "brushless",
+      "inverted": false,
+      "idle": "brake",
+      "velocityFactor": 0.0007637396540446623,
+      "positionFactor": 0.045824379242679736
+    },
+    {
+      "name": "frontLeftAngular",
+      "type": "spark_max",
+      "deviceId": 8,
+      "mode": "brushless",
+      "inverted": true,
+      "idle": "brake"
+    },
+    {
+      "name": "frontRightLateral",
+      "type": "spark_max",
+      "deviceId": 4,
+      "mode": "brushless",
+      "inverted": false,
+      "idle": "brake",
+      "velocityFactor": 0.0007637396540446623,
+      "positionFactor": 0.045824379242679736
+    },
+    {
+      "name": "frontRightAngular",
+      "type": "spark_max",
+      "deviceId": 5,
+      "mode": "brushless",
+      "inverted": true,
+      "idle": "brake"
+    },
+    {
+      "name": "backRightLateral",
+      "type": "spark_max",
+      "deviceId": 2,
+      "mode": "brushless",
+      "inverted": false,
+      "idle": "brake",
+      "velocityFactor": 0.0007637396540446623,
+      "positionFactor": 0.045824379242679736
+    },
+    {
+      "name": "backRightAngular",
+      "type": "spark_max",
+      "deviceId": 3,
+      "mode": "brushless",
+      "inverted": true,
+      "idle": "brake"
+    },
+    {
+      "name": "backLeftLateral",
+      "type": "spark_max",
+      "deviceId": 7,
+      "mode": "brushless",
+      "inverted": false,
+      "idle": "brake",
+      "velocityFactor": 0.0007637396540446623,
+      "positionFactor": 0.045824379242679736
+    },
+    {
+      "name": "backLeftAngular",
+      "type": "spark_max",
+      "deviceId": 6,
+      "mode": "brushless",
+      "inverted": true,
+      "idle": "brake"
+    }
+  ],
+  "encoders": [
+    {
+      "name": "frontLeftLateral",
+      "type": "absolute",
+      "motor": "frontLeftLateral"
+    },
+    {
+      "name": "frontLeftAngular",
+      "type": "cancoder",
+      "deviceId": 12
+    },
+    {
+      "name": "frontRightLateral",
+      "type": "absolute",
+      "motor": "frontRightLateral"
+    },
+    {
+      "name": "frontRightAngular",
+      "type": "cancoder",
+      "deviceId": 9
+    },
+    {
+      "name": "backRightLateral",
+      "type": "absolute",
+      "motor": "backRightLateral"
+    },
+    {
+      "name": "backRightAngular",
+      "type": "cancoder",
+      "deviceId": 11
+    },
+    {
+      "name": "backLeftLateral",
+      "type": "absolute",
+      "motor": "backLeftLateral"
+    },
+    {
+      "name": "backLeftAngular",
+      "type": "cancoder",
+      "deviceId": 10
+    }
+  ],
+  "imu": {
+    "type": "navx",
+    "deviceId": 0
+  },
   "lateralPID": [
     0.02,
     0.0,

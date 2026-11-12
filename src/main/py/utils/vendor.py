@@ -33,6 +33,7 @@ VENDOR_LIBRARIES: Final[dict[str, str]] = {
     "photonlibpy": "PhotonLib",
     "robotpy_apriltag": "AprilTag",
     "urcl": "URCL",
+    "xrp": "XRP",
 }
 
 _results: dict[str, BaseException | None] = {}

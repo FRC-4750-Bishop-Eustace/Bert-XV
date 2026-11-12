@@ -21,36 +21,25 @@
 # SOFTWARE.
 
 from commands2 import Subsystem
-from hardware import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType, CreateCamera
-from utils import GetList, GetPose3d, GetString, Logger, constants
+from hardware import AprilTagAlgorithmType, AprilTagData, Camera, CreateCameraFromConfig
+from utils import GetObjectList, Logger, constants
 from wpilib import Timer
 from wpimath.geometry import Pose2d
 
-from ..swerve.drivetrain import Drivetrain
+from ..drivetrain.drivetrain import Drivetrain
 
 
 class Vision(Subsystem):
-    def __init__(self, parent: "Logger", swerve: "Drivetrain") -> None:
+    def __init__(self, parent: "Logger", drivetrain: "Drivetrain") -> None:
         super().__init__()
         self.logger = parent.Child("vision")
-        self.swerve = swerve
+        self.drivetrain = drivetrain
         self.block = False
         self.stddevs = (1.0, 1.0, 1.0)
 
-        self.cameras = []
-        for cam in GetList(constants.VISION_CONSTANTS, "cameras"):
-            if not isinstance(cam, dict):
-                raise TypeError(f"Expected vision camera entry to be a JSON object, got {type(cam).__name__}")
-
-            backend = CameraType.STUB
-            typ = GetString(cam, "type")
-            if typ == "limelight":
-                backend = CameraType.LIMELIGHT
-            elif typ == "photon":
-                backend = CameraType.PHOTON
-            self.cameras.append(
-                CreateCamera(backend, CameraParameters(GetString(cam, "name"), GetPose3d(cam, "offset")))
-            )
+        self.cameras: list[Camera] = [
+            CreateCameraFromConfig(cam) for cam in GetObjectList(constants.VISION_CONSTANTS, "cameras")
+        ]
 
     def BlockVisionUpdates(self, block: bool = True) -> None:
         self.block = block
@@ -81,9 +70,9 @@ class Vision(Subsystem):
         mt2 = camera.GetData(AprilTagAlgorithmType.MT2_BLUE) or AprilTagData(
             Pose2d(), 0.0, 0, 0.0, 0.0, 0.0, Timer.getFPGATimestamp(), 0.0, 0.0
         )
-        gyro_rate = abs(self.swerve.gyro.GetRate() or 0.0)
+        gyro_rate = abs(self.drivetrain.gyro.GetRate() or 0.0)
         if mt2.tagCount == 1 and gyro_rate < 360:
-            camera.SetOrientation(self.swerve.gyro.GetYaw() or 0.0)
+            camera.SetOrientation(self.drivetrain.gyro.GetYaw() or 0.0)
 
             self.stddevs = (
                 0.6 + 0.002 * gyro_rate,
@@ -102,5 +91,5 @@ class Vision(Subsystem):
             data = self.UseHeuristic(camera)
 
             if data is not None:
-                self.swerve.estimator.setVisionMeasurementStdDevs(self.stddevs)
-                self.swerve.estimator.addVisionMeasurement(data.pose, data.timestamp)
+                self.drivetrain.estimator.setVisionMeasurementStdDevs(self.stddevs)
+                self.drivetrain.estimator.addVisionMeasurement(data.pose, data.timestamp)

@@ -145,29 +145,41 @@ def LoadConstants(profile: str | Path | None = None) -> Constants:
     return merged
 
 
-def GetInt(const: Constants, key: str) -> int:
-    value = const[key]
+def GetInt(const: Constants, key: str, default: int = 0) -> int:
+    value = const.get(key)
+    if value is None:
+        return default
+
     if isinstance(value, bool) or not isinstance(value, int | float):
         raise TypeError(f"Expected constants entry '{key}' to be a number, got {type(value).__name__}")
     return int(value)
 
 
-def GetFloat(const: Constants, key: str) -> float:
-    value = const[key]
+def GetFloat(const: Constants, key: str, default: float = 0.0) -> float:
+    value = const.get(key)
+    if value is None:
+        return default
+
     if isinstance(value, bool) or not isinstance(value, int | float):
         raise TypeError(f"Expected constants entry '{key}' to be a number, got {type(value).__name__}")
     return float(value)
 
 
-def GetString(const: Constants, key: str) -> str:
-    value = const[key]
+def GetString(const: Constants, key: str, default: str = "") -> str:
+    value = const.get(key)
+    if value is None:
+        return default
+
     if not isinstance(value, str):
         raise TypeError(f"Expected constants entry '{key}' to be a string, got {type(value).__name__}")
     return value
 
 
-def GetBool(const: Constants, key: str) -> bool:
-    value = const[key]
+def GetBool(const: Constants, key: str, default: bool = False) -> bool:
+    value = const.get(key)
+    if value is None:
+        return default
+
     if not isinstance(value, bool):
         raise TypeError(f"Expected constants entry '{key}' to be a boolean, got {type(value).__name__}")
     return value
@@ -185,6 +197,16 @@ def GetObject(const: Constants, key: str) -> Constants:
     if not isinstance(value, dict):
         raise TypeError(f"Expected constants entry '{key}' to be a JSON object, got {type(value).__name__}")
     return value
+
+
+def GetObjectList(const: Constants, key: str) -> list[Constants]:
+    entries = GetList(const, key)
+    result: list[Constants] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise TypeError(f"Expected constants entry '{key}' to contain JSON objects, got {type(entry).__name__}")
+        result.append(entry)
+    return result
 
 
 def GetNumbers(const: Constants, key: str, count: int) -> list[float]:

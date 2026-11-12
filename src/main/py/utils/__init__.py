@@ -31,6 +31,7 @@ from .constants import (
     GetList,
     GetNumbers,
     GetObject,
+    GetObjectList,
     GetPID,
     GetPose2d,
     GetPose3d,
@@ -45,6 +46,7 @@ from .constants import (
 )
 from .health import Health
 from .logger import Logger, LogLevel
+from .profile_selector import ProfileSelector
 from .uuid import GetLogDirectory, NewUUID
 
 __all__ = [
@@ -59,6 +61,7 @@ __all__ = [
     "GetLogDirectory",
     "GetNumbers",
     "GetObject",
+    "GetObjectList",
     "GetPID",
     "GetPose2d",
     "GetPose3d",
@@ -74,4 +77,5 @@ __all__ = [
     "LogLevel",
     "Logger",
     "NewUUID",
+    "ProfileSelector",
 ]

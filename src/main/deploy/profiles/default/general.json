@@ -8,5 +8,6 @@
   "criticalCPUTemperature": 85.0,
   "highCANUtilization": 85.0,
   "criticalCANUtilization": 100.0,
-  "canbus": "rio"
+  "canbus": "rio",
+  "isXRP": false
 }

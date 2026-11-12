@@ -22,8 +22,10 @@
 
 from pathlib import Path
 
+from utils import Constants, GetPose3d, GetString
 from utils.vendor import RequireImport
 
+from .config import ParseEnum
 from .types import AprilTagAlgorithmType, AprilTagData, Camera, CameraParameters, CameraType
 
 __all__ = [
@@ -33,6 +35,7 @@ __all__ = [
     "CameraParameters",
     "CameraType",
     "CreateCamera",
+    "CreateCameraFromConfig",
 ]
 
 # Bridge so `hardware.camera` also acts as a package root for `hardware.camera.{...}`
@@ -55,3 +58,10 @@ def CreateCamera(backend: CameraType, params: CameraParameters) -> "Camera":
 
         return PhotonCamera(params)
     raise ValueError(f"Unknown camera type: {backend}")
+
+
+def CreateCameraFromConfig(config: Constants) -> "Camera":
+    """Create a camera from a ``cameras`` entry in a vision configuration."""
+
+    backend = ParseEnum(CameraType, GetString(config, "type"), "camera type")
+    return CreateCamera(backend, CameraParameters(GetString(config, "name"), GetPose3d(config, "offset")))

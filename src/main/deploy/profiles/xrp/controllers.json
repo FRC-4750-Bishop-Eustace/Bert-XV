@@ -1,0 +1,8 @@
+{
+  "controllerPort": 2,
+  "dashboardPort": 0,
+  "lateralSlewRate": 10.0,
+  "angularSlewRate": 20.0,
+  "lateralDeadband": 0.05,
+  "angularDeadband": 0.05
+}

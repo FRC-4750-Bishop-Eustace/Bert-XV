@@ -23,52 +23,27 @@
 import math
 
 import wpimath
-from hardware import (
-    CreateEncoder,
-    CreateMotor,
-    EncoderParameters,
-    EncoderType,
-    IdleMode,
-    MotorMode,
-    MotorParameters,
-    MotorType,
-)
-from utils import GetFeedForwardMeters, GetFloat, GetPID, GetProfiledPID, constants
+from hardware import Encoder, Motor
+from utils import GetFeedForwardMeters, GetPID, GetProfiledPID, constants
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
 
 
 class SwerveModule:
-    def __init__(self, motor_ids: list[int], encoder_ids: list[int]) -> None:
-        assert len(motor_ids) == len(encoder_ids) == 2
-
-        self.lateral_motor = CreateMotor(
-            MotorType.SPARK_MAX,
-            MotorParameters(
-                motor_ids[0],
-                MotorMode.BRUSHLESS,
-                False,
-                IdleMode.BRAKE,
-                (math.tau * GetFloat(constants.DRIVETRAIN_CONSTANTS, "wheelRadius") / 60)
-                / GetFloat(constants.DRIVETRAIN_CONSTANTS, "driveReduction"),
-                (GetFloat(constants.DRIVETRAIN_CONSTANTS, "wheelRadius") * math.tau)
-                / GetFloat(constants.DRIVETRAIN_CONSTANTS, "driveReduction"),
-            ),
-        )
-        self.lateral_encoder = CreateEncoder(EncoderType.ABSOLUTE, EncoderParameters(self.lateral_motor))
+    def __init__(
+        self,
+        lateral_motor: Motor,
+        angular_motor: Motor,
+        lateral_encoder: Encoder,
+        angular_encoder: Encoder,
+    ) -> None:
+        self.lateral_motor = lateral_motor
+        self.lateral_encoder = lateral_encoder
         self.lateral_pid = GetPID(constants.DRIVETRAIN_CONSTANTS, "lateralPID")
         self.lateral_ff = GetFeedForwardMeters(constants.DRIVETRAIN_CONSTANTS, "lateralFeedforward")
 
-        self.angular_motor = CreateMotor(
-            MotorType.SPARK_MAX,
-            MotorParameters(
-                motor_ids[1],
-                MotorMode.BRUSHLESS,
-                True,
-                IdleMode.BRAKE,
-            ),
-        )
-        self.angular_encoder = CreateEncoder(EncoderType.CANCODER, EncoderParameters(encoder_ids[1]))
+        self.angular_motor = angular_motor
+        self.angular_encoder = angular_encoder
         self.angular_pid = GetProfiledPID(constants.DRIVETRAIN_CONSTANTS, "angularPID")
         self.angular_ff = GetFeedForwardMeters(constants.DRIVETRAIN_CONSTANTS, "angularFeedforward")
 

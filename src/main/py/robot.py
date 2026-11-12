@@ -25,14 +25,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "src" / "main" / "py"))
 
-from commands2 import Command, CommandScheduler, TimedCommandRobot
+from commands2 import CommandScheduler, TimedCommandRobot
 from robot_container import RobotContainer
-from utils.constants import InitializeConstants
-from utils.health import Health
-from utils.logger import Logger
+from utils import Health, Logger, ProfileSelector
 from utils.vendor import VENDOR_LIBRARIES, CheckImport
-
-CONSTANTS_PROFILE = "default"
 
 
 class Robot(TimedCommandRobot):
@@ -42,20 +38,13 @@ class Robot(TimedCommandRobot):
     def robotInit(self) -> None:
         self._logger = Logger("robot")  # `self.logger` already exists as an internal method of `TimedCommandRobot`
 
-        InitializeConstants(CONSTANTS_PROFILE)
+        self.profileSelector = ProfileSelector()
+        self.profileSelector.schedule()
 
-        try:
-            from urcl import URCL
-
-            URCL.start()
-
-        except Exception:
-            self._logger.Warning("URCL could not be found")
+        self.cmdScheduler = CommandScheduler.getInstance()
+        self.cmdScheduler.run()
 
         for module, name in VENDOR_LIBRARIES.items():
-            if module == "urcl":
-                continue
-
             error = CheckImport(module)
             if error is not None:
                 self._logger.Warning(f"{name} could not be found", module=module, error=str(error))
@@ -63,18 +52,18 @@ class Robot(TimedCommandRobot):
         self.robot = RobotContainer(self._logger)
         self.health = Health(self._logger)
 
-        self.autoCmd: Command | None = None
-        self.cmdScheduler = CommandScheduler.getInstance()
+        self.autoCmd = self.robot.GetAutonomousCommand() or None
 
     def robotPeriodic(self) -> None:
         self.cmdScheduler.run()
+
         self.robot.UpdateField()
+
         self.health.Update()
 
     def autonomousInit(self) -> None:
         self._logger.Trace("Autonomous mode started")
 
-        self.autoCmd = self.robot.GetAutonomousCommand()
         if self.autoCmd:
             self.autoCmd.schedule()
 

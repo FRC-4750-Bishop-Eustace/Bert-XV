@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from commands2 import Command
+from typing import cast
+
+from commands2 import Command, Subsystem
 from subsystems import Drivetrain
 from utils import GetFloat, GetInt, constants
 from wpilib import DriverStation, SmartDashboard
@@ -31,8 +33,8 @@ from wpimath.geometry import Translation2d
 
 
 class DriveWithJoystick(Command):
-    def __init__(self, swerve: Drivetrain, controller: GenericHID, point: Translation2d | None = None) -> None:
-        self.swerve = swerve
+    def __init__(self, drivetrain: Drivetrain, controller: GenericHID, point: Translation2d | None = None) -> None:
+        self.drivetrain = drivetrain
         self.controller = controller
         self.point = point
         self.slew_rates: list[SlewRateLimiter] = [
@@ -41,7 +43,7 @@ class DriveWithJoystick(Command):
         ]
         self.field_relative = True
 
-        self.addRequirements(self.swerve)
+        self.addRequirements(cast(Subsystem, self.drivetrain))
 
         SmartDashboard.putBoolean("FieldRelative", self.field_relative)
 
@@ -49,17 +51,17 @@ class DriveWithJoystick(Command):
         self.field_relative = not self.field_relative
         SmartDashboard.putBoolean("FieldRelative", self.field_relative)
 
-        self.swerve.logger.Info(
+        self.drivetrain.logger.Info(
             f"Field relative toggled {'on' if self.field_relative else 'off'}", field_relative=self.field_relative
         )
 
     def ResetGyro(self) -> None:
-        self.swerve.logger.Info("Resetting IMU")
-        self.swerve.gyro.Reset()
+        self.drivetrain.logger.Info("Resetting IMU")
+        self.drivetrain.gyro.Reset()
 
     def SetLockingPoint(self, point: Translation2d | None) -> None:
         self.point = point
-        self.swerve.angularPid.reset(self.swerve.angularPid.getGoal())
+        self.drivetrain.angularPid.reset(self.drivetrain.angularPid.getGoal())
 
     def execute(self) -> None:
         if not DriverStation.isTeleopEnabled():
@@ -67,33 +69,33 @@ class DriveWithJoystick(Command):
 
         x = -self.slew_rates[0].calculate(
             applyDeadband(
-                self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisLeftY") or -1),  # -Y
+                self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisLeftY", -1)),  # -Y
                 GetFloat(constants.CONTROLLERS_CONSTANTS, "lateralDeadband"),
             )
             * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed"),
         )
         y = -self.slew_rates[0].calculate(
             applyDeadband(
-                self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisLeftX") or -1),  # -X
+                self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisLeftX", -1)),  # -X
                 GetFloat(constants.CONTROLLERS_CONSTANTS, "lateralDeadband"),
             )
             * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed"),
         )
 
-        if self.controller.getPOV() == (GetInt(constants.PORTS_CONSTANTS, "dpadUp") or -1):
+        if self.controller.getPOV() == GetInt(constants.PORTS_CONSTANTS, "dpadUp", -1):
             x = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(constants.PORTS_CONSTANTS, "dpadRight") or -1):
+        if self.controller.getPOV() == GetInt(constants.PORTS_CONSTANTS, "dpadRight", -1):
             y = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(constants.PORTS_CONSTANTS, "dpadDown") or -1):
+        if self.controller.getPOV() == GetInt(constants.PORTS_CONSTANTS, "dpadDown", -1):
             x = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-        if self.controller.getPOV() == (GetInt(constants.PORTS_CONSTANTS, "dpadLeft") or -1):
+        if self.controller.getPOV() == GetInt(constants.PORTS_CONSTANTS, "dpadLeft", -1):
             y = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
 
         theta: float = 0.0
         if not self.point:  # Point locking disabled
             theta = -self.slew_rates[1].calculate(
                 applyDeadband(
-                    self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisRightX") or -1),  # +X
+                    self.controller.getRawAxis(GetInt(constants.PORTS_CONSTANTS, "axisRightX", -1)),  # +X
                     GetFloat(constants.CONTROLLERS_CONSTANTS, "angularDeadband"),
                 )
                 * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxAngularSpeed"),
@@ -103,7 +105,7 @@ class DriveWithJoystick(Command):
             if self.controller.getRawButton(GetInt(constants.PORTS_CONSTANTS, "R1")) == 1:
                 theta = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microAngularSpeed")
         else:  # Point locking enabled
-            target = (self.point - self.swerve.GetPosition()).angle()
-            theta = self.swerve.angularPid.calculate(self.swerve.GetRotation().radians(), target.radians())
+            target = (self.point - self.drivetrain.GetPosition()).angle()
+            theta = self.drivetrain.angularPid.calculate(self.drivetrain.GetRotation().radians(), target.radians())
 
-        self.swerve.Drive(x, y, theta, self.field_relative)
+        self.drivetrain.Drive(x, y, theta, self.field_relative)

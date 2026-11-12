@@ -20,12 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .swerve.drivetrain import Drivetrain
-from .swerve.swerve_module import SwerveModule
+from .drivetrain.drivetrain import CreateDrivetrain, Drivetrain
 from .vision.vision import Vision
 
 __all__ = [
+    "CreateDrivetrain",
     "Drivetrain",
-    "SwerveModule",
     "Vision",
 ]

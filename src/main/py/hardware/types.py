@@ -33,6 +33,7 @@ class MotorType(IntEnum):
     SPARK_FLEX = 2
     TALON_FX = 3
     TALON_FXS = 4
+    XRP = 5
 
 
 class MotorMode(IntEnum):
@@ -114,6 +115,7 @@ class IMUType(IntEnum):
     ADIS16470 = 1
     NAVX = 2
     PIGEON2 = 3
+    XRP = 4
 
 
 @dataclass(frozen=True, slots=True)

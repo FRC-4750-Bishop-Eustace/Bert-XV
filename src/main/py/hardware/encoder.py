@@ -20,14 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from collections.abc import Mapping
 from pathlib import Path
 
+from utils import (
+    Constants,
+    GetBool,
+    GetInt,
+    GetString,
+)
 from utils.vendor import RequireImport
 
-from .types import Encoder, EncoderParameters, EncoderType
+from .config import GetChannels, ParseEnum
+from .types import Encoder, EncoderParameters, EncoderType, Motor
 
 __all__ = [
     "CreateEncoder",
+    "CreateEncoderFromConfig",
     "Encoder",
     "EncoderParameters",
     "EncoderType",
@@ -57,3 +66,33 @@ def CreateEncoder(backend: EncoderType, params: EncoderParameters) -> "Encoder":
 
         return AbsoluteEncoder(params)
     raise ValueError(f"Unknown encoder type: {backend}")
+
+
+def CreateEncoderFromConfig(config: Constants, motors: Mapping[str, Motor] | None = None) -> "Encoder":
+    """Create an encoder from an ``encoders`` entry in a hardware configuration.
+
+    Absolute encoders reference the motor they wrap through the ``motor`` entry.
+    """
+
+    backend = ParseEnum(EncoderType, GetString(config, "type"), "encoder type")
+    inverted = GetBool(config, "inverted")
+
+    device_id: int | tuple[int, int] | Motor
+    if backend == EncoderType.ABSOLUTE:
+        motor_name = GetString(config, "motor")
+        if not motor_name:
+            raise ValueError("Absolute encoder configuration requires a 'motor' entry")
+        if motors is None or motor_name not in motors:
+            raise KeyError(f"No motor named '{motor_name}' for absolute encoder")
+        device_id = motors[motor_name]
+
+    elif backend == EncoderType.WPI:
+        device_id = GetChannels(config)
+
+    elif backend == EncoderType.STUB:
+        device_id = GetInt(config, "deviceId", 0)
+
+    else:
+        device_id = GetInt(config, "deviceId")
+
+    return CreateEncoder(backend, EncoderParameters(device_id, inverted))

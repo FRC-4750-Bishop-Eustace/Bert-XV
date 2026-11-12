@@ -22,12 +22,15 @@
 
 from pathlib import Path
 
+from utils import Constants, GetBool, GetFloat, GetInt, GetString
 from utils.vendor import RequireImport
 
+from .config import ParseEnum
 from .types import IdleMode, Motor, MotorMode, MotorParameters, MotorType
 
 __all__ = [
     "CreateMotor",
+    "CreateMotorFromConfig",
     "IdleMode",
     "Motor",
     "MotorMode",
@@ -64,4 +67,25 @@ def CreateMotor(backend: MotorType, params: MotorParameters) -> "Motor":
         from .motor.talon_fxs import TalonFXSMotor
 
         return TalonFXSMotor(params)
+    if backend == MotorType.XRP:
+        RequireImport("xrp")
+        from .motor.xrp import XRPMotor
+
+        return XRPMotor(params)
     raise ValueError(f"Unknown motor type: {backend}")
+
+
+def CreateMotorFromConfig(config: Constants) -> "Motor":
+    """Create a motor from a ``motors`` entry in a hardware configuration."""
+
+    backend = ParseEnum(MotorType, GetString(config, "type"), "motor type")
+    params = MotorParameters(
+        device_id=GetInt(config, "deviceId"),
+        mode=ParseEnum(MotorMode, GetString(config, "mode", "brushless"), "motor mode"),
+        inverted=GetBool(config, "inverted"),
+        idle=ParseEnum(IdleMode, GetString(config, "idle", "coast"), "idle mode"),
+        velocity_factor=GetFloat(config, "velocityFactor"),
+        position_factor=GetFloat(config, "positionFactor"),
+        current_limit=GetFloat(config, "currentLimit"),
+    )
+    return CreateMotor(backend, params)

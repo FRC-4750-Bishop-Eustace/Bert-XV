@@ -1,0 +1,94 @@
+{
+  "type": "mecanum",
+  "chassisHalfLength": 0.3429,
+  "wheelRadius": 0.0492,
+  "driveReduction": 6.74603174603,
+  "encoderResolution": 4096,
+  "maxAngularVelocity": 1000,
+  "maxAngularAcceleration": 1000,
+  "maxLateralSpeed": 1.0,
+  "maxAngularSpeed": 1.0,
+  "microLateralSpeed": 0.2,
+  "microAngularSpeed": 0.2,
+  "motors": [
+    {
+      "name": "frontLeft",
+      "type": "xrp",
+      "deviceId": 1,
+      "inverted": false
+    },
+    {
+      "name": "frontRight",
+      "type": "xrp",
+      "deviceId": 4,
+      "inverted": true
+    },
+    {
+      "name": "backLeft",
+      "type": "xrp",
+      "deviceId": 7,
+      "inverted": false
+    },
+    {
+      "name": "backRight",
+      "type": "xrp",
+      "deviceId": 2,
+      "inverted": true
+    }
+  ],
+  "encoders": [
+    {
+      "name": "frontLeft",
+      "type": "wpi",
+      "channels": [
+        5,
+        6
+      ]
+    },
+    {
+      "name": "frontRight",
+      "type": "wpi",
+      "channels": [
+        8,
+        9
+      ]
+    },
+    {
+      "name": "backLeft",
+      "type": "wpi",
+      "channels": [
+        11,
+        12
+      ]
+    },
+    {
+      "name": "backRight",
+      "type": "wpi",
+      "channels": [
+        6,
+        7
+      ]
+    }
+  ],
+  "imu": {
+    "type": "xrp"
+  },
+  "lateralPID": [
+    0.02,
+    0.0,
+    0.0
+  ],
+  "angularPID": [
+    7.8,
+    0.0,
+    0.055
+  ],
+  "lateralFeedforward": [
+    0.0,
+    2.2
+  ],
+  "angularFeedforward": [
+    0.0,
+    0.0
+  ]
+}
