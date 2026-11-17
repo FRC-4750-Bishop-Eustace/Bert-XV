@@ -72,7 +72,8 @@ class SubsystemBase(Subsystem):
     def Periodic(self) -> None:
         raise NotImplementedError
 
-    def SimulationPeriodic(self) -> None: ...
+    def SimulationPeriodic(self) -> None:
+        self.logger.Trace(f"{self.name}.SimulationPeriodic isn't overriden")
 
     @override
     def periodic(self) -> None:
@@ -132,8 +133,11 @@ class SubsystemBase(Subsystem):
             self.Stop()
             self.logger.Info("Subsystem disabled")
 
-    def OnEnable(self) -> None: ...
+    def OnEnable(self) -> None:
+        self.logger.Trace(f"{self.name}.OnEnable isn't overriden")
 
-    def OnDisable(self) -> None: ...
+    def OnDisable(self) -> None:
+        self.logger.Trace(f"{self.name}.OnDisable isn't overriden")
 
-    def Stop(self) -> None: ...
+    def Stop(self) -> None:
+        self.logger.Trace(f"{self.name}.Stop isn't overriden")
