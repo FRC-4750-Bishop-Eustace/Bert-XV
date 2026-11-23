@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bert_xv"
 version = "0.1.0"
-description = "Source code for Bert/Swernie 15"
+description = "Source code for Beʳᵗ 15"
 readme = "./README.md"
 requires-python = ">=3.12"
 authors = [

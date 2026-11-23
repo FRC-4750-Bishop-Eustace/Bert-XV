@@ -60,12 +60,6 @@ class RobotContainer:
                 self.drivetrain,
             ),
         )
-        JoystickButton(self.controller, GetInt(constants.PORTS_CONSTANTS, "faceUp")).onTrue(
-            cmd.runOnce(
-                self.drive.ToggleFieldRelative,
-                self.drivetrain,
-            ),
-        )
 
     def UpdateField(self) -> None:
         self.field.setRobotPose(self.drivetrain.GetPose())

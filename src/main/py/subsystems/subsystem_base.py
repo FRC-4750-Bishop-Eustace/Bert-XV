@@ -41,7 +41,7 @@ class SubsystemBase(Subsystem):
         self.enabled = True
 
         super().setName(self.name)
-        CommandScheduler.getInstance().registerSubsystem(self)
+        # CommandScheduler.getInstance().registerSubsystem(self)
 
     def GetName(self) -> str:
         return self.name
