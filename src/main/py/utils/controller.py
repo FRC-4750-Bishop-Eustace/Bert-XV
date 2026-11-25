@@ -31,10 +31,12 @@ from hardware.config import GetControllerConfig, ParseController, ParseControlle
 from wpilib.interfaces import GenericHID
 
 from . import Constants, GetInt, constants
+from .logger import Logger
 
 
 class Controller:
-    def __init__(self, hid: GenericHID | str) -> None:
+    def __init__(self, logger: Logger, hid: GenericHID | str) -> None:
+        self.logger = logger.Child("controller")
         self.name: str | None
         self.hid: GenericHID | None
         self.ports: Constants
@@ -48,6 +50,32 @@ class Controller:
             self.name = type(hid).__name__
             self.hid = hid
             self.ports = {}
+
+        self.ValidatePorts()
+
+    def ValidatePorts(self) -> None:
+        if self.hid is None:
+            return
+
+        for key in self.ports:
+            if key.startswith("dpad"):
+                continue
+
+            axis = key.startswith("axis")
+            index = GetInt(self.ports, key, -1 if axis else 0)
+            count = self.hid.getAxisCount() if axis else self.hid.getButtonCount()
+
+            exists = ((index < count) >= 0) if axis else (1 <= index <= count)
+            if exists:
+                continue
+
+            self.logger.Warning(
+                f"Missing {'axis' if axis else 'button'} '{key}' on controller '{self.name}'",
+                controller=self.name,
+                port=key,
+                index=index,
+                available=count,
+            )
 
     def GetPort(self, key: str, default: int = 0) -> int:
         return GetInt(self.ports, key, default)

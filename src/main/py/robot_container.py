@@ -32,8 +32,8 @@ class RobotContainer:
     def __init__(self, logger: "Logger") -> None:
         self.logger = logger
 
-        self.controller = Controller("driver")
-        self.dashboard = Controller("dashboard")
+        self.controller = Controller(self.logger, "driver")
+        self.dashboard = Controller(self.logger, "dashboard")
 
         self.field = Field2d()
 

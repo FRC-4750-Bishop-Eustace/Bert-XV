@@ -1,3 +1,16 @@
 {
-  "cameras": []
+  "cameras": [
+    {
+      "type": "photon",
+      "name": "picam",
+      "offset": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ]
 }
