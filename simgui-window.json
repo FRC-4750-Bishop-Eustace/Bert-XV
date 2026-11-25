@@ -31,17 +31,17 @@
   "Window": {
     "###/FMSInfo": {
       "Collapsed": "0",
-      "Pos": "992,808",
+      "Pos": "1088,814",
       "Size": "140,179"
     },
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "609,809",
-      "Size": "275,138"
+      "Pos": "738,824",
+      "Size": "140,198"
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "545,554",
+      "Pos": "552,559",
       "Size": "796,237"
     },
     "###Keyboard 0 Settings": {
@@ -61,7 +61,7 @@
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1471,37",
+      "Pos": "1477,38",
       "Size": "320,968"
     },
     "###RoboRIO": {

@@ -20,13 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from collections.abc import Callable
 from typing import Any
 
+from commands2 import Command
+from commands2.button import Trigger
 from hardware.config import GetControllerConfig, ParseController, ParseControllerPorts
 from wpilib.interfaces import GenericHID
 
-from . import constants
-from .constants import Constants, GetInt
+from . import Constants, GetInt, constants
 
 
 class Controller:
@@ -83,6 +87,12 @@ class Controller:
             return default
 
         return self.hid.getPOV(pov)
+
+    def Bind(self, button: int | str, factory: Callable[..., Command], *args: Any, **kwargs: Any) -> None:
+        if self.hid is None:
+            return
+
+        Trigger(lambda: self.GetButton(button, False)).onTrue(factory(*args, **kwargs))
 
     def __getattr__(self, name: str) -> Any:
         if self.hid is None:

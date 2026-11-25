@@ -23,7 +23,6 @@
 import commands2.cmd as cmd
 from commands import DriveWithJoystick
 from commands2 import Command
-from commands2.button import Trigger
 from subsystems import CreateDrivetrain, Vision
 from utils import AutonomousSelector, Controller, Logger
 from wpilib import Field2d, SmartDashboard
@@ -54,12 +53,7 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(self.drive)
 
     def ConfigureBindings(self) -> None:
-        Trigger(lambda: self.controller.GetButton("faceDown")).onTrue(
-            cmd.runOnce(
-                self.drive.ToggleFieldRelative,
-                self.drivetrain,
-            ),
-        )
+        self.controller.Bind("faceDown", cmd.runOnce, self.drive.ToggleFieldRelative, self.drivetrain)
 
     def UpdateField(self) -> None:
         self.field.setRobotPose(self.drivetrain.GetPose())
