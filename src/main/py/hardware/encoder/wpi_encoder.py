@@ -38,6 +38,8 @@ class WPIEncoder:
             params.device_id[1],
             params.inverted,
         )
+        if params.distance_per_pulse is not None:
+            self.encoder.setDistancePerPulse(params.distance_per_pulse)
 
     def GetPosition(self) -> float | None:
         return self.encoder.getDistance()

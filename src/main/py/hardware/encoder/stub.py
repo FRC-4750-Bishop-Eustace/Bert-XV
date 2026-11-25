@@ -30,10 +30,10 @@ class StubEncoder:
         self.velocity = 0.0
 
     def GetPosition(self) -> float | None:
-        return self.position
+        return self.position * (self.params.distance_per_pulse or 1.0)
 
     def GetVelocity(self) -> float | None:
-        return self.velocity
+        return self.velocity * (self.params.distance_per_pulse or 1.0)
 
     def Reset(self) -> None:
         self.position = 0.0

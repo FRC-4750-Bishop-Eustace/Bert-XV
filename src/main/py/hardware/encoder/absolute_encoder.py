@@ -33,10 +33,10 @@ class AbsoluteEncoder:
         self.encoder = params.device_id.motor.getEncoder()
 
     def GetPosition(self) -> float | None:
-        return self.encoder.getPosition()
+        return self.encoder.getPosition() * (self.params.distance_per_pulse or 1.0)
 
     def GetVelocity(self) -> float | None:
-        return self.encoder.getVelocity()
+        return self.encoder.getVelocity() * (self.params.distance_per_pulse or 1.0)
 
     def Reset(self) -> None:
         pass

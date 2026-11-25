@@ -23,7 +23,7 @@
 import commands2.cmd as cmd
 from commands import DriveWithJoystick
 from commands2 import Command
-from commands2.button import JoystickButton
+from commands2.button import Trigger
 from subsystems import CreateDrivetrain, Vision
 from utils import AutonomousSelector, GetInt, Logger, constants
 from wpilib import Field2d, Joystick, PS4Controller, SmartDashboard
@@ -54,7 +54,13 @@ class RobotContainer:
         self.drivetrain.setDefaultCommand(self.drive)
 
     def ConfigureBindings(self) -> None:
-        JoystickButton(self.controller, GetInt(constants.PORTS_CONSTANTS, "faceDown")).onTrue(
+        Trigger(
+            lambda: (
+                (face_down := GetInt(constants.PORTS_CONSTANTS, "faceDown")) > 0
+                and face_down <= self.controller.getButtonCount()
+                and self.controller.getRawButton(face_down)
+            )
+        ).onTrue(
             cmd.runOnce(
                 self.drive.ToggleFieldRelative,
                 self.drivetrain,

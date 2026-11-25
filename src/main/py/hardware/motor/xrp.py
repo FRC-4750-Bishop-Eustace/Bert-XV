@@ -40,7 +40,7 @@ class XRPMotor:
         self.motor.set(speed)
 
     def SetVoltage(self, voltage: float) -> None:
-        self.motor.set(voltage / 12.0)
+        self.motor.set(max(-1.0, min(1.0, voltage / 12.0)))
 
     def GetPosition(self) -> float | None:
         return self.motor.get()

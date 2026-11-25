@@ -94,6 +94,7 @@ class EncoderType(IntEnum):
 class EncoderParameters:
     device_id: int | tuple[int, int] | Motor
     inverted: bool = False
+    distance_per_pulse: float | None = None
 
 
 @runtime_checkable

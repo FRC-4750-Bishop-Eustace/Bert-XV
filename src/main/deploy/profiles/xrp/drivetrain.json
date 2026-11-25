@@ -1,38 +1,38 @@
 {
   "type": "mecanum",
-  "chassisHalfLength": 0.3429,
-  "wheelRadius": 0.0492,
-  "driveReduction": 6.74603174603,
-  "encoderResolution": 4096,
+  "chassisHalfLength": 0.0775,
+  "wheelRadius": 0.024,
+  "driveReduction": 48.75,
+  "encoderResolution": 585,
   "maxAngularVelocity": 1000,
   "maxAngularAcceleration": 1000,
-  "maxLateralSpeed": 1.0,
-  "maxAngularSpeed": 1.0,
-  "microLateralSpeed": 0.2,
-  "microAngularSpeed": 0.2,
+  "maxLateralSpeed": 0.3,
+  "maxAngularSpeed": 2.0,
+  "microLateralSpeed": 0.05,
+  "microAngularSpeed": 0.3,
   "motors": [
     {
       "name": "frontLeft",
       "type": "xrp",
-      "deviceId": 1,
+      "deviceId": 0,
       "inverted": false
     },
     {
       "name": "frontRight",
       "type": "xrp",
-      "deviceId": 4,
+      "deviceId": 1,
       "inverted": true
     },
     {
       "name": "backLeft",
       "type": "xrp",
-      "deviceId": 7,
+      "deviceId": 2,
       "inverted": false
     },
     {
       "name": "backRight",
       "type": "xrp",
-      "deviceId": 2,
+      "deviceId": 3,
       "inverted": true
     }
   ],
@@ -41,33 +41,37 @@
       "name": "frontLeft",
       "type": "wpi",
       "channels": [
-        5,
-        6
-      ]
+        4,
+        5
+      ],
+      "distancePerPulse": 0.00025777170490993176
     },
     {
       "name": "frontRight",
       "type": "wpi",
       "channels": [
-        8,
-        9
-      ]
+        6,
+        7
+      ],
+      "distancePerPulse": 0.00025777170490993176
     },
     {
       "name": "backLeft",
       "type": "wpi",
       "channels": [
-        11,
-        12
-      ]
+        8,
+        9
+      ],
+      "distancePerPulse": 0.00025777170490993176
     },
     {
       "name": "backRight",
       "type": "wpi",
       "channels": [
-        6,
-        7
-      ]
+        10,
+        11
+      ],
+      "distancePerPulse": 0.00025777170490993176
     }
   ],
   "imu": {

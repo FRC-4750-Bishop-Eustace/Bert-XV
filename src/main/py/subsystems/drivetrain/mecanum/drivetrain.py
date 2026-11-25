@@ -52,10 +52,10 @@ class MecanumDrivetrain(SubsystemBase):
 
         half_length = GetFloat(constants.DRIVETRAIN_CONSTANTS, "chassisHalfLength")
         self.kinematics = MecanumDriveKinematics(
-            Translation2d(-half_length, half_length),
-            Translation2d(half_length, half_length),
-            Translation2d(-half_length, -half_length),
-            Translation2d(half_length, -half_length),
+            Translation2d(half_length, half_length),  # Front left
+            Translation2d(half_length, -half_length),  # Front right
+            Translation2d(-half_length, half_length),  # Back left
+            Translation2d(-half_length, -half_length),  # Back right
         )
 
         self.estimator = MecanumDrivePoseEstimator(
@@ -103,7 +103,12 @@ class MecanumDrivetrain(SubsystemBase):
         self.modules[3].SetDesiredState(states.rearRight)
 
     def Stop(self) -> None:
-        self.Drive(0.0, 0.0, 0.0, False)
+        if not hasattr(self, "modules"):
+            return
+
+        for module in self.modules:
+            module.Stop()
+
         self.logger.Info("Drivetrain stopped")
 
     def Periodic(self) -> None:

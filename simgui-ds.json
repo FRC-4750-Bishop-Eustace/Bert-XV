@@ -1,0 +1,118 @@
+{
+  "Keyboard 0 Settings": {
+    "window": {
+      "visible": true
+    }
+  },
+  "keyboardJoysticks": [
+    {
+      "axisConfig": [
+        {
+          "decKey": 68,
+          "decayRate": 1.0,
+          "incKey": 65
+        },
+        {
+          "decKey": 87,
+          "decayRate": 1.0,
+          "incKey": 83
+        },
+        {
+          "decayRate": 1.0,
+          "incKey": 81
+        },
+        {
+          "decayRate": 1.0,
+          "incKey": 69
+        },
+        {
+          "decKey": 262,
+          "decayRate": 1.0,
+          "incKey": 263
+        },
+        {
+          "decKey": 265,
+          "decayRate": 1.0,
+          "incKey": 264
+        }
+      ],
+      "axisCount": 6,
+      "buttonCount": 10,
+      "buttonKeys": [
+        90,
+        88,
+        67,
+        86,
+        66,
+        78,
+        77,
+        44,
+        46,
+        47
+      ],
+      "povConfig": [
+        {
+          "key0": 328,
+          "key135": 323,
+          "key180": 322,
+          "key225": 321,
+          "key270": 324,
+          "key315": 327,
+          "key45": 329,
+          "key90": 326
+        }
+      ],
+      "povCount": 1
+    },
+    {
+      "axisConfig": [
+        {
+          "decKey": 74,
+          "incKey": 76
+        },
+        {
+          "decKey": 73,
+          "incKey": 75
+        }
+      ],
+      "axisCount": 2,
+      "buttonCount": 4,
+      "buttonKeys": [
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "povCount": 0
+    },
+    {
+      "axisCount": 2,
+      "buttonCount": 6,
+      "buttonKeys": [
+        260,
+        268,
+        266,
+        261,
+        269,
+        267
+      ],
+      "povCount": 0
+    },
+    {
+      "axisCount": 0,
+      "buttonCount": 0,
+      "povCount": 0
+    }
+  ],
+  "robotJoysticks": [
+    {
+      "guid": "030000004c050000e60c000011810000"
+    },
+    {},
+    {
+      "guid": "Keyboard0"
+    }
+  ],
+  "useEnableDisableHotkeys": true,
+  "useEstopHotkey": true
+}

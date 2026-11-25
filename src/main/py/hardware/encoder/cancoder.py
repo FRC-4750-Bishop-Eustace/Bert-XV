@@ -34,10 +34,10 @@ class CANcoderEncoder:
         self.encoder = CANcoder(device_id=params.device_id, canbus=CANBus(GetString(constants.CONSTANTS, "canbus")))
 
     def GetPosition(self) -> float | None:
-        return self.encoder.get_position().value
+        return self.encoder.get_position().value * (self.params.distance_per_pulse or 1.0)
 
     def GetVelocity(self) -> float | None:
-        return self.encoder.get_velocity().value
+        return self.encoder.get_velocity().value * (self.params.distance_per_pulse or 1.0)
 
     def Reset(self) -> None:
         self.encoder.set_position(0.0)

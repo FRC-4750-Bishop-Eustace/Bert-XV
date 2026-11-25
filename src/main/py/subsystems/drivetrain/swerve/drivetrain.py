@@ -119,7 +119,12 @@ class SwerveDrivetrain(SubsystemBase):
         self.modules[3].SetDesiredState(states[3])
 
     def Stop(self) -> None:
-        self.Drive(0.0, 0.0, 0.0, False)
+        if not hasattr(self, "modules"):
+            return
+
+        for module in self.modules:
+            module.Stop()
+
         self.logger.Info("Drivetrain stopped")
 
     def Periodic(self) -> None:

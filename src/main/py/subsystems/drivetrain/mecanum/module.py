@@ -22,16 +22,14 @@
 
 
 from hardware import Encoder, Motor
-from utils import GetFeedForwardMeters, GetPID, constants
+from utils import GetFloat, constants
 
 
 class MecanumModule:
     def __init__(self, motor: Motor, encoder: Encoder) -> None:
         self.motor = motor
         self.encoder = encoder
-
-        self.pid = GetPID(constants.DRIVETRAIN_CONSTANTS, "lateralPID")
-        self.ff = GetFeedForwardMeters(constants.DRIVETRAIN_CONSTANTS, "lateralFeedforward")
+        self.max_speed = GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed", 1.0)
 
     def GetState(self) -> float:
         return self.encoder.GetVelocity() or 0.0
@@ -40,10 +38,8 @@ class MecanumModule:
         return self.encoder.GetPosition() or 0.0
 
     def SetDesiredState(self, state: float) -> None:
-        self.motor.SetVoltage(
-            self.pid.calculate(
-                self.encoder.GetVelocity() or 0.0,
-                state,
-            )
-            + self.ff.calculate(state)
-        )
+        duty = max(-1.0, min(1.0, state / self.max_speed))
+        self.motor.SetSpeed(duty)
+
+    def Stop(self) -> None:
+        self.motor.Stop()

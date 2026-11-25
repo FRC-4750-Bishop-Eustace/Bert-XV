@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import override
 
-from commands2 import CommandScheduler, Subsystem
+from commands2 import Subsystem
 from utils import Logger
 from wpiutil import SendableBuilder
 
@@ -41,7 +41,6 @@ class SubsystemBase(Subsystem):
         self.enabled = True
 
         super().setName(self.name)
-        # CommandScheduler.getInstance().registerSubsystem(self)
 
     def GetName(self) -> str:
         return self.name

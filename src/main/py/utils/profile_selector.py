@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import sys
 from collections.abc import Hashable
 from functools import partial
 from pathlib import Path
@@ -45,7 +46,11 @@ def ProfileSelector() -> Command:
         profiles["default"] = cmd.runOnce(InitializeConstants).ignoringDisable(True)
 
     profile_chooser: SendableChooser = SendableChooser()
+    wants_xrp = any(arg.__contains__("xrp") for arg in sys.argv)
     default_profile = "default" if "default" in profiles else next(iter(profiles))
+
+    if wants_xrp and "xrp" in profiles:
+        default_profile = "xrp"
     for name in profiles:
         if name == default_profile:
             profile_chooser.setDefaultOption(str(name), str(name))

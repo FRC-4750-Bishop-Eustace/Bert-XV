@@ -81,3 +81,7 @@ class SwerveModule:
             )
             + self.angular_ff.calculate(self.angular_pid.getSetpoint().velocity)
         )
+
+    def Stop(self) -> None:
+        self.lateral_motor.Stop()
+        self.angular_motor.Stop()

@@ -53,16 +53,41 @@
 
               # Graphics
               libGL
-              mesa
-              libdrm
               libgbm
-              vulkan-loader
-              vulkan-headers
 
               # Hardware
               dbus
               libusb1
             ];
+
+            # Expose native libraries to dynamically linked applications
+            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
+              stdenv.cc.cc.lib
+
+              # Wayland
+              wayland
+              libxkbcommon
+              libdecor
+
+              # X11
+              libX11
+              libXext
+              libXcursor
+              libXfixes
+              libXi
+              libXrandr
+              libXScrnSaver
+              libXtst
+              libxcb
+              xcbutil
+              xcbutilwm
+              xcbutilimage
+              xcbutilkeysyms
+
+              # Graphics
+              libGL
+              libgbm
+            ]);
           };
         });
     };

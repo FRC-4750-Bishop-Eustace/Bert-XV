@@ -26,6 +26,7 @@ from pathlib import Path
 from utils import (
     Constants,
     GetBool,
+    GetFloat,
     GetInt,
     GetString,
 )
@@ -95,4 +96,5 @@ def CreateEncoderFromConfig(config: Constants, motors: Mapping[str, Motor] | Non
     else:
         device_id = GetInt(config, "deviceId")
 
-    return CreateEncoder(backend, EncoderParameters(device_id, inverted))
+    distance_per_pulse = GetFloat(config, "distancePerPulse", 0.0) or None
+    return CreateEncoder(backend, EncoderParameters(device_id, inverted, distance_per_pulse))
