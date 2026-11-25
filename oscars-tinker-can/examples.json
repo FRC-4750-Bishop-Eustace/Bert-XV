@@ -1,0 +1,32 @@
+{
+  "note": "Copy the examples you want into launcher.json. These are examples, not automatically active controls.",
+  "button": {
+    "id": "my_tool",
+    "label": "My bench tool",
+    "description": "Open another installed tool.",
+    "icon": "tool",
+    "action": "my_tool"
+  },
+  "action_for_installed_application": {
+    "my_tool": {"type": "command", "argv": ["/usr/bin/pcmanfm", "{home}/Documents"]}
+  },
+  "action_for_local_web_tool": {
+    "my_web_tool": {
+      "type": "open_browser",
+      "url": "http://127.0.0.1:9000/",
+      "profile": "my-web-tool",
+      "fullscreen": true
+    }
+  },
+  "controls": [
+    {"id": "demo_enabled", "type": "toggle", "label": "Demo option", "description": "A saved option for a future tool."},
+    {"id": "demo_level", "type": "slider", "label": "Demo level", "min": 0, "max": 10, "step": 1},
+    {"id": "demo_mode", "type": "select", "label": "Demo mode", "options": [{"label": "Mode A", "value": "a"}, {"label": "Mode B", "value": "b"}]}
+  ],
+  "settings_for_example_controls": {"demo_enabled": false, "demo_level": 0, "demo_mode": "a"},
+  "explicit_apply_example": {
+    "note": "Add action and optionally apply_label to a control to show an Apply button. The tool executes only when Apply is pressed, not while sliding. Replace the example executable with your installed tool.",
+    "control": {"id": "demo_level", "type": "slider", "label": "Demo level", "min": 0, "max": 10, "step": 1, "action": "apply_demo", "apply_label": "Apply to tool"},
+    "action": {"apply_demo": {"type": "command", "argv": ["/path/to/your-tool", "--level", "{value}", "--mode", "{setting:demo_mode}"]}}
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "title": "Oscar's Tinker Can",
+  "subtitle": "Trash-can test lab \u00b7 BErt 4750",
+  "theme": {
+    "accent": "#c1df49",
+    "street_sign": "#16663d"
+  },
+  "browser_command": "chromium",
+  "settings": {
+    "rev_fullscreen": true,
+    "rev_scale": 1.0
+  },
+  "buttons": [
+    {
+      "id": "rev",
+      "label": "Launch REV",
+      "description": "Start the backend, then open the hardware client.",
+      "icon": "play",
+      "accent": "orange",
+      "primary": true,
+      "action": "launch_rev"
+    },
+    {
+      "id": "logs",
+      "label": "Backend log",
+      "description": "View startup messages and connection details.",
+      "icon": "log",
+      "action": "rev_log"
+    }
+  ],
+  "controls": [
+    {
+      "id": "rev_fullscreen",
+      "type": "toggle",
+      "label": "Open REV fullscreen",
+      "description": "Applies when opening the REV browser window."
+    },
+    {
+      "id": "rev_scale",
+      "type": "slider",
+      "label": "REV display scale",
+      "description": "A smaller scale fits more telemetry on the screen.",
+      "min": 0.65,
+      "max": 1.25,
+      "step": 0.05,
+      "format": "percent"
+    }
+  ],
+  "backends": {
+    "rev": {
+      "label": "REV backend",
+      "command": [
+        "{home}/.local/share/frc-java25/bin/java",
+        "-Dquarkus.log.console.color=false",
+        "-Djava.util.logging.manager=org.jboss.logmanager.LogManager",
+        "-Dapp.dir=/usr/lib/rev-robotics/rev-hardware-client/lib/app",
+        "-Djna.boot.library.path=/usr/lib/rev-robotics/rev-hardware-client/lib/runtime/lib",
+        "-Djna.library.path=/usr/lib/rev-robotics/rev-hardware-client/lib/runtime/lib",
+        "-Djava.library.path=/usr/lib/rev-robotics/rev-hardware-client/lib/runtime/lib:/usr/lib/rev-robotics/rev-hardware-client/lib/app",
+        "-jar",
+        "/usr/lib/rev-robotics/rev-hardware-client/lib/app/server-1.4.7-runner.jar",
+        "--show-ui=false"
+      ],
+      "environment": {
+        "QUARKUS_HTTP_HOST": "127.0.0.1"
+      },
+      "required_files": [
+        "/usr/lib/rev-robotics/rev-hardware-client/lib/app/server-1.4.7-runner.jar"
+      ],
+      "state_directory": "{home}/.local/state/rev-bench",
+      "ready_pattern": "Listening on: http://[0-9.]+:([0-9]+)",
+      "ready_url": "http://127.0.0.1:{port}/",
+      "timeout_seconds": 120
+    }
+  },
+  "actions": {
+    "launch_rev": {
+      "type": "pipeline",
+      "steps": [
+        {
+          "type": "ensure_backend",
+          "backend": "rev"
+        },
+        {
+          "type": "open_browser",
+          "backend": "rev",
+          "profile": "rev",
+          "fullscreen_setting": "rev_fullscreen",
+          "scale_setting": "rev_scale"
+        }
+      ]
+    },
+    "rev_log": {
+      "type": "show_log",
+      "backend": "rev"
+    }
+  }
+}
