@@ -44,6 +44,7 @@ from .constants import (
     InitializeConstants,
     LoadConstants,
 )
+from .controller import Controller
 from .health import Health
 from .logger import Logger, LogLevel
 from .profile_selector import ProfileSelector
@@ -52,6 +53,7 @@ from .uuid import GetLogDirectory, NewUUID
 __all__ = [
     "AutonomousSelector",
     "Constants",
+    "Controller",
     "GetBool",
     "GetFeedForwardMeters",
     "GetFeedForwardRadians",

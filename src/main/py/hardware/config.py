@@ -22,12 +22,28 @@
 
 from enum import IntEnum
 
-from utils import Constants, GetList
+from utils import Constants, GetInt, GetList, GetObjectList, GetString
+from wpilib import Joystick, PS4Controller, PS5Controller, StadiaController, XboxController
+from wpilib.interfaces import GenericHID
+
+from .types import ControllerType
 
 __all__ = [
     "GetChannels",
+    "GetController",
+    "GetControllerConfig",
+    "ParseController",
+    "ParseControllerPorts",
     "ParseEnum",
 ]
+
+CONTROLLER_TYPES: dict[ControllerType, type[GenericHID]] = {
+    ControllerType.JOYSTICK: Joystick,
+    ControllerType.PS4: PS4Controller,
+    ControllerType.PS5: PS5Controller,
+    ControllerType.STADIA: StadiaController,
+    ControllerType.XBOX: XboxController,
+}
 
 
 def ParseEnum[T: IntEnum](enum: type[T], value: str, field: str) -> T:
@@ -51,3 +67,37 @@ def GetChannels(config: Constants, key: str = "channels") -> tuple[int, int]:
         result.append(channel)
 
     return (result[0], result[1])
+
+
+def GetControllerConfig(config: Constants, name: str) -> Constants | None:
+    for entry in GetObjectList(config, "controllers"):
+        if GetString(entry, "name") == name:
+            return entry
+
+    return None
+
+
+def ParseController(config: Constants | None) -> GenericHID | None:
+    if config is None:
+        return None
+
+    backend = ParseEnum(ControllerType, GetString(config, "type"), "controller type")
+    return CONTROLLER_TYPES[backend](GetInt(config, "port"))
+
+
+def ParseControllerPorts(config: Constants | None) -> Constants:
+    if config is None:
+        return {}
+
+    ports = config.get("ports")
+    if ports is None:
+        return {}
+
+    if not isinstance(ports, dict):
+        raise TypeError(f"Expected controller entry 'ports' to be a JSON object, got {type(ports).__name__}")
+
+    return ports
+
+
+def GetController(config: Constants, name: str) -> GenericHID | None:
+    return ParseController(GetControllerConfig(config, name))

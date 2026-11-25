@@ -24,16 +24,15 @@ from typing import cast
 
 from commands2 import Command, Subsystem
 from subsystems import Drivetrain
-from utils import GetFloat, GetInt, constants
+from utils import Controller, GetFloat, constants
 from wpilib import DriverStation, SmartDashboard
-from wpilib.interfaces import GenericHID
 from wpimath import applyDeadband
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Translation2d
 
 
 class DriveWithJoystick(Command):
-    def __init__(self, drivetrain: Drivetrain, controller: GenericHID, point: Translation2d | None = None) -> None:
+    def __init__(self, drivetrain: Drivetrain, controller: Controller, point: Translation2d | None = None) -> None:
         self.drivetrain = drivetrain
         self.controller = controller
         self.point = point
@@ -69,55 +68,45 @@ class DriveWithJoystick(Command):
             self.drivetrain.Stop()
             return
 
-        axis_left_y = GetInt(constants.PORTS_CONSTANTS, "axisLeftY", -1)
-        axis_left_x = GetInt(constants.PORTS_CONSTANTS, "axisLeftX", -1)
-        axis_right_x = GetInt(constants.PORTS_CONSTANTS, "axisRightX", -1)
-        axis_count = self.controller.getAxisCount()
-
         x = -self.slew_rates[0].calculate(
             applyDeadband(
-                self.controller.getRawAxis(axis_left_y) if axis_count > axis_left_y >= 0 else 0.0,  # -Y
+                self.controller.GetAxis("axisLeftY"),  # -Y
                 GetFloat(constants.CONTROLLERS_CONSTANTS, "lateralDeadband"),
             )
             * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed"),
         )
         y = -self.slew_rates[1].calculate(
             applyDeadband(
-                self.controller.getRawAxis(axis_left_x) if axis_count > axis_left_x >= 0 else 0.0,  # -X
+                self.controller.GetAxis("axisLeftX"),  # -X
                 GetFloat(constants.CONTROLLERS_CONSTANTS, "lateralDeadband"),
             )
             * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxLateralSpeed"),
         )
 
-        if self.controller.getPOVCount() > 0:
-            pov = self.controller.getPOV()
-            if pov >= 0:
-                if pov == GetInt(constants.PORTS_CONSTANTS, "dpadUp", -1):
-                    x = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-                if pov == GetInt(constants.PORTS_CONSTANTS, "dpadRight", -1):
-                    y = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-                if pov == GetInt(constants.PORTS_CONSTANTS, "dpadDown", -1):
-                    x = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
-                if pov == GetInt(constants.PORTS_CONSTANTS, "dpadLeft", -1):
-                    y = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
+        pov = self.controller.GetPOV()
+        if pov >= 0:
+            if pov == self.controller.GetPort("dpadUp", -1):
+                x = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
+            if pov == self.controller.GetPort("dpadRight", -1):
+                y = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
+            if pov == self.controller.GetPort("dpadDown", -1):
+                x = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
+            if pov == self.controller.GetPort("dpadLeft", -1):
+                y = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microLateralSpeed")
 
         theta: float = 0.0
         if not self.point:  # Point locking disabled
             theta = -self.slew_rates[2].calculate(
                 applyDeadband(
-                    self.controller.getRawAxis(axis_right_x) if axis_count > axis_right_x >= 0 else 0.0,  # +X
+                    self.controller.GetAxis("axisRightX"),  # +X
                     GetFloat(constants.CONTROLLERS_CONSTANTS, "angularDeadband"),
                 )
                 * GetFloat(constants.DRIVETRAIN_CONSTANTS, "maxAngularSpeed"),
             )
 
-            l1 = GetInt(constants.PORTS_CONSTANTS, "L1")
-            r1 = GetInt(constants.PORTS_CONSTANTS, "R1")
-            button_count = self.controller.getButtonCount()
-
-            if button_count >= l1 and self.controller.getRawButton(l1) == 1:
+            if self.controller.GetButton("L1"):
                 theta = GetFloat(constants.DRIVETRAIN_CONSTANTS, "microAngularSpeed")
-            if button_count >= r1 and self.controller.getRawButton(r1) == 1:
+            if self.controller.GetButton("R1"):
                 theta = -GetFloat(constants.DRIVETRAIN_CONSTANTS, "microAngularSpeed")
 
         else:  # Point locking enabled

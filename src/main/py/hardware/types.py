@@ -27,6 +27,14 @@ from typing import Protocol, runtime_checkable
 from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Translation3d
 
 
+class ControllerType(IntEnum):
+    JOYSTICK = 0
+    PS4 = 1
+    PS5 = 2
+    STADIA = 3
+    XBOX = 4
+
+
 class MotorType(IntEnum):
     STUB = 0
     SPARK_MAX = 1
